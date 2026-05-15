@@ -197,15 +197,15 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
             Vec3 vec3Position = tentity.position();
             if (vec3Position.x != 0.0d || vec3Position.y != 0.0d || vec3Position.z != 0.0d) {
                 if (!this.isFirstFrameAfterReset) {
-                    return 10;
+                    float fDistanceTo = tentity.distanceTo(this.entity);
+                    if (fDistanceTo > 64.0f) {
+                        return 30;
+                    }
+                    if (fDistanceTo > 40.0f) {
+                        return 60;
+                    }
                 }
-                float fDistanceTo = tentity.distanceTo(this.entity);
-                if (fDistanceTo > 64.0f) {
-                    return 30;
-                }
-                if (fDistanceTo > 40.0f) {
-                    return 60;
-                }
+                return 10;
             }
         }
         return ClientTickEvent.getRefreshRate();
@@ -224,7 +224,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         Entity entity = this.entity;
         LivingEntity livingEntity = entity instanceof LivingEntity ? (LivingEntity) entity : null;
         int tickCount = this instanceof IPreviewAnimatable ? ClientTickEvent.getTickCount() : entity.tickCount;
-        float frameTime = partialTick != 1.0f ? partialTick : Minecraft.getInstance().getFrameTime();
+        float frameTime = partialTick != 1.0f ? partialTick : Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
         boolean shouldSit = entity.isPassenger() && entity.getVehicle() != null && EntityDataBridge.shouldRiderSit(entity.getVehicle());
         float limbSwingAmount = 0.0f;
         float limbSwing = 0.0f;

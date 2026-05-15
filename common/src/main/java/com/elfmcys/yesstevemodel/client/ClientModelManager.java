@@ -544,7 +544,6 @@ public class ClientModelManager {
     }
 
     public static SyncStatus getSyncStatus() {
-        RenderSystem.assertOnGameThread();
         return syncState;
     }
 

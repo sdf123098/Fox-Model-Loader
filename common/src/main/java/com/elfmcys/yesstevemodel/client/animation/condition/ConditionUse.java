@@ -58,11 +58,11 @@ public class ConditionUse {
             return;
         }
         String strSubstring = name.substring(this.preSize);
-        if (name.startsWith(this.idPre) && ResourceLocation.isValidResourceLocation(strSubstring)) {
-            this.idTest.add(new ResourceLocation(strSubstring));
+        if (name.startsWith(this.idPre) && ResourceLocation.isValidPath(strSubstring)) {
+            this.idTest.add(ResourceLocation.parse(strSubstring));
         }
-        if (name.startsWith(this.tagPre) && ResourceLocation.isValidResourceLocation(strSubstring)) {
-            this.tagTest.add(TagKey.create(Registries.ITEM, new ResourceLocation(strSubstring)));
+        if (name.startsWith(this.tagPre) && ResourceLocation.isValidPath(strSubstring)) {
+            this.tagTest.add(TagKey.create(Registries.ITEM, ResourceLocation.parse(strSubstring)));
         }
         if (!name.startsWith(this.extraPre) || strSubstring.equals(UseAnim.NONE.name().toLowerCase(Locale.US))) {
             return;

@@ -6,11 +6,11 @@ import com.elfmcys.yesstevemodel.capability.fabric.ModelInfoComponent;
 import com.elfmcys.yesstevemodel.capability.fabric.ProjectileModelComponent;
 import com.elfmcys.yesstevemodel.capability.fabric.StarModelsComponent;
 import com.elfmcys.yesstevemodel.capability.fabric.VehicleModelComponent;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
-import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
+import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
+import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -18,27 +18,27 @@ import net.minecraft.world.entity.projectile.Projectile;
 public final class YsmComponents implements EntityComponentInitializer {
 
     public static final ComponentKey<StarModelsComponent> STAR_MODELS = ComponentRegistryV3.INSTANCE.getOrCreate(
-            new ResourceLocation(YesSteveModel.MOD_ID, "star_models"),
+            ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID,"star_models"),
             StarModelsComponent.class
     );
 
     public static final ComponentKey<AuthModelsComponent> AUTH_MODELS = ComponentRegistryV3.INSTANCE.getOrCreate(
-            new ResourceLocation(YesSteveModel.MOD_ID, "auth_models"),
+            ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID,"auth_models"),
             AuthModelsComponent.class
     );
 
     public static final ComponentKey<ModelInfoComponent> MODEL_INFO = ComponentRegistryV3.INSTANCE.getOrCreate(
-            new ResourceLocation(YesSteveModel.MOD_ID, "model_info"),
+            ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID,"model_info"),
             ModelInfoComponent.class
     );
 
     public static final ComponentKey<ProjectileModelComponent> PROJECTILE_MODEL = ComponentRegistryV3.INSTANCE.getOrCreate(
-            new ResourceLocation(YesSteveModel.MOD_ID, "projectile_model"),
+            ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID,"projectile_model"),
             ProjectileModelComponent.class
     );
 
     public static final ComponentKey<VehicleModelComponent> VEHICLE_MODEL = ComponentRegistryV3.INSTANCE.getOrCreate(
-            new ResourceLocation(YesSteveModel.MOD_ID, "vehicle_model"),
+            ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID,"vehicle_model"),
             VehicleModelComponent.class
     );
 

@@ -47,7 +47,7 @@ public class TextureButton extends Button {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         guiGraphics.fillGradient(getX(), getY(), getX() + this.width, getY() + this.height, -12369342, -12369342);
-        renderPlayerPreview(guiGraphics, minecraft.getFrameTime());
+        renderPlayerPreview(guiGraphics, partialTick);
         String str = this.previewEntity.getCurrentTextureName();
         MutableComponent mutableComponentLiteral = Component.literal(ModelMetadataPresenter.getLocalizedModelString(this.modelAssembly, "files.player.texture.%s".formatted(str), str));
         List listSplit = font.split(mutableComponentLiteral, 50);

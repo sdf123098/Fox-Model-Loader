@@ -329,7 +329,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         this.searchBox.setValue(value);
         this.searchBox.setTextColor(15986656);
         this.searchBox.setFocused(zIsFocused);
-        this.searchBox.moveCursorToEnd();
+        this.searchBox.moveCursorToEnd(false);
         addWidget(this.searchBox);
         addRenderableWidget(new IconButton(this.guiLeft + 5, this.guiTop + 5, 20, 20, 80, 16, button -> {
             if (Minecraft.getInstance().player != null) {
@@ -354,13 +354,10 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
                 navigateUp();
             }).setTooltipText("gui.back"));
         }
-        addRenderableWidget(new Checkbox(this.guiLeft + 5, this.guiTop - 22, 20, 20, Component.translatable("gui.yes_steve_model.show_model_id_first"), GeneralConfig.SHOW_MODEL_ID_FIRST.get(), true) {
-            public void onPress() {
-                super.onPress();
-                GeneralConfig.SHOW_MODEL_ID_FIRST.set(selected());
-                GeneralConfig.SHOW_MODEL_ID_FIRST.save();
-            }
-        });
+        addRenderableWidget(Checkbox.builder(Component.translatable("gui.yes_steve_model.show_model_id_first"), font).pos(this.guiLeft + 5, this.guiTop - 22).maxWidth(20).selected(GeneralConfig.SHOW_MODEL_ID_FIRST.get()).onValueChange((c, v) -> {
+            GeneralConfig.SHOW_MODEL_ID_FIRST.set(v);
+            GeneralConfig.SHOW_MODEL_ID_FIRST.save();
+        }).build());
         addRenderableWidget(new IconButton(this.guiLeft + 328, this.guiTop + 5, 18, 18, 32, 0, button4 -> {
             if (this.category != Category.ALL) {
                 this.category = Category.ALL;
@@ -444,12 +441,12 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
     }
 
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(guiGraphics);
+        renderTransparentBackground(guiGraphics);
         guiGraphics.fillGradient(this.guiLeft, this.guiTop, this.guiLeft + 135, this.guiTop + 235, -14540254, -14540254);
         guiGraphics.fillGradient(this.guiLeft + 138, this.guiTop, this.guiLeft + 420, this.guiTop + 235, -14540254, -14540254);
         guiGraphics.fillGradient(this.guiLeft + 351, this.guiTop + 7, this.guiLeft + 352, this.guiTop + 21, -790560, -790560);
         this.searchBox.render(guiGraphics, mouseX, mouseY, partialTick);
-        renderModelPreview(guiGraphics, mouseX, mouseY, this.minecraft.getFrameTime());
+        renderModelPreview(guiGraphics, mouseX, mouseY, partialTick);
         if (this.searchBox.getValue().isEmpty() && !this.searchBox.isFocused()) {
             guiGraphics.drawString(this.font, Component.translatable("gui.yes_steve_model.search").withStyle(ChatFormatting.ITALIC), this.guiLeft + 148, this.guiTop + 10, 7829367);
         }
@@ -540,7 +537,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
             RenderSystem.enableScissor((int) ((this.guiLeft + 5) * guiScale), (int) (Minecraft.getInstance().getWindow().getHeight() - ((this.guiTop + 200) * guiScale)), (int) (125.0d * guiScale), (int) (171.0d * guiScale));
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(0.0f, 0.0f, 100.0f);
-            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, this.guiLeft + 67, this.guiTop + 190, 70, (this.guiLeft + 67) - mouseX, ((this.guiTop + 180) - 95) - mouseY, localPlayer);
+            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, this.guiLeft + 67, this.guiTop + 190, 70, (this.guiLeft + 67) - mouseX, ((this.guiTop + 180) - 95) - mouseY, 1.0f, 1.0f, 1.0f, localPlayer);
             guiGraphics.pose().popPose();
             RenderSystem.disableScissor();
             PlayerCapability.get(localPlayer).ifPresent(cap -> {
@@ -569,7 +566,6 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
     }
 
     public void tick() {
-        this.searchBox.tick();
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -648,7 +644,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         if (delta != 0.0d && isInModelArea(mouseX, mouseY)) {
             return handleScrollPage(delta);
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, delta, delta);
     }
 
     private boolean isInModelArea(double mouseX, double mouseY) {

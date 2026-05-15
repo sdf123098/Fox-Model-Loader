@@ -74,7 +74,7 @@ public class CustomFishingHookRenderer {
             stringVertex(startX, startY, startZ, buffer, poseLast, fraction(size), fraction(size + 1), color[0], color[1], color[2]);
         }
         if (OculusCompat.isLoaded()) {
-            buffer.vertex(0.0d, 0.0d, 0.0d).color(0, 0, 0, 255).normal(0.0f, 0.0f, 0.0f).endVertex();
+            buffer.addVertex(0.0f, 0.0f, 0.0f).setColor(0, 0, 0, 255).setNormal(0.0f, 0.0f, 0.0f);
         }
     }
 
@@ -97,6 +97,6 @@ public class CustomFishingHookRenderer {
         float dy = (((y * ((endFrac * endFrac) + endFrac)) * 0.5f) + 0.25f) - vy;
         float dz = (z * endFrac) - vz;
         float length = Mth.sqrt((dx * dx) + (dy * dy) + (dz * dz));
-        vertexConsumer.vertex(pose.pose(), vx, vy, vz).color(red, green, blue, 1.0f).normal(pose.normal(), dx / length, dy / length, dz / length).endVertex();
+        vertexConsumer.addVertex(pose.pose(), vx, vy, vz).setColor(red, green, blue, 1.0f).setNormal(pose, dx / length, dy / length, dz / length);
     }
 }

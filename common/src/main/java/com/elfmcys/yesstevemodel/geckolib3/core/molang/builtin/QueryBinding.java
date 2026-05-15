@@ -152,7 +152,7 @@ public class QueryBinding extends ContextBinding {
     }
 
     private static boolean hasCape(AbstractClientPlayer abstractClientPlayer) {
-        return abstractClientPlayer.isCapeLoaded() && !abstractClientPlayer.isInvisible() && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE) && abstractClientPlayer.getCloakTextureLocation() != null;
+        return abstractClientPlayer.getSkin().capeTexture() != null && !abstractClientPlayer.isInvisible() && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE);
     }
 
     private static int getEquipmentCount(LivingEntity entity) {
@@ -170,7 +170,7 @@ public class QueryBinding extends ContextBinding {
         if (useItem.isEmpty()) {
             return 0;
         }
-        return useItem.getUseDuration();
+        return useItem.getUseDuration(entity);
     }
 
     private static float getYawSpeed(IContext<Entity> context) {

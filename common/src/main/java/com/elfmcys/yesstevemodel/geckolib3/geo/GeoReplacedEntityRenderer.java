@@ -161,7 +161,7 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, T 
                 }
             }
         }
-        super.setupRotations(tentity, poseStack, ageInTicks, rotationYaw, partialTicks);
+        super.setupRotations(tentity, poseStack, ageInTicks, rotationYaw, partialTicks, 1.0f);
         if (t > 0) {
             tentity.deathTime = t;
         }

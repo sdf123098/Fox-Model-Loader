@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ModIconButton extends FlatColorButton {
 
-    private static final ResourceLocation ICON_TEXTURE = new ResourceLocation(YesSteveModel.MOD_ID, "texture/icon.png");
+    private static final ResourceLocation ICON_TEXTURE = ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/icon.png");
 
     public ModIconButton(int x, int y) {
         super(x, y, 20, 20, Component.empty(), button -> {

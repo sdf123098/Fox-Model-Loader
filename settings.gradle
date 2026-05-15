@@ -11,4 +11,3 @@ rootProject.name = 'yes_steve_model'
 
 include 'common'
 include 'fabric'
-include 'forge'

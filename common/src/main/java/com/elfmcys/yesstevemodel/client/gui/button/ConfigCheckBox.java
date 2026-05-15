@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.StateSwitchingButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -16,7 +17,7 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class ConfigCheckBox extends StateSwitchingButton implements ISpecialWidget {
 
-    private static final ResourceLocation location = new ResourceLocation(YesSteveModel.MOD_ID, "texture/roulette.png");
+    private static final ResourceLocation location = ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/roulette.png");
 
     private final Consumer<Boolean> consumer2;
 
@@ -26,7 +27,7 @@ public class ConfigCheckBox extends StateSwitchingButton implements ISpecialWidg
         super(x, y, width, 12, false);
         this.component2 = component;
         this.consumer2 = consumer;
-        initTextureValues(0, 0, 128, 12, location);
+        initTextureValues(new WidgetSprites(location, location, location, location));
     }
 
     public ConfigCheckBox(int x, int y, Component component, Consumer<Boolean> consumer) {
@@ -34,8 +35,11 @@ public class ConfigCheckBox extends StateSwitchingButton implements ISpecialWidg
     }
 
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.drawString(Minecraft.getInstance().font, this.component2, getX() + 14, getY() + 2, -1, false);
+        int uOffset = isStateTriggered ? 128 : 0;
+        int vOffset = isHovered() ? 12 : 0;
+        int boxSize = 12;
+        guiGraphics.blit(location, getX(), getY(), uOffset, vOffset, boxSize, boxSize, 256, 24);
+        guiGraphics.drawString(Minecraft.getInstance().font, this.component2, getX() + boxSize + 2, getY() + 2, -1, false);
     }
 
     public void onClick(double mouseX, double mouseY) {

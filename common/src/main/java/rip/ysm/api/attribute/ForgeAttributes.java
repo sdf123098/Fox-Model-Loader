@@ -1,6 +1,8 @@
 package rip.ysm.api.attribute;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +52,6 @@ public final class ForgeAttributes {
         if (attribute == null) {
             return defaultValue;
         }
-        return entity.getAttributeValue(attribute);
+        return entity.getAttributeValue(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute));
     }
 }

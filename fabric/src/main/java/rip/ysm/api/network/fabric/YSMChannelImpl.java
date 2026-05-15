@@ -3,6 +3,7 @@ package rip.ysm.api.network.fabric;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
@@ -36,17 +37,29 @@ public final class YSMChannelImpl {
 
     public static void init(ResourceLocation id, String version) {
         channelId = id;
+
+        YSMPayload.initType(channelId);
+        PayloadTypeRegistry.playC2S().register(YSMPayload.TYPE, YSMPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(YSMPayload.TYPE, YSMPayload.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(YSMPayload.TYPE, (payload, context) ->
+                dispatch(payload.buf(), new ServerPacketContext(
+                        context.server(), context.player(),
+                        ((ServerCommonPacketListenerImplAccessor) context.player().connection).ysm$getConnection()
+                ))
+        );
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> currentServer = server);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> currentServer = null);
 
-        ServerPlayNetworking.registerGlobalReceiver(channelId, (server, player, handler, buf, responseSender) -> dispatch(buf, new ServerPacketContext(server, player, ((ServerCommonPacketListenerImplAccessor) handler).ysm$getConnection())));
-
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            YSMChannelClientImpl.init(channelId);
+            YSMChannelClientImpl.init();
         }
     }
 
-    public static <T> void register(int discriminator, Class<T> type, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, PacketContext> handler, PacketDirection direction) {
+    public static <T> void register(int discriminator, Class<T> type, BiConsumer<T, FriendlyByteBuf> encoder,
+                                    Function<FriendlyByteBuf, T> decoder, BiConsumer<T, PacketContext> handler,
+                                    PacketDirection direction) {
         if ((discriminator & ~0xff) != 0) {
             throw new IllegalArgumentException("Discriminator must fit in an unsigned byte (0-255): " + discriminator);
         }
@@ -67,11 +80,11 @@ public final class YSMChannelImpl {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
             return;
         }
-        YSMChannelClientImpl.sendToServer(channelId, encode(packet));
+        YSMChannelClientImpl.sendToServer(encode(packet));
     }
 
     public static void sendToClientPlayer(Object packet, ServerPlayer player) {
-        ServerPlayNetworking.send(player, channelId, encode(packet));
+        ServerPlayNetworking.send(player, new YSMPayload(encode(packet)));
     }
 
     public static void sendToAll(Object packet) {
@@ -80,37 +93,37 @@ public final class YSMChannelImpl {
             return;
         }
         for (ServerPlayer player : PlayerLookup.all(server)) {
-            ServerPlayNetworking.send(player, channelId, encode(packet));
+            ServerPlayNetworking.send(player, new YSMPayload(encode(packet)));
         }
     }
 
     public static void sendToTrackingEntity(Object packet, Entity entity) {
         for (ServerPlayer player : PlayerLookup.tracking(entity)) {
-            ServerPlayNetworking.send(player, channelId, encode(packet));
+            ServerPlayNetworking.send(player, new YSMPayload(encode(packet)));
         }
     }
 
     public static void sendToTrackingEntityAndSelf(Object packet, Player player) {
         for (ServerPlayer p : PlayerLookup.tracking(player)) {
-            ServerPlayNetworking.send(p, channelId, encode(packet));
+            ServerPlayNetworking.send(p, new YSMPayload(encode(packet)));
         }
         if (player instanceof ServerPlayer self) {
-            ServerPlayNetworking.send(self, channelId, encode(packet));
+            ServerPlayNetworking.send(self, new YSMPayload(encode(packet)));
         }
     }
 
     public static Packet<?> toClientboundPacket(Object packet) {
-        return ServerPlayNetworking.createS2CPacket(channelId, encode(packet));
+        return ServerPlayNetworking.createS2CPacket(new YSMPayload(encode(packet)));
     }
 
     public static Packet<?> toServerboundPacket(Object packet) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
             throw new IllegalStateException("toServerboundPacket can only be invoked from the client environment");
         }
-        return YSMChannelClientImpl.toServerboundPacket(channelId, encode(packet));
+        return YSMChannelClientImpl.toServerboundPacket(encode(packet));
     }
 
-    private static FriendlyByteBuf encode(Object packet) {
+    static FriendlyByteBuf encode(Object packet) {
         Integer id = ID_BY_CLASS.get(packet.getClass());
         if (id == null) {
             throw new IllegalStateException("Packet type not registered: " + packet.getClass());

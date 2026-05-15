@@ -5,6 +5,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.IContext;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.funciton.ContextFunction;
 import com.elfmcys.yesstevemodel.mixin.client.ArrowEntityAccessor;
 import com.elfmcys.yesstevemodel.molang.runtime.ExecutionContext;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -28,12 +29,13 @@ public class EffectLevel extends ContextFunction<Entity> {
             if (effectId != null) {
                 MobEffect mobEffect = BuiltInRegistries.MOB_EFFECT.get(effectId);
                 if (mobEffect != null) {
+                    Holder<MobEffect> effectHolder = BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect);
                     if (context.entity().geoInstance() instanceof PlayerCapability cap
                             && !cap.isLocalPlayerModel()) {
-                        effects += cap.getPositionTracker().getEffectAmplifier(mobEffect);
+                        effects += cap.getPositionTracker().getEffectAmplifier(effectHolder);
                     } else if (((IContext<?>)context.entity()).entity() instanceof LivingEntity) {
                         MobEffectInstance mobEffectInstance = ((LivingEntity)((IContext<?>)context.entity()).entity())
-                                .getEffect(mobEffect);
+                                .getEffect(effectHolder);
                         if (mobEffectInstance != null) {
                             effects += mobEffectInstance.getAmplifier() + 1;
                         }
@@ -44,7 +46,7 @@ public class EffectLevel extends ContextFunction<Entity> {
 
                         for (MobEffectInstance mobEffectInstance : ((ArrowEntityAccessor)((IContext<?>)context.entity()).entity())
                                 .getEffects()) {
-                            if (mobEffectInstance.getEffect() == mobEffect) {
+                            if (mobEffectInstance.getEffect().value() == mobEffect) {
                                 effects += mobEffectInstance.getAmplifier() + 1;
                                 break;
                             }

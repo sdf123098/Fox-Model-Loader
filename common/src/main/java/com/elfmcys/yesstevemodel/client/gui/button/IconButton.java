@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class IconButton extends FlatColorButton {
 
-    private static final ResourceLocation ICON_TEXTURE = new ResourceLocation(YesSteveModel.MOD_ID, "texture/icon.png");
+    private static final ResourceLocation ICON_TEXTURE = ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/icon.png");
 
     private final int iconU;
 

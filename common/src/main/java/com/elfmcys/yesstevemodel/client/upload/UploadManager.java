@@ -138,7 +138,7 @@ public class UploadManager {
         }
 
         TextureLocatable(int resolution) {
-            this.resourceLocation = new ResourceLocation(YesSteveModel.MOD_ID, "textures/" + ++textureCounter);
+            this.resourceLocation = ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID, "textures/" + ++textureCounter);
             this.resolution = resolution;
             this.registered = false;
         }

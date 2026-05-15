@@ -17,7 +17,7 @@ dependencies {
     // 运行时不绑定：Forge 平台由 Forge 自身提供这些类，Fabric 平台由 fabric 子项目的 modImplementation 引入 port。
     modCompileOnly "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
 
-    // ImageStream — 用于 avif/webp/jpeg 解码。运行时由 forge 子项目通过 jar-in-jar 内嵌。
+    // ImageStream — 用于 avif/webp/jpeg 解码。运行时由 fabric 子项目通过 jar-in-jar 内嵌。
     compileOnly "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
 }
 

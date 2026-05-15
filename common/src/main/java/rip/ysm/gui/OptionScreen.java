@@ -122,7 +122,7 @@ public abstract class OptionScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g);
+        renderTransparentBackground(g);
 
         g.fill(panelLeft, panelTop, panelRight, panelTop + 18, 0x90000000);
         g.drawString(this.font, this.title, panelLeft + 6, panelTop + 5, 0xFFFFFFFF, false);

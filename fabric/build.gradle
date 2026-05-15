@@ -29,6 +29,8 @@ dependencies {
 
     modImplementation fabricApi.module("fabric-networking-api-v1", rootProject.fabric_api_version)
     modImplementation fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api_version)
+    modImplementation fabricApi.module("fabric-rendering-v1", rootProject.fabric_api_version)
+    modImplementation fabricApi.module("fabric-sound-api-v1", rootProject.fabric_api_version)
 
     modImplementation "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
 
@@ -36,19 +38,17 @@ dependencies {
         exclude group: "net.fabricmc.fabric-api", module: "fabric-api"
     }
     include "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
-    include "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
     include "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
 
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.3"
-    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.3"
-    include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.3"
-    include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.3"
+    modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-base:$rootProject.cardinal_components_version"
+    modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-entity:$rootProject.cardinal_components_version"
+    include "org.ladysnake.cardinal-components-api:cardinal-components-base:$rootProject.cardinal_components_version"
+    include "org.ladysnake.cardinal-components-api:cardinal-components-entity:$rootProject.cardinal_components_version"
 
     implementation "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
     include "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
 
-    modCompileOnly "maven.modrinth:iris:1.7.0+1.20.1-fabric"
+    modCompileOnly "maven.modrinth:iris:1.8.8+1.21.1-fabric"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')

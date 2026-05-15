@@ -32,13 +32,13 @@ public class ConditionPassenger {
             return;
         }
         String strSubstring = name.substring(preSize);
-        if (name.startsWith(this.idPre) && ResourceLocation.isValidResourceLocation(strSubstring)) {
-            this.idTest.add(new ResourceLocation(strSubstring));
+        if (name.startsWith(this.idPre) && ResourceLocation.isValidPath(strSubstring)) {
+            this.idTest.add(ResourceLocation.parse(strSubstring));
         }
-        if (!name.startsWith(this.tagPre) || !ResourceLocation.isValidResourceLocation(strSubstring)) {
+        if (!name.startsWith(this.tagPre) || !ResourceLocation.isValidPath(strSubstring)) {
             return;
         }
-        this.tagTest.add(TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(strSubstring)));
+        this.tagTest.add(TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(strSubstring)));
     }
 
     public String doTest(LivingEntity entity) {

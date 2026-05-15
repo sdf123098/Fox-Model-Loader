@@ -16,11 +16,12 @@ public final class YesSteveModelFabricClient implements ClientModInitializer {
         HudOverlay syncOverlay = new ModelSyncStateOverlay();
         HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
             Minecraft mc = Minecraft.getInstance();
+            float delta = tickDelta.getGameTimeDeltaTicks();
             int w = mc.getWindow().getGuiScaledWidth();
             int h = mc.getWindow().getGuiScaledHeight();
-            debugOverlay.render(guiGraphics, mc.font, tickDelta, w, h);
-            loadingOverlay.render(guiGraphics, mc.font, tickDelta, w, h);
-            syncOverlay.render(guiGraphics, mc.font, tickDelta, w, h);
+            debugOverlay.render(guiGraphics, mc.font, delta, w, h);
+            loadingOverlay.render(guiGraphics, mc.font, delta, w, h);
+            syncOverlay.render(guiGraphics, mc.font, delta, w, h);
         });
     }
 }

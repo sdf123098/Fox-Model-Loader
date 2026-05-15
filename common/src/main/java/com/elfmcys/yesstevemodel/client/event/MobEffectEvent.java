@@ -2,6 +2,7 @@ package com.elfmcys.yesstevemodel.client.event;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +17,8 @@ public class MobEffectEvent {
             return;
         }
         if (entity instanceof ServerPlayer serverPlayer && effect != null) {
-            ModelInfoCapability.get(serverPlayer).ifPresent(cap -> cap.getAnimSync().syncEffectAdded(serverPlayer, effect, amplifier + 1));
+            ModelInfoCapability.get(serverPlayer).ifPresent(cap ->
+                    cap.getAnimSync().syncEffectAdded(serverPlayer, new Holder.Direct<>(effect), amplifier + 1));
         }
     }
 
@@ -25,7 +27,8 @@ public class MobEffectEvent {
             return;
         }
         if (entity instanceof ServerPlayer serverPlayer && effect != null) {
-            ModelInfoCapability.get(serverPlayer).ifPresent(cap -> cap.getAnimSync().syncEffectRemoved(serverPlayer, effect));
+            ModelInfoCapability.get(serverPlayer).ifPresent(cap ->
+                    cap.getAnimSync().syncEffectRemoved(serverPlayer, new Holder.Direct<>(effect)));
         }
     }
 }

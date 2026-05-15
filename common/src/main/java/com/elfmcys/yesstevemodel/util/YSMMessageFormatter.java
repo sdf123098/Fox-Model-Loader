@@ -19,7 +19,7 @@ public class YSMMessageFormatter {
     }
 
     public static boolean isCurrentClientPlayer(Entity entity) {
-        return entity != null && !PlatformAPI.isServer() && entity.getUUID().equals(Minecraft.getInstance().getUser().getGameProfile().getId());
+        return entity != null && !PlatformAPI.isServer() && entity.getUUID().equals(Minecraft.getInstance().getGameProfile().getId());
     }
 
     public static boolean hasPermission(@Nullable Entity entity, int level) {

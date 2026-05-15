@@ -41,10 +41,10 @@ public class ConditionArmor {
                 return;
             }
             String strGroup = matcher.group(2);
-            if (!ResourceLocation.isValidResourceLocation(strGroup)) {
+            if (!ResourceLocation.isValidPath(strGroup)) {
                 return;
             } else {
-                this.idTest.computeIfAbsent(slot2, obj -> new ObjectOpenHashSet<>()).add(new ResourceLocation(strGroup));
+                this.idTest.computeIfAbsent(slot2, obj -> new ObjectOpenHashSet<>()).add(ResourceLocation.parse(strGroup));
             }
         }
         Matcher matcher2 = TAG_PRE_REG.matcher(str);
@@ -52,10 +52,10 @@ public class ConditionArmor {
             return;
         }
         String strGroup2 = matcher2.group(2);
-        if (!ResourceLocation.isValidResourceLocation(strGroup2)) {
+        if (!ResourceLocation.isValidPath(strGroup2)) {
             return;
         }
-        this.tagTest.computeIfAbsent(slot, obj2 -> new ReferenceArrayList<>()).add(TagKey.create(Registries.ITEM, new ResourceLocation(strGroup2)));
+        this.tagTest.computeIfAbsent(slot, obj2 -> new ReferenceArrayList<>()).add(TagKey.create(Registries.ITEM, ResourceLocation.parse(strGroup2)));
     }
 
     public String doTest(LivingEntity entity, EquipmentSlot slot) {

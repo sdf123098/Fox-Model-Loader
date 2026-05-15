@@ -22,7 +22,7 @@ import java.util.List;
 
 public class PackIconButton extends Button {
 
-    private static final ResourceLocation default_pack_icon = new ResourceLocation(YesSteveModel.MOD_ID, "texture/default_pack_icon.png");
+    private static final ResourceLocation default_pack_icon = ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/default_pack_icon.png");
 
     private final ModelPackData packData;
 

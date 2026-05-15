@@ -30,7 +30,7 @@ public class RendererManager {
             return;
         }
         ResourceManagerReloadListener listener = resourceManager -> resetRenderers();
-        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, listener, new ResourceLocation(YesSteveModel.MOD_ID, "renderer_manager"));
+        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, listener, ResourceLocation.fromNamespaceAndPath(YesSteveModel.MOD_ID, "renderer_manager"));
     }
 
     private static void resetRenderers() {

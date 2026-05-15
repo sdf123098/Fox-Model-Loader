@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin({ServerPlayer.class})
 public abstract class ServerPlayerMixin {
-    @Inject(method = {"startRiding(Lnet/minecraft/world/entity/Entity;Z)Z"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;positionRider(Lnet/minecraft/world/entity/Entity;)V", shift = At.Shift.AFTER)})
+    @Inject(method = {"startRiding(Lnet/minecraft/world/entity/Entity;Z)Z"}, at = @At("RETURN"))
     private void onStartRiding(Entity entity, boolean force, CallbackInfoReturnable<Boolean> ci) {
         Entity entity2;
         if (YesSteveModel.isAvailable() && entity.getFirstPassenger() == (entity2 = (ServerPlayer) (Object) this)) {

@@ -1,40 +1,66 @@
 package com.elfmcys.yesstevemodel.audio;
 
-import com.mojang.blaze3d.audio.OggAudioStream;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBVorbis;
+import org.lwjgl.stb.STBVorbisInfo;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 public class OggVorbisAudioStream implements IAudioStreamSupport {
 
     private static final ByteBuffer EMPTY_BUFFER = BufferUtils.createByteBuffer(0);
 
-    private final OggAudioStream oggStream;
-
     private final AudioFormat audioFormat;
+    private final long decoderHandle;
+    private final int channels;
 
     @Nullable
     private final AudioCacheBuilder cacheBuilder;
 
     private volatile boolean isClosed;
-
     private boolean isEndOfStream;
 
-    public OggVorbisAudioStream(ByteBuffer byteBuffer, @Nullable AudioCacheBuilder cacheBuilder) throws UnsupportedAudioFileException, IOException {
-        this.oggStream = new OggAudioStream(new ByteBufInputStream(Unpooled.wrappedBuffer(byteBuffer)));
-        if (this.oggStream.getFormat().getChannels() != 1 && this.oggStream.getFormat().getChannels() != 2) {
-            throw new UnsupportedAudioFileException();
+    public OggVorbisAudioStream(ByteBuffer byteBuffer, @Nullable AudioCacheBuilder cacheBuilder)
+            throws UnsupportedAudioFileException, IOException {
+
+        ByteBuffer directBuffer = MemoryUtil.memAlloc(byteBuffer.remaining());
+        directBuffer.put(byteBuffer.duplicate());
+        directBuffer.flip();
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer error = stack.mallocInt(1);
+
+            decoderHandle = STBVorbis.stb_vorbis_open_memory(directBuffer, error, null);
+            if (decoderHandle == MemoryUtil.NULL) {
+                MemoryUtil.memFree(directBuffer);
+                throw new IOException("Failed to open OGG Vorbis stream, error: " + error.get(0));
+            }
+
+            STBVorbisInfo info = STBVorbisInfo.malloc();
+            STBVorbis.stb_vorbis_get_info(decoderHandle, info);
+            channels = info.channels();
+            int sampleRate = info.sample_rate();
+            info.free();
+
+            if (channels != 1 && channels != 2) {
+                MemoryUtil.memFree(directBuffer);
+                STBVorbis.stb_vorbis_close(decoderHandle);
+                throw new UnsupportedAudioFileException("Unsupported channel count: " + channels);
+            }
+
+            this.audioFormat = new AudioFormat(sampleRate, 16, 1, true, false);
+            this.cacheBuilder = cacheBuilder;
         }
-        this.audioFormat = new AudioFormat(this.oggStream.getFormat().getSampleRate(), 16, 1, true, false);
-        this.cacheBuilder = cacheBuilder;
     }
 
     @NotNull
@@ -43,40 +69,64 @@ public class OggVorbisAudioStream implements IAudioStreamSupport {
     }
 
     @NotNull
-    public ByteBuffer read(int i) throws IOException {
-        ByteBuffer byteBufferCreateByteBuffer;
+    public ByteBuffer read(int frameCount) throws IOException {
         if (this.isEndOfStream || this.isClosed) {
             return EMPTY_BUFFER;
         }
-        ByteBuffer byteBufferSlice = this.oggStream.read(this.oggStream.getFormat().getChannels() * i);
-        if (!byteBufferSlice.hasRemaining()) {
-            if (this.cacheBuilder != null) {
-                this.cacheBuilder.flushToCache();
+
+        int samplesPerChannel = frameCount * channels;
+        ShortBuffer shortBuffer = MemoryUtil.memAllocShort(samplesPerChannel);
+        try {
+            int samplesRead = STBVorbis.stb_vorbis_get_samples_short_interleaved(
+                    decoderHandle, channels, shortBuffer);
+
+            if (samplesRead == 0) {
+                if (this.cacheBuilder != null) {
+                    this.cacheBuilder.flushToCache();
+                }
+                this.isEndOfStream = true;
+                return EMPTY_BUFFER;
             }
-            this.isEndOfStream = true;
-            return byteBufferSlice;
-        }
-        if (this.oggStream.getFormat().getChannels() == 2) {
-            ByteBuffer byteBufferOrder = byteBufferSlice.duplicate().order(ByteOrder.nativeOrder());
-            if (!byteBufferSlice.isReadOnly()) {
-                byteBufferCreateByteBuffer = byteBufferSlice.duplicate().order(ByteOrder.nativeOrder()).limit(byteBufferOrder.remaining() / 2);
+
+            ShortBuffer readView = shortBuffer.duplicate();
+            readView.limit(samplesRead * channels);
+
+            byte[] pcmBytes = new byte[samplesRead * channels * 2];
+            ByteBuffer byteBuf = ByteBuffer.wrap(pcmBytes).order(ByteOrder.nativeOrder());
+
+            if (channels == 2) {
+                byte[] monoBytes = new byte[samplesRead * 2];
+                ByteBuffer monoBuf = ByteBuffer.wrap(monoBytes).order(ByteOrder.nativeOrder());
+                for (int i = 0; i < samplesRead; i++) {
+                    short left = readView.get();
+                    short right = readView.get();
+                    monoBuf.putShort((short) Math.round((left + right) / 2.0f));
+                }
+                byteBuf = ByteBuffer.wrap(monoBytes).order(ByteOrder.nativeOrder());
+                shortBuffer.limit(samplesRead); // for view consistency
+                monoBuf.flip();
+                if (this.cacheBuilder != null) {
+                    this.cacheBuilder.appendAudio(monoBuf.duplicate());
+                }
+                return monoBuf;
             } else {
-                byteBufferCreateByteBuffer = BufferUtils.createByteBuffer(byteBufferOrder.remaining() / 2);
+                for (int i = 0; i < samplesRead; i++) {
+                    byteBuf.putShort(readView.get());
+                }
+                byteBuf.flip();
+                if (this.cacheBuilder != null) {
+                    this.cacheBuilder.appendAudio(byteBuf.duplicate());
+                }
+                return byteBuf;
             }
-            byteBufferSlice = byteBufferCreateByteBuffer.slice();
-            do {
-                byteBufferCreateByteBuffer.putShort((short) Math.round((byteBufferOrder.getShort() + byteBufferOrder.getShort()) / 2.0f));
-            } while (byteBufferOrder.hasRemaining());
+        } finally {
+            MemoryUtil.memFree(shortBuffer);
         }
-        if (this.cacheBuilder != null) {
-            this.cacheBuilder.appendAudio(byteBufferSlice.duplicate());
-        }
-        return byteBufferSlice;
     }
 
-    public void close() throws IOException {
+    public void close() {
         if (!this.isClosed) {
-            this.oggStream.close();
+            STBVorbis.stb_vorbis_close(decoderHandle);
             this.isClosed = true;
         }
     }

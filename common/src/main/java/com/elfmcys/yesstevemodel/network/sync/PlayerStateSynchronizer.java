@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2ByteArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -136,11 +137,11 @@ public class PlayerStateSynchronizer {
         }
     }
 
-    public void syncEffectAdded(ServerPlayer serverPlayer, MobEffect effect, int amplifier) {
+    public void syncEffectAdded(ServerPlayer serverPlayer, Holder<MobEffect> effect, int amplifier) {
         getOrCreateSyncMessage(serverPlayer, true).addEffect(effect, amplifier);
     }
 
-    public void syncEffectRemoved(ServerPlayer serverPlayer, MobEffect effect) {
+    public void syncEffectRemoved(ServerPlayer serverPlayer, Holder<MobEffect> effect) {
         getOrCreateSyncMessage(serverPlayer, true).removeEffect(effect);
     }
 
@@ -177,7 +178,7 @@ public class PlayerStateSynchronizer {
             MobEffectInstance instance = activeEffects.iterator().next();
             message.setEffects(Object2ByteMaps.singleton(instance.getEffect(), (byte) (instance.getAmplifier() + 1)));
         } else {
-            MobEffect[] effectIds = new MobEffect[activeEffects.size()];
+            Holder<MobEffect>[] effectIds = new Holder[activeEffects.size()];
             byte[] amplifiers = new byte[activeEffects.size()];
             int i = 0;
             for (MobEffectInstance instance : activeEffects) {
@@ -185,7 +186,7 @@ public class PlayerStateSynchronizer {
                 amplifiers[i] = (byte) (instance.getAmplifier() + 1);
                 i++;
             }
-            message.setEffects((Object2ByteMap<MobEffect>) new Object2ByteArrayMap(effectIds, amplifiers));
+            message.setEffects(new Object2ByteArrayMap<>(effectIds, amplifiers));
         }
         message.setHealth((int) serverPlayer.getHealth());
         message.setMaxHealth((int) serverPlayer.getMaxHealth());
