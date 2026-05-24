@@ -1,0 +1,35 @@
+package com.elfmcys.yesstevemodel.client.animation.molang.functions.ysm;
+
+import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.IContext;
+import com.elfmcys.yesstevemodel.geckolib3.core.molang.funciton.entity.EntityFunction;
+import com.elfmcys.yesstevemodel.geckolib3.util.MolangUtils;
+import com.elfmcys.yesstevemodel.molang.runtime.ExecutionContext;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class DumpRelativeBlock extends EntityFunction {
+    @Override
+    public Object eval(ExecutionContext<IContext<Entity>> context, ArgumentCollection arguments) {
+        BlockState blockState;
+        Identifier key;
+        if (!context.entity().isDebugMode() || (blockState = MolangUtils.getRelativeBlockState(context, arguments)) == null || (key = BuiltInRegistries.BLOCK.getKey(blockState.getBlock())) == null) {
+            return null;
+        }
+        context.entity().logWarningComponent(Component.literal("Display ").append(ComponentUtils.copyOnClickText(blockState.getBlock().getName().getString(99))));
+        context.entity().logWarningComponent(Component.literal("Name ").append(ComponentUtils.copyOnClickText(key.toString())));
+        java.util.Collections.<TagKey<?>>emptyList().forEach(tagKey -> {
+            context.entity().logWarningComponent(Component.literal("Tag ").append(ComponentUtils.copyOnClickText(tagKey.registry().toString())));
+        });
+        return null;
+    }
+
+    @Override
+    public boolean validateArgumentSize(int size) {
+        return size == 3;
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(if \\(-not \\(Test-Path \"d:\\\\openysm\\\\images\"\\)\\) { New-Item -ItemType Directory -Path \"d:\\\\openysm\\\\images\" })"
+    ]
+  }
+}

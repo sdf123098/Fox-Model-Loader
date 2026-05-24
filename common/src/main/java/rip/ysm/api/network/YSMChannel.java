@@ -1,0 +1,53 @@
+package rip.ysm.api.network;
+
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
+public final class YSMChannel {
+
+    private YSMChannel() {
+    }
+
+    public static void init(Identifier channelId, String version) {
+        rip.ysm.api.network.fabric.YSMChannelImpl.init(channelId, version);
+    }
+
+    public static <T> void register(int discriminator, Class<T> type, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, PacketContext> handler, PacketDirection direction) {
+        rip.ysm.api.network.fabric.YSMChannelImpl.register(discriminator, type, encoder, decoder, handler, direction);
+    }
+
+    public static void sendToServer(Object packet) {
+        rip.ysm.api.network.fabric.YSMChannelImpl.sendToServer(packet);
+    }
+
+    public static void sendToClientPlayer(Object packet, ServerPlayer player) {
+        rip.ysm.api.network.fabric.YSMChannelImpl.sendToClientPlayer(packet, player);
+    }
+
+    public static void sendToAll(Object packet) {
+        rip.ysm.api.network.fabric.YSMChannelImpl.sendToAll(packet);
+    }
+
+    public static void sendToTrackingEntity(Object packet, Entity entity) {
+        rip.ysm.api.network.fabric.YSMChannelImpl.sendToTrackingEntity(packet, entity);
+    }
+
+    public static void sendToTrackingEntityAndSelf(Object packet, Player player) {
+        rip.ysm.api.network.fabric.YSMChannelImpl.sendToTrackingEntityAndSelf(packet, player);
+    }
+
+    public static Packet<?> toClientboundPacket(Object packet) {
+        return rip.ysm.api.network.fabric.YSMChannelImpl.toClientboundPacket(packet);
+    }
+
+    public static Packet<?> toServerboundPacket(Object packet) {
+        return rip.ysm.api.network.fabric.YSMChannelImpl.toServerboundPacket(packet);
+    }
+}
