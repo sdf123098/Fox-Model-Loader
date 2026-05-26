@@ -158,6 +158,11 @@ public class ModelInfoScreen extends Screen {
         }).forEach(renderable2 -> {
             ((AuthorButton) renderable2).refreshContactComponents(guiGraphics, this, mouseX, mouseY);
         });
+        ((ScreenAccessor) this).ysm$getRenderables().stream().filter(renderable -> {
+            return renderable instanceof FlatColorButton;
+        }).forEach(renderable -> {
+            ((FlatColorButton) renderable).renderTooltip(guiGraphics, this, mouseX, mouseY);
+        });
     }
 
     public boolean isPauseScreen() {

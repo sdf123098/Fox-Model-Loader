@@ -12,5 +12,6 @@ public class LivingEntityRenderState extends EntityRenderState {
     public float ageInTicks;
     public float attackAnim;
     public float swimAmount;
+    public float ticksSinceKineticHitFeedback;
     public float weatherPosition;
 }

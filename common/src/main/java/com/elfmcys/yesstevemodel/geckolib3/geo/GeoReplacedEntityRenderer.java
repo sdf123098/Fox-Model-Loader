@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -103,10 +104,13 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, T 
             }
             setupRotations(entity, poseStack, modelData.lerpedAge, modelData.lerpBodyRot, partialTick);
             if (t.getEntity().getVehicle() != null) {
-                VehicleCapability.get(t.getEntity().getVehicle()).ifPresent(cap -> {
-                    Vector3f vector3f = cap.getExpressionOffset();
-                    if (vector3f != null) {
-                        poseStack.mulPose(new Quaternionf().rotateZYX(vector3f.z, 0.0f, vector3f.x).invert());
+                Entity vehicle = t.getEntity().getVehicle();
+                VehicleCapability.get(vehicle).ifPresent(cap -> {
+                    if (cap.isModelReady()) {
+                        Vector3f vector3f = cap.getExpressionOffset();
+                        if (vector3f != null) {
+                            poseStack.mulPose(new Quaternionf().rotateZYX(vector3f.z, 0.0f, vector3f.x).invert());
+                        }
                     }
                 });
             }

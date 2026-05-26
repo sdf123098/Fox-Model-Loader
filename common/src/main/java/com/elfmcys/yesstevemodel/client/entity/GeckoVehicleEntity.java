@@ -13,6 +13,8 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -25,6 +27,10 @@ public class GeckoVehicleEntity extends GeoEntity<Entity> {
 
     public GeckoVehicleEntity(Entity entity) {
         super(entity, true);
+    }
+
+    public static boolean usesVanillaRenderer(Entity entity) {
+        return entity instanceof AbstractBoat || entity instanceof AbstractMinecart;
     }
 
     @Override
@@ -46,7 +52,7 @@ public class GeckoVehicleEntity extends GeoEntity<Entity> {
     @Override
     @Nullable
     public GeoEntity.ModelWrapper buildRenderShape(ModelAssembly modelAssembly, boolean isDefault) {
-        VehicleModelBundle modelBundle = modelAssembly.getVehicleModels().get(getEntityTypeId());
+        VehicleModelBundle modelBundle = getVehicleModel(modelAssembly);
         if (modelBundle != null) {
             return new EntityModelWrapper(modelAssembly, isDefault, modelBundle);
         }
@@ -56,12 +62,20 @@ public class GeckoVehicleEntity extends GeoEntity<Entity> {
     @Override
     public void onModelLoaded(ModelAssembly modelAssembly) {
         super.onModelLoaded(modelAssembly);
-        this.vehicleModel = modelAssembly.getVehicleModels().get(getEntityTypeId());
+        this.vehicleModel = getVehicleModel(modelAssembly);
     }
 
     @Nullable
     private Identifier getEntityTypeId() {
         return BuiltInRegistries.ENTITY_TYPE.getKey(this.entity.getType());
+    }
+
+    @Nullable
+    private VehicleModelBundle getVehicleModel(ModelAssembly modelAssembly) {
+        if (usesVanillaRenderer(this.entity)) {
+            return null;
+        }
+        return modelAssembly.getVehicleModels().get(getEntityTypeId());
     }
 
     @Override

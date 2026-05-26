@@ -164,6 +164,18 @@
         "texture": "textures/boat.png"
       },
       {
+        "match": ["minecraft:bamboo_raft"],
+        "model": "models/raft.json",
+        "animation": "animations/boat.animation.json",
+        "texture": "textures/boat.png"
+      },
+      {
+        "match": ["minecraft:bamboo_chest_raft"],
+        "model": "models/chest_raft.json",
+        "animation": "animations/boat.animation.json",
+        "texture": "textures/boat.png"
+      },
+      {
         "match": ["minecraft:minecart"],
         "model": "models/minecart.json",
         "texture": "textures/minecart.png"

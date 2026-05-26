@@ -6,10 +6,12 @@
   "description": "Originally based on OpenYSM.",
   "authors": ["Micaftic"],
   "contact": {
-    "homepage": ""
+    "homepage": "https://github.com/sdf123098/Fox-Model-Loader",
+    "sources": "https://github.com/sdf123098/Fox-Model-Loader",
+    "issues": "https://github.com/sdf123098/Fox-Model-Loader/issues"
   },
   "license": "MIT",
-  "icon": "yesstevemodel.png",
+  "icon": "assets/yes_steve_model/texture/mod_icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [

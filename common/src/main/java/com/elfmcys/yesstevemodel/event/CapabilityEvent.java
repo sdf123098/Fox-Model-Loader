@@ -85,6 +85,9 @@ public final class CapabilityEvent {
         if (!YesSteveModel.isAvailable()) {
             return EventResult.pass();
         }
+        if (!level.isClientSide() && entity instanceof Projectile projectile && projectile.getOwner() instanceof ServerPlayer owner) {
+            syncProjectileModel(projectile, owner);
+        }
         if (entity instanceof ServerPlayer player) {
             getModelInfoCap(player).ifPresent(modelInfoCap -> {
                 if (!NetworkHandler.isPlayerConnected(player) && !modelInfoCap.isMandatory()) {
@@ -188,7 +191,9 @@ public final class CapabilityEvent {
             }
             ProjectileModelCapability.get(projectile).ifPresent(projectileModelCap -> modelInfoCap.withMolangVars(object2FloatOpenHashMap -> {
                 projectileModelCap.setModel(modelInfoCap.getModelId(), object2FloatOpenHashMap);
-                NetworkHandler.sendToTrackingEntity(new S2CSyncProjectileModelPacket(projectile.getId(), projectileModelCap), projectile);
+                S2CSyncProjectileModelPacket packet = new S2CSyncProjectileModelPacket(projectile.getId(), projectileModelCap);
+                NetworkHandler.sendToClientPlayer(packet, serverPlayer);
+                NetworkHandler.sendToTrackingEntity(packet, projectile);
             }));
         });
     }

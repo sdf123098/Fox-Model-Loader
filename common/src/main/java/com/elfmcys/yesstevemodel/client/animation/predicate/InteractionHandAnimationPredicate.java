@@ -10,6 +10,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState;
 import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable;
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,10 +27,12 @@ public class InteractionHandAnimationPredicate implements IAnimationPredicate<Li
                 event.getController().stopTransition();
             }
             ConditionManager conditionManager = event.getAnimatable().getModelConfig();
-            if (livingEntity.getUsedItemHand() == InteractionHand.MAIN_HAND) {
+            InteractionHand usedHand = livingEntity.getUsedItemHand();
+            HumanoidArm usedArm = usedHand == InteractionHand.MAIN_HAND ? livingEntity.getMainArm() : livingEntity.getMainArm().getOpposite();
+            if (usedArm == HumanoidArm.RIGHT) {
                 ConditionUse conditionUse = conditionManager.getUseMainhand();
                 if (conditionUse != null) {
-                    String str = conditionUse.doTest(livingEntity, InteractionHand.MAIN_HAND);
+                    String str = conditionUse.doTest(livingEntity, usedHand);
                     if (StringUtils.isNoneBlank(str)) {
                         return IAnimationPredicate.playAnimationWithValid(event, str, ILoopType.EDefaultLoopTypes.LOOP, i);
                     }
@@ -38,7 +41,7 @@ public class InteractionHandAnimationPredicate implements IAnimationPredicate<Li
             }
             ConditionUse conditionUse2 = conditionManager.getUseOffhand();
             if (conditionUse2 != null) {
-                String str2 = conditionUse2.doTest(livingEntity, InteractionHand.OFF_HAND);
+                String str2 = conditionUse2.doTest(livingEntity, usedHand);
                 if (StringUtils.isNoneBlank(str2)) {
                     return IAnimationPredicate.playAnimationWithValid(event, str2, ILoopType.EDefaultLoopTypes.LOOP, i);
                 }

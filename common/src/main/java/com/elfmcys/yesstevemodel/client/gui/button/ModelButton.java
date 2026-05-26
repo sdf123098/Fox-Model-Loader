@@ -20,6 +20,7 @@ import com.elfmcys.yesstevemodel.util.FileTypeUtil;
 import com.elfmcys.yesstevemodel.util.PlatformUtil;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -176,25 +177,34 @@ public class ModelButton extends Button {
         }
     }
 
+    private static boolean isShiftDown(Minecraft minecraft) {
+        Window window = minecraft.getWindow();
+        return InputConstants.isKeyDown(window, InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(window, InputConstants.KEY_RSHIFT);
+    }
+
     public void renderTooltip(GuiGraphicsExtractor guiGraphics, Screen screen, int mouseX, int mouseY) {
         if (isHovered()) {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(0.0f, 0.0f);
-            String selected = Minecraft.getInstance().getLanguageManager().getSelected();
+            Minecraft minecraft = Minecraft.getInstance();
+            String selected = minecraft.getLanguageManager().getSelected();
             if (!Objects.equals(this.cachedLanguage, selected)) {
                 this.cachedLanguage = selected;
                 this.detailedTooltipLines = null;
                 this.tooltipLines = null;
             }
-            if (InputConstants.isKeyDown((com.mojang.blaze3d.platform.Window)(Object)Minecraft.getInstance().window, 340) || InputConstants.isKeyDown((com.mojang.blaze3d.platform.Window)(Object)Minecraft.getInstance().window, 344)) {
+            if (isShiftDown(minecraft)) {
                 if (this.detailedTooltipLines == null) {
                     this.detailedTooltipLines = ModelMetadataPresenter.buildModelTooltip(this.renderContext, selected, this.modelIdHolder.getModelId(), true);
                 }
+                guiGraphics.setComponentTooltipForNextFrame(minecraft.font, this.detailedTooltipLines, mouseX, mouseY);
 /*                 GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.detailedTooltipLines, mouseX, mouseY); */
             } else {
                 if (this.tooltipLines == null) {
                     this.tooltipLines = ModelMetadataPresenter.buildModelTooltip(this.renderContext, selected, this.modelIdHolder.getModelId(), false);
                 }
+                guiGraphics.setComponentTooltipForNextFrame(minecraft.font, this.tooltipLines, mouseX, mouseY);
 /*                 GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.tooltipLines, mouseX, mouseY); */
             }
             guiGraphics.pose().popMatrix();

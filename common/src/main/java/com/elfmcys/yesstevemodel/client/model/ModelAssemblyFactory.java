@@ -4,6 +4,7 @@ import com.elfmcys.yesstevemodel.client.ClientModelInfo;
 import com.elfmcys.yesstevemodel.client.texture.OuterFileTexture;
 import com.elfmcys.yesstevemodel.client.animation.condition.ConditionManager;
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation;
+import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.BoneAnimation;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue;
 import com.elfmcys.yesstevemodel.geckolib3.file.VehicleModelFiles;
@@ -26,6 +27,16 @@ import java.util.*;
 public class ModelAssemblyFactory {
 
     private static final String FIRST_PERSON_ARM_BONE = "fp_arm";
+
+    private static final String BOAT_ANIMATION = "boat";
+
+    private static final Set<String> BOAT_DYNAMIC_BONES = Set.of(
+            "AllBody",
+            "LeftArm",
+            "LeftForeArm",
+            "RightArm",
+            "RightForeArm"
+    );
 
     private static ModelAssembly primaryAssembly;
 
@@ -63,6 +74,11 @@ public class ModelAssemblyFactory {
             }
         }
         if (!isPrimary) {
+            Animation primaryBoat = primaryAssembly != null ? primaryAssembly.getAnimationBundle().getMainAnimations().get(BOAT_ANIMATION) : null;
+            Animation importedBoat = object2ReferenceOpenHashMap.get(BOAT_ANIMATION);
+            if (primaryBoat != null && importedBoat != null && importedBoat != primaryBoat) {
+                object2ReferenceOpenHashMap.put(BOAT_ANIMATION, mergeBoatPaddleAnimation(importedBoat, primaryBoat));
+            }
             ObjectIterator<Map.Entry<String, Animation>> it = primaryAssembly.getAnimationBundle().getMainAnimations().entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, Animation> entry = it.next();
@@ -114,6 +130,55 @@ public class ModelAssemblyFactory {
                 resourceBundle);
     }
 
+    private static Animation mergeBoatPaddleAnimation(Animation importedBoat, Animation primaryBoat) {
+        if (importedBoat.isEmpty()) {
+            return primaryBoat;
+        }
+        Map<String, BoneAnimation> dynamicBones = new LinkedHashMap<>();
+        for (BoneAnimation boneAnimation : primaryBoat.boneAnimations) {
+            if (BOAT_DYNAMIC_BONES.contains(boneAnimation.boneName)) {
+                dynamicBones.put(boneAnimation.boneName, boneAnimation);
+            }
+        }
+        if (dynamicBones.isEmpty()) {
+            return importedBoat;
+        }
+
+        ArrayList<BoneAnimation> mergedBones = new ArrayList<>(importedBoat.boneAnimations.size() + dynamicBones.size());
+        HashSet<String> mergedNames = new HashSet<>();
+        for (BoneAnimation boneAnimation : importedBoat.boneAnimations) {
+            BoneAnimation replacement = dynamicBones.get(boneAnimation.boneName);
+            if (replacement != null) {
+                mergedBones.add(replacement);
+                mergedNames.add(replacement.boneName);
+            } else {
+                mergedBones.add(boneAnimation);
+                mergedNames.add(boneAnimation.boneName);
+            }
+        }
+        for (BoneAnimation boneAnimation : dynamicBones.values()) {
+            if (mergedNames.add(boneAnimation.boneName)) {
+                mergedBones.add(boneAnimation);
+            }
+        }
+
+        Animation merged = new Animation(
+                importedBoat.animationName,
+                importedBoat.animationLength,
+                importedBoat.loop,
+                importedBoat.unKnowData1,
+                importedBoat.unKnowData2,
+                importedBoat.blendWeight,
+                importedBoat.override,
+                mergedBones.toArray(new BoneAnimation[0]),
+                importedBoat.soundKeyFrames.toArray(new com.elfmcys.yesstevemodel.geckolib3.core.keyframe.event.EventKeyFrame[0]),
+                importedBoat.particleKeyFrames.toArray(new com.elfmcys.yesstevemodel.geckolib3.core.event.ParticleEventKeyFrame[0]),
+                importedBoat.customInstructionKeyframes.toArray(new com.elfmcys.yesstevemodel.geckolib3.core.keyframe.event.EventKeyFrame[0])
+        );
+        merged.sourceKey = importedBoat.sourceKey;
+        return merged;
+    }
+
     private static Map<Identifier, ProjectileModelBundle> buildProjectileModels(ClientModelInfo clientModelInfo, ModelResourceBundle resourceBundle, boolean isPrimary, List<AbstractTexture> textureList) {
         Object2ReferenceOpenHashMap<Identifier, ProjectileModelBundle> projectileMap = new Object2ReferenceOpenHashMap();
         for (ProjectileModelFiles projectileFiles : clientModelInfo.getExtraItemModels()) {
@@ -158,6 +223,11 @@ public class ModelAssemblyFactory {
             VehicleModelBundle vehicleBundle = new VehicleModelBundle(model, animations, controllers, texture, resourceBundle);
             for (Identifier Identifier : FileTypeUtil.resolveEntityTypes(vehicleFiles.getTextureNames())) {
                 vehicleMap.put(Identifier, vehicleBundle);
+            }
+        }
+        if (!isPrimary && primaryAssembly != null) {
+            for (Map.Entry<Identifier, VehicleModelBundle> entry : primaryAssembly.getVehicleModels().entrySet()) {
+                vehicleMap.computeIfAbsent(entry.getKey(), k -> entry.getValue());
             }
         }
         return vehicleMap;

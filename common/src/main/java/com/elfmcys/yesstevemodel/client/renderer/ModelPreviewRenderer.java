@@ -5,8 +5,8 @@ import com.elfmcys.yesstevemodel.capability.PlayerCapability;
 import com.elfmcys.yesstevemodel.config.GeneralConfig;
 import rip.ysm.compat.firstperson.FirstPersonCompat;
 import rip.ysm.compat.oculus.OculusCompat;
-import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat;
 import com.elfmcys.yesstevemodel.client.animation.AnimationTracker;
+import com.elfmcys.yesstevemodel.client.entity.GeckoVehicleEntity;
 import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable;
 import com.elfmcys.yesstevemodel.mixin.client.EntityRidingAccessor;
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity;
@@ -25,6 +25,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -116,12 +117,12 @@ public final class ModelPreviewRenderer {
         return DIRECT_GUI_PREVIEWS_SUPPORTED;
     }
 
-    public static boolean renderQueuedGuiPreview(EntityRenderState renderState, PoseStack poseStack) {
+    public static boolean renderQueuedGuiPreview(EntityRenderState renderState, PoseStack poseStack, SubmitNodeCollector collector) {
         GuiPreviewRequest request = GUI_PREVIEWS.remove(renderState);
         if (request == null) {
             return false;
         }
-        request.render(poseStack);
+        request.render(poseStack, collector);
         return true;
     }
 
@@ -167,7 +168,7 @@ public final class ModelPreviewRenderer {
     }
 
     private interface GuiPreviewRequest {
-        void render(PoseStack poseStack);
+        void render(PoseStack poseStack, SubmitNodeCollector collector);
     }
 
     private static final class LivingGuiPreviewRequest implements GuiPreviewRequest {
@@ -194,8 +195,8 @@ public final class ModelPreviewRenderer {
         }
 
         @Override
-        public void render(PoseStack poseStack) {
-            renderLivingGuiPreview(poseStack, offsetX, offsetY, partialTick, animatable, renderer, disablePreviewRotation, hideEquipment, previewYaw, extraPlayer);
+        public void render(PoseStack poseStack, SubmitNodeCollector collector) {
+            renderLivingGuiPreview(poseStack, offsetX, offsetY, partialTick, animatable, renderer, disablePreviewRotation, hideEquipment, previewYaw, extraPlayer, collector);
         }
     }
 
@@ -221,18 +222,20 @@ public final class ModelPreviewRenderer {
         }
 
         @Override
-        public void render(PoseStack poseStack) {
+        public void render(PoseStack poseStack, SubmitNodeCollector collector) {
             renderFreeGuiPreview(poseStack, offsetX, offsetY, pitch, yaw, partialTick, animatableEntity, renderer, renderGround);
         }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void renderLivingGuiPreview(PoseStack poseStack, float offsetX, float offsetY, float partialTick, LivingAnimatable animatable, GeoReplacedEntityRenderer renderer, boolean disablePreviewRotation, boolean hideEquipment, float previewYaw, boolean extraPlayer) {
+    private static void renderLivingGuiPreview(PoseStack poseStack, float offsetX, float offsetY, float partialTick, LivingAnimatable animatable, GeoReplacedEntityRenderer renderer, boolean disablePreviewRotation, boolean hideEquipment, float previewYaw, boolean extraPlayer, SubmitNodeCollector collector) {
         ItemStack[] savedEquipment;
         boolean previousPreviewMode = isPreviewMode;
         boolean previousExtraPlayerMode = isExtraPlayerMode;
+        SubmitNodeCollector previousCollector = SubmitRenderContext.get();
         setPreviewMode(true);
         setExtraPlayerMode(extraPlayer || previousExtraPlayerMode);
+        SubmitRenderContext.set(collector != null ? collector : previousCollector);
         LivingEntity livingEntity = (LivingEntity) animatable.getEntity();
         poseStack.pushPose();
         poseStack.translate(offsetX, offsetY, 0.0d);
@@ -299,6 +302,7 @@ public final class ModelPreviewRenderer {
                 // Equipment restore skipped: MC 26.x no longer exposes the old mutable inventory fields.
             }
             poseStack.popPose();
+            SubmitRenderContext.set(previousCollector);
             setExtraPlayerMode(previousExtraPlayerMode);
             setPreviewMode(previousPreviewMode);
         }
@@ -392,7 +396,7 @@ public final class ModelPreviewRenderer {
 
     public static void renderVehicleModel(Entity entity, PoseStack poseStack, float partialTick) {
         Entity vehicle = entity.getVehicle();
-        if (vehicle != null) {
+        if (vehicle != null && !GeckoVehicleEntity.usesVanillaRenderer(vehicle)) {
             VehicleCapability.get(vehicle).ifPresent(cap -> {
                 int index;
                 AnimatedGeoModel model;
@@ -406,9 +410,6 @@ public final class ModelPreviewRenderer {
                 poseStack.mulPose(Axis.YN.rotationDegrees(180.0f - bodyRotation));
                 Vec3 passengerAttachment = ((EntityRidingAccessor) vehicle).invokeGetPassengerAttachmentPoint(entity, entity.getDimensions(entity.getPose()), 1.0F);
                 double myRidingOffset = -passengerAttachment.y();
-                if (((entity instanceof Player) && PlayerCapability.get(entity).isPresent()) || TouhouLittleMaidCompat.isMaidRideable(entity)) {
-                    myRidingOffset -= 0.5d;
-                }
                 poseStack.translate(0.0d, myRidingOffset, 0.0d);
             });
         }
@@ -758,6 +759,10 @@ public final class ModelPreviewRenderer {
     }
 
     public static void renderPlayerOverlay(GuiGraphicsExtractor guiGraphics, LocalPlayer localPlayer, double x, double y, float scale, float yawOffset, int zDepth, float partialTick) {
+        renderPlayerOverlay(guiGraphics, localPlayer, x, y, scale, yawOffset, zDepth, partialTick, true);
+    }
+
+    public static void renderPlayerOverlay(GuiGraphicsExtractor guiGraphics, LocalPlayer localPlayer, double x, double y, float scale, float yawOffset, int zDepth, float partialTick, boolean clipToFrame) {
         if (guiGraphics == null || localPlayer == null || scale <= 0.0f) {
             return;
         }
@@ -770,16 +775,31 @@ public final class ModelPreviewRenderer {
         }
         float centerX = (left + right) * 0.5f;
         float centerY = (top + bottom) * 0.5f;
-        if (renderCustomLocalPlayerPreview(guiGraphics, localPlayer, left, top, right, bottom, centerX, bottom - 2.0f, scale, 180.0f + yawOffset, partialTick, true)) {
+        int renderLeft = left;
+        int renderTop = top;
+        int renderRight = right;
+        int renderBottom = bottom;
+        if (!clipToFrame) {
+            Minecraft minecraft = Minecraft.getInstance();
+            renderLeft = Math.min(0, left);
+            renderTop = Math.min(0, top);
+            renderRight = Math.max(minecraft.getWindow().getGuiScaledWidth(), right);
+            renderBottom = Math.max(minecraft.getWindow().getGuiScaledHeight(), bottom);
+        }
+        if (renderCustomLocalPlayerPreview(guiGraphics, localPlayer, renderLeft, renderTop, renderRight, renderBottom, centerX, bottom - 2.0f, scale, 180.0f + yawOffset, partialTick, true)) {
             return;
         }
         float mouseX = centerX - ((float) Math.tan(yawOffset / 20.0f) * 40.0f);
         setExtraPlayerMode(true);
-        guiGraphics.enableScissor(left, top, right, bottom);
+        if (clipToFrame) {
+            guiGraphics.enableScissor(left, top, right, bottom);
+        }
         try {
             InventoryScreen.extractEntityInInventoryFollowsMouse(guiGraphics, left, top, right, bottom, Math.max(1, Math.round(scale)), mouseX, centerY, 1.0f, localPlayer);
         } finally {
-            guiGraphics.disableScissor();
+            if (clipToFrame) {
+                guiGraphics.disableScissor();
+            }
             setExtraPlayerMode(false);
         }
 

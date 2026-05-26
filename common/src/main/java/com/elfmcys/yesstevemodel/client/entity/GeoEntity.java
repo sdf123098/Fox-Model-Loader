@@ -28,11 +28,11 @@ import java.util.concurrent.Future;
 public abstract class GeoEntity<T extends Entity> extends AnimatableEntity<T> {
     private String modelId;
 
-    private ModelAssembly modelAssembly;
+    protected ModelAssembly modelAssembly;
 
-    private ModelWrapper renderShape;
+    protected ModelWrapper renderShape;
 
-    private boolean loaded;
+    protected boolean loaded;
 
     private int updateTicks;
 
@@ -113,7 +113,7 @@ public abstract class GeoEntity<T extends Entity> extends AnimatableEntity<T> {
         refreshModel();
     }
 
-    private void refreshModel() {
+    protected void refreshModel() {
         ClientModelManager.getModelContext(this.modelId).ifPresentOrElse(assembly -> {
             if (this.renderShape == null || this.renderShape.isDefault || assembly != this.renderShape.context) {
                 this.renderShape = buildRenderShape(assembly, false);

@@ -409,6 +409,7 @@ public class AnimationRouletteScreen extends Screen {
         if (-1 < this.hoveredIndex && this.hoveredIndex < this.currentProperties.size()) {
             String str = ModelMetadataPresenter.getLocalizedModelString(this.renderContext, "properties.extra_animation.%s.desc".formatted(this.currentProperties.getKeyAt(this.hoveredIndex)), StringPool.EMPTY);
             if (StringUtils.isNotBlank(str)) {
+                guiGraphics.setTooltipForNextFrame(this.font, this.font.split(Component.literal(str), 240), mouseX, mouseY);
 /*                 GuiGraphicsExtractor.renderTooltip(this.font, this.font.split(Component.literal(str), 240), mouseX, mouseY); */
             }
         }

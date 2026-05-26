@@ -52,7 +52,7 @@ public class HandItemRenderer {
                 ? RenderTypes.entityTranslucent(Identifier)
                 : RenderTypes.entityCutout(Identifier);
         collector.submitCustomGeometry(poseStack, renderType, (pose, buffer) ->
-                NativeModelRenderer.renderMesh(buffer, pose, model.getGeoModel(), model.getMatrixData(), model.getAbsPivotData(), textureIndex, renderPartMask, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f, Identifier));
+                NativeModelRenderer.renderMesh(buffer, pose, model.getGeoModel(), model.getMatrixData(), model.getAbsPivotData(), textureIndex, renderPartMask, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f, Identifier, false));
         poseStack.popPose();
     }
 }

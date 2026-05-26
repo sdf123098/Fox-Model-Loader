@@ -2,7 +2,9 @@ package com.elfmcys.yesstevemodel.mixin.client;
 
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.state.gui.pip.GuiEntityRenderState;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +21,9 @@ public abstract class GuiEntityRendererMixin {
         Vector3f translation = state.translation();
         poseStack.translate(translation.x, translation.y, translation.z);
         poseStack.mulPose(state.rotation());
-        if (ModelPreviewRenderer.renderQueuedGuiPreview(state.renderState(), poseStack)) {
+        FeatureRenderDispatcher featureDispatcher = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
+        if (ModelPreviewRenderer.renderQueuedGuiPreview(state.renderState(), poseStack, featureDispatcher.getSubmitNodeStorage())) {
+            featureDispatcher.renderAllFeatures();
             poseStack.popPose();
             ModelPreviewRenderer.setPreviewMode(false);
             ci.cancel();

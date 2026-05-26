@@ -26,11 +26,7 @@ public final class GpuCapability {
         checked = true;
 
         if (System.getProperty("OYSM_DISABLE_GPU") != null) {
-            reason = "gpu renderer has been disabled";
-            return;
-        }
-        if (System.getProperty("OYSM_ENABLE_EXPERIMENTAL_GPU") == null) {
-            reason = "gpu renderer is disabled on MC 26.x until the direct GL path is remigrated";
+            reason = "gpu renderer disabled by OYSM_DISABLE_GPU";
             return;
         }
         if (!NativeLibLoader.isLoaded()) {

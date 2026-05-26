@@ -4,6 +4,7 @@ package com.elfmcys.yesstevemodel.geckolib3.geo;
 
 import com.elfmcys.yesstevemodel.NativeLibLoader;
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer;
+import com.elfmcys.yesstevemodel.client.renderer.SubmitRenderContext;
 import com.elfmcys.yesstevemodel.config.GeneralConfig;
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel;
 import com.elfmcys.yesstevemodel.util.log.ChatLogger;
@@ -30,35 +31,28 @@ public class NativeModelRenderer {
 
     private static final Matrix4f projectionModelViewMatrix = new Matrix4f();
 
-    private static boolean gpuRendererDisabledLogged;
-
     public static void renderMesh(VertexConsumer buffer, PoseStack.Pose pose, GeoModel model, float[] boneParams, float[] stateBuffer, int textureIndex, int renderPartMask, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         renderMesh(buffer, pose, model, boneParams, stateBuffer, textureIndex, renderPartMask, packedLight, packedOverlay, red, green, blue, alpha, null);
     }
 
     public static void renderMesh(VertexConsumer buffer, PoseStack.Pose pose, GeoModel model, float[] boneParams, float[] stateBuffer, int textureIndex, int renderPartMask, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, net.minecraft.resources.Identifier textureLocation) {
+        renderMesh(buffer, pose, model, boneParams, stateBuffer, textureIndex, renderPartMask, packedLight, packedOverlay, red, green, blue, alpha, textureLocation, true);
+    }
+
+    public static void renderMesh(VertexConsumer buffer, PoseStack.Pose pose, GeoModel model, float[] boneParams, float[] stateBuffer, int textureIndex, int renderPartMask, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, net.minecraft.resources.Identifier textureLocation, boolean allowDirectGpuRenderer) {
         OculusCompat.updatePBRState();
         new Matrix4f().mul(new Matrix4f(), projectionModelViewMatrix);
         boolean isPreview = ModelPreviewRenderer.isPreview() || ModelPreviewRenderer.isExtraPlayer();
 
-        if (textureLocation != null && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
-            if (!gpuRendererDisabledLogged) {
-                ChatLogger.INSTANCE.logFormatted("Disabled GPU renderer: MC 26.x texture binding is not available yet");
-                gpuRendererDisabledLogged = true;
-            }
-            GeneralConfig.USE_GPU_RENDERER.set(false);
-        }
-
-        if (textureLocation != null && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
-
-            if(!GpuCapability.isAvailable())
-            {
+        // Submit-based world renders must keep the normal geometry path so the
+        // entity still reaches the feature/shadow pipeline.
+        boolean useGpuRenderer = allowDirectGpuRenderer && textureLocation != null && SubmitRenderContext.get() == null && ModelPreviewRenderer.isWorldRender() && !isPreview && !ModelPreviewRenderer.isFirstPerson() && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get();
+        if (useGpuRenderer) {
+            if (!GpuCapability.isAvailable()) {
                 ChatLogger.INSTANCE.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason());
                 GeneralConfig.USE_GPU_RENDERER.set(false);
-                return;
-            }
-
-            if (OculusCompat.isShaderPackInUse() && !isPreview) {
+                GeneralConfig.USE_GPU_RENDERER.save();
+            } else if (OculusCompat.isShaderPackInUse() && !isPreview) {
                 if (IrisRenderPath.tryRender(model, pose, boneParams, renderPartMask, packedLight, packedOverlay, red, green, blue, alpha, textureLocation)) {
                     return;
                 }

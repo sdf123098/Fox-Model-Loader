@@ -1,6 +1,8 @@
 package com.elfmcys.yesstevemodel.capability;
 
+import com.elfmcys.yesstevemodel.client.ClientModelManager;
 import com.elfmcys.yesstevemodel.client.entity.GeckoVehicleEntity;
+import com.elfmcys.yesstevemodel.client.model.ModelAssembly;
 import com.elfmcys.yesstevemodel.molang.runtime.Int2FloatOpenHashMapStruct;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
@@ -25,6 +27,28 @@ public class VehicleCapability extends GeckoVehicleEntity {
 
     public VehicleCapability(Entity entity) {
         super(entity);
+    }
+
+    @Override
+    protected void refreshModel() {
+        ClientModelManager.getModelContext(this.getModelId()).ifPresent(assembly -> {
+            if (this.renderShape == null || this.renderShape.isDefault || assembly != this.renderShape.context) {
+                this.renderShape = buildRenderShape(assembly, false);
+            }
+        });
+        if (this.renderShape != null) {
+            if ((this.renderShape.context != this.modelAssembly || this.renderShape.isDefault != this.loaded) && this.renderShape.isValid()) {
+                this.modelAssembly = this.renderShape.context;
+                this.loaded = this.renderShape.isDefault;
+                onModelLoaded(this.modelAssembly);
+                initAnimationControllers(getAnimationProcessor(), this.modelAssembly.getExpressionCache().getEvents());
+                return;
+            }
+            return;
+        }
+        if (this.modelAssembly != null) {
+            clearModel();
+        }
     }
 
     public void setOwnerModelId(String str) {

@@ -39,6 +39,10 @@ import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.projectile.arrow.SpectralArrow;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractChestBoat;
+import net.minecraft.world.entity.vehicle.boat.ChestRaft;
+import net.minecraft.world.entity.vehicle.boat.Raft;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -59,6 +63,11 @@ import java.util.Locale;
 public class YSMBinding extends ContextBinding {
 
     public static final LazySupplier<YSMBinding> INSTANCE = new LazySupplier<>(YSMBinding::new);
+    private static final float BOAT_CHEST_BODY_Z_OFFSET = -0.15f * 16.0f;
+    private static final float BOAT_DEFAULT_BODY_Y_OFFSET = 0.0f;
+    private static final float BOAT_RAFT_BODY_Y_OFFSET = 0.0f;
+    private static final float BOAT_DEFAULT_PADDLE_SCALE = 1.0f;
+    private static final float BOAT_RAFT_PADDLE_SCALE = 1.0f;
 
     private YSMBinding() {
         function("dump_equipped_item", new DumpEquippedItem());
@@ -104,6 +113,16 @@ public class YSMBinding extends ContextBinding {
         entityVar("frozen_ticks", ctx -> ctx.entity().getTicksFrozen());
         entityVar("air_supply", ctx -> ctx.entity().getAirSupply());
         entityVar("delta_movement_length", ctx -> ctx.entity().getDeltaMovement().length());
+        entityVar("boat_left_paddle", ctx -> getBoatPaddleState(ctx, AbstractBoat.PADDLE_LEFT));
+        entityVar("boat_right_paddle", ctx -> getBoatPaddleState(ctx, AbstractBoat.PADDLE_RIGHT));
+        entityVar("boat_left_rowing_time", ctx -> getBoatRowingTime(ctx, AbstractBoat.PADDLE_LEFT));
+        entityVar("boat_right_rowing_time", ctx -> getBoatRowingTime(ctx, AbstractBoat.PADDLE_RIGHT));
+        entityVar("boat_is_chest", YSMBinding::isBoatChest);
+        entityVar("boat_is_raft", YSMBinding::isBoatRaft);
+        entityVar("boat_body_offset_y", YSMBinding::getBoatBodyOffsetY);
+        entityVar("boat_body_offset_z", YSMBinding::getBoatBodyOffsetZ);
+        entityVar("boat_paddle_scale", YSMBinding::getBoatPaddleScale);
+        entityVar("boat_chest_passenger_offset", YSMBinding::getBoatChestPassengerOffset);
         livingEntityVar("has_helmet", ctx -> hasEquipment(ctx.entity(), EquipmentSlot.HEAD));
         livingEntityVar("has_chest_plate", ctx -> hasEquipment(ctx.entity(), EquipmentSlot.CHEST));
         livingEntityVar("has_leggings", ctx -> hasEquipment(ctx.entity(), EquipmentSlot.LEGS));
@@ -187,10 +206,10 @@ public class YSMBinding extends ContextBinding {
         throwableProjectileEntityVar("throwable_item", YSMBinding::getThrowableItemId);
         fishHookEntityVar("hooked_in", YSMBinding::getHookedEntityType);
         fishHookEntityVar("is_biting", ctx -> ((FishingHookAccessor) ctx.entity()).isBiting());
-        abstractArrowEntityVar("on_ground_time", ctx -> ((ProjectileStateAccessor) ctx.entity()).getInGroundTime());
-        abstractArrowEntityVar("in_ground", ctx -> ((ProjectileStateAccessor) ctx.entity()).isInGround());
+        abstractArrowEntityVar("on_ground_time", ctx -> ((ProjectileStateAccessor) ctx.entity()).ysm$getInGroundTime());
+        abstractArrowEntityVar("in_ground", ctx -> ((ProjectileStateAccessor) ctx.entity()).ysm$isInGround());
         abstractArrowEntityVar("is_spectral_arrow", ctx -> ctx.entity() instanceof SpectralArrow);
-        abstractArrowEntityVar("shoot_item_id", ctx -> ((ProjectileStateAccessor) ctx.entity()).getOwnerItemId());
+        abstractArrowEntityVar("shoot_item_id", ctx -> ((ProjectileStateAccessor) ctx.entity()).ysm$getOwnerItemId());
         CuriosCompat.registerCuriosItems(this);
     }
 
@@ -256,6 +275,58 @@ public class YSMBinding extends ContextBinding {
         EntityFrameStateTracker<?> c0269x82e473c1Mo1215x3cfc56ba = context.geoInstance().getPositionTracker();
         Vec3 vec3M1419xc2097f01 = c0269x82e473c1Mo1215x3cfc56ba.getPositionDelta();
         return (20.0f * Mth.sqrt((float) ((vec3M1419xc2097f01.x * vec3M1419xc2097f01.x) + (vec3M1419xc2097f01.z * vec3M1419xc2097f01.z)))) / c0269x82e473c1Mo1215x3cfc56ba.getTimeDelta();
+    }
+
+    private static boolean getBoatPaddleState(IContext<Entity> context, int paddle) {
+        AbstractBoat boat = getBoat(context.entity());
+        return boat != null && boat.getPaddleState(paddle);
+    }
+
+    private static float getBoatRowingTime(IContext<Entity> context, int paddle) {
+        AbstractBoat boat = getBoat(context.entity());
+        if (boat == null) {
+            return 0.0f;
+        }
+        return boat.getRowingTime(paddle, context.animationEvent().getPartialTick());
+    }
+
+    private static boolean isBoatChest(IContext<Entity> context) {
+        return getBoat(context.entity()) instanceof AbstractChestBoat;
+    }
+
+    private static boolean isBoatRaft(IContext<Entity> context) {
+        AbstractBoat boat = getBoat(context.entity());
+        return boat instanceof Raft || boat instanceof ChestRaft;
+    }
+
+    private static float getBoatBodyOffsetY(IContext<Entity> context) {
+        AbstractBoat boat = getBoat(context.entity());
+        return boat instanceof Raft || boat instanceof ChestRaft ? BOAT_RAFT_BODY_Y_OFFSET : BOAT_DEFAULT_BODY_Y_OFFSET;
+    }
+
+    private static float getBoatBodyOffsetZ(IContext<Entity> context) {
+        AbstractBoat boat = getBoat(context.entity());
+        if (boat instanceof AbstractChestBoat) {
+            return BOAT_CHEST_BODY_Z_OFFSET;
+        }
+        return 0.0f;
+    }
+
+    private static float getBoatPaddleScale(IContext<Entity> context) {
+        AbstractBoat boat = getBoat(context.entity());
+        return boat instanceof Raft || boat instanceof ChestRaft ? BOAT_RAFT_PADDLE_SCALE : BOAT_DEFAULT_PADDLE_SCALE;
+    }
+
+    private static float getBoatChestPassengerOffset(IContext<Entity> context) {
+        return -getBoatBodyOffsetZ(context);
+    }
+
+    private static AbstractBoat getBoat(Entity entity) {
+        if (entity instanceof AbstractBoat boat) {
+            return boat;
+        }
+        Entity vehicle = entity.getVehicle();
+        return vehicle instanceof AbstractBoat boat ? boat : null;
     }
 
     private static float getXxa(IContext<LivingEntity> context) {

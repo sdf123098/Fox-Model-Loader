@@ -23,6 +23,8 @@ public class ConditionUse {
 
     private static final String EMPTY = "";
 
+    private static final String MC_SPEAR_ANIMATION = "lance";
+
     private final int preSize;
 
     private final String idPre;
@@ -114,11 +116,28 @@ public class ConditionUse {
         if (this.extraTes.isEmpty() && this.innerTest.isEmpty()) {
             return EMPTY;
         }
+        ItemUseAnimation anim = entity.getItemInHand(hand).getUseAnimation();
+        if (anim == ItemUseAnimation.TRIDENT) {
+            if (this.extraTes.contains(anim)) {
+                return this.extraPre + anim.name().toLowerCase(Locale.US);
+            }
+            String legacyTridentUse = this.extraPre + ItemUseAnimation.SPEAR.name().toLowerCase(Locale.US);
+            if (this.innerTest.contains(legacyTridentUse)) {
+                return legacyTridentUse;
+            }
+            return EMPTY;
+        }
+        if (anim == ItemUseAnimation.SPEAR) {
+            String mcSpearUse = this.extraPre + MC_SPEAR_ANIMATION;
+            if (this.innerTest.contains(mcSpearUse)) {
+                return mcSpearUse;
+            }
+            return EMPTY;
+        }
         String innerName = InnerClassify.doClassifyTest(this.extraPre, entity, hand);
         if (StringUtils.isNotBlank(innerName) && this.innerTest.contains(innerName)) {
             return innerName;
         }
-        ItemUseAnimation anim = entity.getItemInHand(hand).getUseAnimation();
         if (this.extraTes.contains(anim)) {
             return this.extraPre + anim.name().toLowerCase(Locale.US);
         }

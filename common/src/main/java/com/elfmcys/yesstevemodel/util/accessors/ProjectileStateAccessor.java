@@ -1,9 +1,9 @@
 package com.elfmcys.yesstevemodel.util.accessors;
 
 public interface ProjectileStateAccessor {
-    boolean isInGround();
+    boolean ysm$isInGround();
 
-    int getInGroundTime();
+    int ysm$getInGroundTime();
 
-    String getOwnerItemId();
+    String ysm$getOwnerItemId();
 }

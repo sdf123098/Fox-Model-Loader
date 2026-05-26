@@ -3253,17 +3253,33 @@
 					"position": [0, 0, 0]
 				},
 				"LeftArm": {
-					"rotation": [-31.50407, -34.90771, -30.83522]
+					"rotation": [
+						"-38+((ysm.boat_left_paddle)?(math.sin(ysm.boat_left_rowing_time*57.2958)*18*ysm.boat_paddle_scale):(0))",
+						"-34.90771-((ysm.boat_left_paddle)?(math.cos(ysm.boat_left_rowing_time*57.2958)*10*ysm.boat_paddle_scale):(0))",
+						"-30.83522-((ysm.boat_left_paddle)?(math.sin(ysm.boat_left_rowing_time*57.2958)*8*ysm.boat_paddle_scale):(0))"
+					]
 				},
 				"LeftForeArm": {
-					"rotation": [-47.5, 0, 0],
+					"rotation": [
+						"-55+((ysm.boat_left_paddle)?(math.cos(ysm.boat_left_rowing_time*57.2958)*20*ysm.boat_paddle_scale):(0))",
+						0,
+						0
+					],
 					"position": [0, 0, 0]
 				},
 				"RightArm": {
-					"rotation": [-31.50407, 34.90771, 30.83522]
+					"rotation": [
+						"-38+((ysm.boat_right_paddle)?(math.sin(ysm.boat_right_rowing_time*57.2958)*18*ysm.boat_paddle_scale):(0))",
+						"34.90771+((ysm.boat_right_paddle)?(math.cos(ysm.boat_right_rowing_time*57.2958)*10*ysm.boat_paddle_scale):(0))",
+						"30.83522+((ysm.boat_right_paddle)?(math.sin(ysm.boat_right_rowing_time*57.2958)*8*ysm.boat_paddle_scale):(0))"
+					]
 				},
 				"RightForeArm": {
-					"rotation": [-47.5, 0, 0]
+					"rotation": [
+						"-55+((ysm.boat_right_paddle)?(math.cos(ysm.boat_right_rowing_time*57.2958)*20*ysm.boat_paddle_scale):(0))",
+						0,
+						0
+					]
 				},
 				"LeftLeg": {
 					"rotation": [-111.53263, -1.57828, -15.08504],
@@ -3290,7 +3306,7 @@
 				},
 				"AllBody": {
 					"rotation": [0, 0, 0],
-					"position": [0, -3, 5],
+					"position": [0, "ysm.boat_body_offset_y", "5+ysm.boat_body_offset_z"],
 					"scale": 1
 				},
 				"AllHead": {

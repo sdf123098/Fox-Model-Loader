@@ -6,6 +6,20 @@
 			"bones": {
 				"Boat": {
 					"position": [0, 4.5, 0]
+				},
+				"LeftShovel": {
+					"rotation": [
+						"(ysm.boat_left_paddle)?(-12+math.sin(ysm.boat_left_rowing_time*57.2958)*32):(0)",
+						"(ysm.boat_left_paddle)?(-math.cos(ysm.boat_left_rowing_time*57.2958)*10):(0)",
+						"(ysm.boat_left_paddle)?(-math.sin(ysm.boat_left_rowing_time*57.2958)*12):(0)"
+					]
+				},
+				"RightShovel": {
+					"rotation": [
+						"(ysm.boat_right_paddle)?(-12+math.sin(ysm.boat_right_rowing_time*57.2958)*32):(0)",
+						"(ysm.boat_right_paddle)?(math.cos(ysm.boat_right_rowing_time*57.2958)*10):(0)",
+						"(ysm.boat_right_paddle)?(math.sin(ysm.boat_right_rowing_time*57.2958)*12):(0)"
+					]
 				}
 			}
 		},

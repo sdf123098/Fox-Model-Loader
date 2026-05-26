@@ -93,6 +93,11 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         }
     }
 
+    private static int opaque(ChatFormatting formatting) {
+        Integer color = formatting.getColor();
+        return color == null ? 0xFFFFFFFF : 0xFF000000 | color.intValue();
+    }
+
     public PlayerModelScreen() {
         super(Component.literal("YSM Player Model GUI"));
         this.hiddenModels = Sets.newHashSet();
@@ -469,7 +474,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         String strVersionString = Platform.getMod(YesSteveModel.MOD_ID).getVersion();
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(0.0f, 0.0f);
-        guiGraphics.text(this.font, strVersionString + " (" + renderer + ")", this.guiLeft + 2, this.guiTop + 226, ChatFormatting.DARK_GRAY.getColor().intValue());
+        guiGraphics.text(this.font, strVersionString + " (" + renderer + ")", this.guiLeft + 2, this.guiTop + 226, opaque(ChatFormatting.DARK_GRAY));
         guiGraphics.pose().popMatrix();
         if (StringUtils.isNotBlank(currentPath)) {
             int lineIndex = 0;
@@ -485,11 +490,13 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         ((ScreenAccessor) this).ysm$getRenderables().stream().filter(renderable -> {
             return renderable instanceof IconButton;
         }).forEach(renderable2 -> {
+            ((IconButton) renderable2).renderTooltip(guiGraphics, this, mouseX, mouseY);
 /*             ((IconButton) renderable2).renderTooltip(GuiGraphicsExtractor, this, mouseX, mouseY); */
         });
         ((ScreenAccessor) this).ysm$getRenderables().stream().filter(renderable3 -> {
             return renderable3 instanceof ModelButton;
         }).forEach(renderable4 -> {
+            ((ModelButton) renderable4).renderTooltip(guiGraphics, this, mouseX, mouseY);
 /*             ((ModelButton) renderable4).renderTooltip(GuiGraphicsExtractor, this, mouseX, mouseY); */
         });
         ((ScreenAccessor) this).ysm$getRenderables().stream().filter(renderable5 -> {
@@ -501,6 +508,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
             MutableComponent mutableComponentWithStyle = Component.translatable("gui.yes_steve_model.search.tip").withStyle(ChatFormatting.GRAY);
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(0.0f, 0.0f);
+            guiGraphics.setTooltipForNextFrame(this.font, this.font.split(mutableComponentWithStyle, 320), mouseX, mouseY);
 /*             GuiGraphicsExtractor.renderTooltip(this.font, this.font.split(mutableComponentWithStyle, 320), mouseX, mouseY); */
             guiGraphics.pose().popMatrix();
         }
@@ -533,7 +541,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         int iWidth = (this.guiLeft + 414) - this.font.width(mutableComponentLiteral);
         int i = this.guiTop + 215;
         Objects.requireNonNull(this.font);
-        guiGraphics.text(this.font, mutableComponentLiteral, iWidth, i + Math.round((14 - 9) / 2.0f), ChatFormatting.DARK_GRAY.getColor().intValue());
+        guiGraphics.text(this.font, mutableComponentLiteral, iWidth, i + Math.round((14 - 9) / 2.0f), opaque(ChatFormatting.DARK_GRAY));
     }
 
     public void renderModelPreview(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {

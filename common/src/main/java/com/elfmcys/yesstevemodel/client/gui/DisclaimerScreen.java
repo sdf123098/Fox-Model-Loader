@@ -37,6 +37,7 @@ public class DisclaimerScreen extends Screen {
         addRenderableWidget(new Button.Builder(Component.translatable("gui.yes_steve_model.disclaimer.close"), button -> {
             if (this.checkbox.selected()) {
                 GeneralConfig.DISCLAIMER_SHOW.set(false);
+                GeneralConfig.DISCLAIMER_SHOW.save();
                 Minecraft.getInstance().setScreen(new PlayerModelScreen());
             } else {
                 Minecraft.getInstance().setScreen(null);

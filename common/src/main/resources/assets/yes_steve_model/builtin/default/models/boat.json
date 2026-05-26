@@ -975,12 +975,12 @@
 				{
 					"name": "PassengerLocator2",
 					"parent": "Boat",
-					"pivot": [0, 1.5, 5.75]
+					"pivot": [0, 3, 5.75]
 				},
 				{
 					"name": "PassengerLocator",
 					"parent": "Boat",
-					"pivot": [0, 1.5, 1.75]
+					"pivot": [0, 3, 1.75]
 				}
 			]
 		}

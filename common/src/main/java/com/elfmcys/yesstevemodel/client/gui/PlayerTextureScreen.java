@@ -230,6 +230,7 @@ public class PlayerTextureScreen extends Screen {
         ((ScreenAccessor) this).ysm$getRenderables().stream().filter(renderable -> {
             return renderable instanceof FlatColorButton;
         }).forEach(renderable2 -> {
+            ((FlatColorButton) renderable2).renderTooltip(guiGraphics, this, mouseX, mouseY);
 /*             ((FlatColorButton) renderable2).renderTooltip(GuiGraphicsExtractor, this, mouseX, mouseY); */
         });
     }

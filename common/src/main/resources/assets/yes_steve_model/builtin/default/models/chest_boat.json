@@ -1083,7 +1083,7 @@
 				{
 					"name": "PassengerLocator",
 					"parent": "Boat",
-					"pivot": [0, 1.5, 2.75]
+					"pivot": [0, 3, 2.75]
 				}
 			]
 		}

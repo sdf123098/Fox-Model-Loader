@@ -1,6 +1,7 @@
 package com.elfmcys.yesstevemodel.geckolib3.geo;
 
 import com.elfmcys.yesstevemodel.client.renderer.SubmitRenderContext;
+import com.elfmcys.yesstevemodel.client.entity.GeckoVehicleEntity;
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity;
 import com.elfmcys.yesstevemodel.geckolib3.core.util.Color;
 import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
@@ -37,7 +38,7 @@ public interface IGeoRenderer<T extends AnimatableEntity<?>> {
         if (collector != null && vertexConsumer == null) {
             animatable.resetAnimationState();
             collector.submitCustomGeometry(poseStack, renderType, (pose, buffer) ->
-                    NativeModelRenderer.renderMesh(buffer, pose, model.getGeoModel(), model.getMatrixData(), model.getAbsPivotData(), i, 0, i2, i3, f2, f3, f4, f5, textureLocation));
+                    NativeModelRenderer.renderMesh(buffer, pose, model.getGeoModel(), model.getMatrixData(), model.getAbsPivotData(), i, 0, i2, i3, f2, f3, f4, f5, textureLocation, false));
             setCurrentModelRenderCycle(EModelRenderCycle.REPEATED);
             return;
         }
@@ -45,7 +46,8 @@ public interface IGeoRenderer<T extends AnimatableEntity<?>> {
             vertexConsumer = bufferSource.getBuffer(renderType);
         }
         animatable.resetAnimationState();
-        NativeModelRenderer.renderMesh(vertexConsumer, poseStack.last(), model.getGeoModel(), model.getMatrixData(), model.getAbsPivotData(), i, 0, i2, i3, f2, f3, f4, f5, textureLocation);
+        boolean allowDirectGpuRenderer = !(animatable instanceof GeckoVehicleEntity);
+        NativeModelRenderer.renderMesh(vertexConsumer, poseStack.last(), model.getGeoModel(), model.getMatrixData(), model.getAbsPivotData(), i, 0, i2, i3, f2, f3, f4, f5, textureLocation, allowDirectGpuRenderer);
         setCurrentModelRenderCycle(EModelRenderCycle.REPEATED);
     }
 

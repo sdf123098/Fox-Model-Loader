@@ -3,6 +3,7 @@ package com.elfmcys.yesstevemodel.client.animation.condition;
 import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat;
 import rip.ysm.compat.slashblade.SlashBladeCompat;
 import com.elfmcys.yesstevemodel.util.ItemTagsConstants;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -29,22 +30,22 @@ public class InnerClassify {
         if (SlashBladeCompat.isSlashBladeItem(itemStack)) {
             return "slashblade";
         }
-        if (itemStack.is(ItemTagsConstants.SWORDS)) {
+        if (itemStack.is(ItemTags.SWORDS) || itemStack.is(ItemTagsConstants.SWORDS)) {
             return "sword";
         }
         if (TouhouLittleMaidCompat.isMaidItem(item)) {
             return "gohei";
         }
-        if (itemStack.is(ItemTagsConstants.AXES)) {
+        if (itemStack.is(ItemTags.AXES) || itemStack.is(ItemTagsConstants.AXES)) {
             return "axe";
         }
-        if (itemStack.is(ItemTagsConstants.PICKAXES)) {
+        if (itemStack.is(ItemTags.PICKAXES) || itemStack.is(ItemTagsConstants.PICKAXES)) {
             return "pickaxe";
         }
-        if (itemStack.is(ItemTagsConstants.SHOVELS)) {
+        if (itemStack.is(ItemTags.SHOVELS) || itemStack.is(ItemTagsConstants.SHOVELS)) {
             return "shovel";
         }
-        if (itemStack.is(ItemTagsConstants.HOES)) {
+        if (itemStack.is(ItemTags.HOES) || itemStack.is(ItemTagsConstants.HOES)) {
             return "hoe";
         }
         if (item == Items.SHIELD || itemStack.is(ItemTagsConstants.SHIELDS)) {

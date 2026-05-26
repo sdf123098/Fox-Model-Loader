@@ -6,6 +6,7 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public final class GpuMesh {
     public final long pointer;
@@ -40,21 +41,23 @@ public final class GpuMesh {
         this.partMask2Count = pm2c;
         this.partMask3Start = pm3s;
         this.partMask3Count = pm3c;
-        this.perFrameBoneBuffer = MemoryUtil.memAlloc(boneCount * 144);
+        this.perFrameBoneBuffer = MemoryUtil.memAlloc(boneCount * 144).order(ByteOrder.nativeOrder());
     }
 
     public int indexOffsetBytes(int renderPartMask) {
-        if (renderPartMask == 0 || renderPartMask == 3) return 0;
+        if (renderPartMask == 0) return 0;
         if (renderPartMask == 1) return partMask1Start * Integer.BYTES;
         if (renderPartMask == 2) return partMask2Start * Integer.BYTES;
+        if (renderPartMask == 3) return partMask3Start * Integer.BYTES;
         return 0;
     }
 
     public int indexDrawCount(int renderPartMask) {
         if (renderPartMask == 0) return indexCount;
-        if (renderPartMask == 3) return indexCount;
-        int self = (renderPartMask == 1) ? partMask1Count : (renderPartMask == 2) ? partMask2Count : 0;
-        return self + partMask3Count;
+        if (renderPartMask == 1) return partMask1Count;
+        if (renderPartMask == 2) return partMask2Count;
+        if (renderPartMask == 3) return partMask3Count;
+        return 0;
     }
 
     public int xformVbo() {

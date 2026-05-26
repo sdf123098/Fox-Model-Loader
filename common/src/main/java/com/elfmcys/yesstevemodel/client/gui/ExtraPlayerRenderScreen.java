@@ -12,6 +12,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 
 
 public class ExtraPlayerRenderScreen extends Screen {
@@ -63,6 +64,7 @@ public class ExtraPlayerRenderScreen extends Screen {
         int iWidth = this.font.width(mutableComponentTranslatable) + 24;
         addRenderableWidget(Checkbox.builder(mutableComponentTranslatable, font).pos((this.width - iWidth) / 2, this.height + i).maxWidth(iWidth).selected(ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.get().booleanValue()).onValueChange((c, v) -> {
             ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.set(v);
+            ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.save();
         }).build());
     }
 
@@ -95,7 +97,7 @@ public class ExtraPlayerRenderScreen extends Screen {
         }
         guiGraphics.pose().popMatrix();
         if (Minecraft.getInstance().player != null && !ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.get().booleanValue()) {
-            ModelPreviewRenderer.renderPlayerOverlay(guiGraphics, Minecraft.getInstance().player, this.mouseStartX, this.mouseStartY, this.rotationX, this.rotationY, -500, partialTick);
+            ModelPreviewRenderer.renderPlayerOverlay(guiGraphics, Minecraft.getInstance().player, this.mouseStartX, this.mouseStartY, this.rotationX, this.rotationY, -500, partialTick, false);
         }
         super.extractRenderState(extractor, mouseX, mouseY, partialTick);
     }
@@ -124,9 +126,13 @@ public class ExtraPlayerRenderScreen extends Screen {
         return super.mouseReleased(event);
     }
 
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         if (this.isRightDragging) {
-            this.rotationX = (float) Math.min(mouseX - this.mouseStartX, (mouseY - this.mouseStartY) / 2.0d);
+            this.rotationX = Mth.clamp((float) Math.min(mouseX - this.mouseStartX, (mouseY - this.mouseStartY) / 2.0d), 8.0f, 360.0f);
             return true;
         }
         if (this.isDragging) {
@@ -138,7 +144,7 @@ public class ExtraPlayerRenderScreen extends Screen {
             this.rotationY += (float) (dragX * 2.0d);
             return true;
         }
-        return false;
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     @Override
@@ -161,6 +167,7 @@ public class ExtraPlayerRenderScreen extends Screen {
         ExtraPlayerRenderConfig.PLAYER_POS_Y.set(Integer.valueOf(this.mouseStartY));
         ExtraPlayerRenderConfig.PLAYER_SCALE.set(Double.valueOf(this.rotationX));
         ExtraPlayerRenderConfig.PLAYER_YAW_OFFSET.set(Double.valueOf(this.rotationY));
+        ExtraPlayerRenderConfig.PLAYER_YAW_OFFSET.save();
         super.onClose();
     }
 }

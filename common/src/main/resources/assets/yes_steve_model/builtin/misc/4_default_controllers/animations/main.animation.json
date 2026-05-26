@@ -492,6 +492,73 @@
 				}
 			}
 		},
+		"boat": {
+			"loop": true,
+			"bones": {
+				"Root": {
+					"rotation": [0, 0, 0],
+					"position": [0, 0, 0],
+					"scale": 1
+				},
+				"AllBody": {
+					"rotation": [0, 0, 0],
+					"position": [0, "ysm.boat_body_offset_y", "5+ysm.boat_body_offset_z"],
+					"scale": 1
+				},
+				"UpBody": {
+					"rotation": [30, 0, 0]
+				},
+				"LeftArm": {
+					"rotation": [
+						"-38+((ysm.boat_left_paddle)?(math.sin(ysm.boat_left_rowing_time*57.2958)*18*ysm.boat_paddle_scale):(0))",
+						"-34.90771-((ysm.boat_left_paddle)?(math.cos(ysm.boat_left_rowing_time*57.2958)*10*ysm.boat_paddle_scale):(0))",
+						"-30.83522-((ysm.boat_left_paddle)?(math.sin(ysm.boat_left_rowing_time*57.2958)*8*ysm.boat_paddle_scale):(0))"
+					]
+				},
+				"LeftForeArm": {
+					"rotation": [
+						"-55+((ysm.boat_left_paddle)?(math.cos(ysm.boat_left_rowing_time*57.2958)*20*ysm.boat_paddle_scale):(0))",
+						0,
+						0
+					]
+				},
+				"RightArm": {
+					"rotation": [
+						"-38+((ysm.boat_right_paddle)?(math.sin(ysm.boat_right_rowing_time*57.2958)*18*ysm.boat_paddle_scale):(0))",
+						"34.90771+((ysm.boat_right_paddle)?(math.cos(ysm.boat_right_rowing_time*57.2958)*10*ysm.boat_paddle_scale):(0))",
+						"30.83522+((ysm.boat_right_paddle)?(math.sin(ysm.boat_right_rowing_time*57.2958)*8*ysm.boat_paddle_scale):(0))"
+					]
+				},
+				"RightForeArm": {
+					"rotation": [
+						"-55+((ysm.boat_right_paddle)?(math.cos(ysm.boat_right_rowing_time*57.2958)*20*ysm.boat_paddle_scale):(0))",
+						0,
+						0
+					]
+				},
+				"Head": {
+					"rotation": [-27.5, 0, 0]
+				},
+				"LeftLeg": {
+					"rotation": [-111.53263, -1.57828, -15.08504]
+				},
+				"LeftLowerLeg": {
+					"rotation": [60.02687, 1.91486, 1.60757]
+				},
+				"LeftFoot": {
+					"rotation": [35, 0, 0]
+				},
+				"RightLeg": {
+					"rotation": [-111.53263, 1.57828, 15.08504]
+				},
+				"RightLowerLeg": {
+					"rotation": [60.02687, -1.91486, -1.60757]
+				},
+				"RightFoot": {
+					"rotation": [40, 0, 0]
+				}
+			}
+		},
 		"parallel0": {
 			"loop": true,
 			"bones": {

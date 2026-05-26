@@ -40,7 +40,7 @@ public class PackIconButton extends Button {
         Identifier location = FileTypeUtil.getPackIconLocation(this.packData.getPath());
         GlStateManager._enableBlend();
         GlStateManager._blendFuncSeparate(770, 771, 1, 0);
-        Identifier iconLocation = getReadyIconLocation(minecraft, location);
+        Identifier iconLocation = getReadyIconLocation(minecraft, location, this.packData.getTexture());
         guiGraphics.blit(iconLocation, getX(), getY(), getX() + this.width, getY() + this.height, 0.0f, 1.0f, 0.0f, 1.0f);
         GlStateManager._disableBlend();
         guiGraphics.fillGradient(getX(), getY() + this.height - 24, getX() + this.width, getY() + this.height, 0xAA000000, 0xAA000000);
@@ -68,6 +68,7 @@ public class PackIconButton extends Button {
         if (isHovered()) {
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(0.0f, 0.0f);
+            guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, listSingletonList, mouseX, mouseY);
 /*             GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, listSingletonList, mouseX, mouseY); */
             guiGraphics.pose().popMatrix();
         }
@@ -81,12 +82,15 @@ public class PackIconButton extends Button {
         guiGraphics.text(font, formattedCharSequence, centerX - (font.width(formattedCharSequence) / 2), y, color, true);
     }
 
-    private static Identifier getReadyIconLocation(Minecraft minecraft, Identifier location) {
-        AbstractTexture texture = minecraft.getTextureManager().getTexture(location);
-        if (texture == null) {
+    private static Identifier getReadyIconLocation(Minecraft minecraft, Identifier location, OuterFileTexture packIconTexture) {
+        if (packIconTexture == null) {
             return default_pack_icon;
         }
-        if (texture instanceof OuterFileTexture outerFileTexture && !outerFileTexture.isLoaded()) {
+        AbstractTexture texture = minecraft.getTextureManager().getTexture(location);
+        if (!(texture instanceof OuterFileTexture outerFileTexture)) {
+            return default_pack_icon;
+        }
+        if (!outerFileTexture.isLoaded()) {
             try {
                 outerFileTexture.doLoad();
             } catch (RuntimeException ignored) {

@@ -24,7 +24,7 @@ public class ProjectileAnimationPredicate implements IAnimationPredicate<GeckoPr
         if (projectile.isOnFire()) {
             return IAnimationPredicate.predicate(event, "fire");
         }
-        if ((projectile instanceof ProjectileStateAccessor) && ((ProjectileStateAccessor) projectile).isInGround()) {
+        if ((projectile instanceof ProjectileStateAccessor) && ((ProjectileStateAccessor) projectile).ysm$isInGround()) {
             return IAnimationPredicate.predicate(event, "ground");
         }
         return IAnimationPredicate.predicate(event, "air");

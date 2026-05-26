@@ -22,15 +22,24 @@ public class Option<T> {
     }
 
     public static Option<Boolean> ofBoolean(String key, ModConfigSpec.BooleanValue cfg) {
-        return new Option<>(key, cfg::get, cfg::set);
+        return new Option<>(key, cfg::get, value -> {
+            cfg.set(value);
+            cfg.save();
+        });
     }
 
     public static Option<Double> ofDouble(String key, ModConfigSpec.DoubleValue cfg) {
-        return new Option<>(key, cfg::get, cfg::set);
+        return new Option<>(key, cfg::get, value -> {
+            cfg.set(value);
+            cfg.save();
+        });
     }
 
     public static <E extends Enum<E>> Option<E> ofEnum(String key, ModConfigSpec.EnumValue<E> cfg) {
-        return new Option<>(key, cfg::get, cfg::set);
+        return new Option<>(key, cfg::get, value -> {
+            cfg.set(value);
+            cfg.save();
+        });
     }
 
     public Component getLabel() {
