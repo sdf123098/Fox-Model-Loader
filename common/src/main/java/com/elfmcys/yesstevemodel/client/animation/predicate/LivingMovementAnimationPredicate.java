@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,6 +61,9 @@ public class LivingMovementAnimationPredicate implements IAnimationPredicate<Liv
         }
         if (vehicle instanceof AbstractBoat) {
             return IAnimationPredicate.playAnimationWithLoop(event, "boat", ILoopType.EDefaultLoopTypes.LOOP);
+        }
+        if (vehicle instanceof AbstractMinecart && event.getAnimatable().getAnimation("ride") != null) {
+            return IAnimationPredicate.playAnimationWithLoop(event, "ride", ILoopType.EDefaultLoopTypes.LOOP);
         }
         boolean z = (livingEntity instanceof Player var8) && CarryOnCompat.isPlayerCarrying(var8);
         boolean z2 = TouhouLittleMaidCompat.isMaidEntity(livingEntity) && (livingEntity.getVehicle() instanceof Player);

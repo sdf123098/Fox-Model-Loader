@@ -69,6 +69,10 @@ import java.util.function.Consumer;
 
 public class AnimationRouletteScreen extends Screen {
 
+    private static final int TEXT_COLOR = 0xFFFFFFFF;
+
+    private static final int LABEL_COLOR = 0xFFF3EFE0;
+
     private static final String SUBMENU_PREFIX = "#";
 
     private static final String RETURN_KEY = "#return";
@@ -376,7 +380,7 @@ public class AnimationRouletteScreen extends Screen {
         int scrolledMouseY;
         guiGraphics.centeredText(this.font, Component.translatable("gui.yes_steve_model.roulette.path", StringUtils.joinWith(" > ", navigationStack.stream().map((v0) -> {
             return v0.getLeft();
-        }).toArray())), this.centerX + 195, this.centerY - 100, 16777215);
+        }).toArray())), this.centerX + 195, this.centerY - 100, TEXT_COLOR);
         // TODO: renderRadialBackground(guiGraphics.pose(), mouseX, mouseY); // Matrix3x2fStack instead of PoseStack
         renderRadialButtons(guiGraphics);
         renderPageInfo(guiGraphics);
@@ -425,7 +429,7 @@ public class AnimationRouletteScreen extends Screen {
 
     private void renderPageInfo(GuiGraphicsExtractor guiGraphics) {
         guiGraphics.fill(this.centerX + 157, this.centerY - 87, this.centerX + 238, this.centerY - 72, -822083584);
-        guiGraphics.centeredText(this.font, Component.literal(String.format("%d/%d", Integer.valueOf(this.currentNavEntry.getRight().intValue() + 1), Integer.valueOf(((this.currentProperties.size() - 1) / 8) + 1))), this.centerX + 197, this.centerY - 83, ChatFormatting.AQUA.getColor().intValue());
+        guiGraphics.centeredText(this.font, Component.literal(String.format("%d/%d", Integer.valueOf(this.currentNavEntry.getRight().intValue() + 1), Integer.valueOf(((this.currentProperties.size() - 1) / 8) + 1))), this.centerX + 197, this.centerY - 83, TEXT_COLOR);
     }
 
     @Override
@@ -600,13 +604,13 @@ public class AnimationRouletteScreen extends Screen {
                     int iCos2 = (int) (this.centerX + (35 * Mth.cos(angle)));
                     float fSin2 = this.centerY + (35 * Mth.sin(angle));
                     Objects.requireNonNull(this.font);
-                    guiGraphics.centeredText(this.font, Component.literal("⚙").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD), iCos2, (int) (fSin2 - (9.0f / 2.0f)), 16777215);
+                    guiGraphics.centeredText(this.font, Component.literal("⚙").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD), iCos2, (int) (fSin2 - (9.0f / 2.0f)), TEXT_COLOR);
                 }
             }
             if (StringUtils.isNoneBlank(str)) {
                 renderWrappedLabel(guiGraphics, Component.literal(ModelMetadataPresenter.getLocalizedModelString(this.renderContext, "properties.extra_animation.%s".formatted(this.currentProperties.getKeyAt(iIntValue)), str)), iCos, labelY, zStartsWith);
             } else {
-                guiGraphics.centeredText(this.font, Component.literal(ModelMetadataPresenter.getLocalizedModelString(this.renderContext, "properties.extra_animation.%s".formatted(this.currentProperties.getKeyAt(iIntValue)), String.valueOf(iIntValue))), iCos, labelY - 8, 15986656);
+                guiGraphics.centeredText(this.font, Component.literal(ModelMetadataPresenter.getLocalizedModelString(this.renderContext, "properties.extra_animation.%s".formatted(this.currentProperties.getKeyAt(iIntValue)), String.valueOf(iIntValue))), iCos, labelY - 8, LABEL_COLOR);
             }
             if (this.currentNavEntry.getRight().intValue() == 0 && navigationStack.size() == 1) {
                 renderKeyBindings(guiGraphics, iIntValue, iCos, labelY);
@@ -624,7 +628,7 @@ public class AnimationRouletteScreen extends Screen {
             mutableComponentWithStyle.append(keyMapping.getTranslatedKeyMessage());
         }
         mutableComponentWithStyle.append(" ]");
-        guiGraphics.centeredText(this.font, mutableComponentWithStyle, x, y + 4, 15986656);
+        guiGraphics.centeredText(this.font, mutableComponentWithStyle, x, y + 4, LABEL_COLOR);
     }
 
     private void renderWrappedLabel(GuiGraphicsExtractor guiGraphics, MutableComponent mutableComponent, int x, int y, boolean isSubmenu) {
@@ -639,7 +643,7 @@ public class AnimationRouletteScreen extends Screen {
         }
         Iterator it = listSplit.iterator();
         while (it.hasNext()) {
-            guiGraphics.centeredText(this.font, (FormattedCharSequence) it.next(), x, lineY, 15986656);
+            guiGraphics.centeredText(this.font, (FormattedCharSequence) it.next(), x, lineY, LABEL_COLOR);
             lineY += 9;
         }
     }

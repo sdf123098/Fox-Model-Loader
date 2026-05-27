@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(if \\(-not \\(Test-Path \"d:\\\\openysm\\\\images\"\\)\\) { New-Item -ItemType Directory -Path \"d:\\\\openysm\\\\images\" })"
+      "PowerShell(if \\(-not \\(Test-Path \"d:\\\\openysm\\\\images\"\\)\\) { New-Item -ItemType Directory -Path \"d:\\\\openysm\\\\images\" })",
+      "mcp__codegraph__codegraph_status",
+      "mcp__codegraph__codegraph_search"
     ]
   }
 }

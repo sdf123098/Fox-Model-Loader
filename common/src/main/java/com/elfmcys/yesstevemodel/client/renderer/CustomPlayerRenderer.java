@@ -129,6 +129,12 @@ public class CustomPlayerRenderer extends GeoReplacedEntityRenderer<Player, Cust
     }
 
     @Override
+    public void preRenderCallback(Player player, PoseStack poseStack, float partialTick) {
+        // Match vanilla AvatarRenderer scale so replaced players keep the same mount anchor as the original model.
+        poseStack.scale(0.9375f, 0.9375f, 0.9375f);
+    }
+
+    @Override
     public void setupRotations(Player player, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTicks) {
         super.setupRotations(player, poseStack, ageInTicks, rotationYaw, partialTicks);
         Entity vehicle = player.getVehicle();

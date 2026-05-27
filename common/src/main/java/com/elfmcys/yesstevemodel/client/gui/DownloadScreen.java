@@ -1,7 +1,6 @@
 package com.elfmcys.yesstevemodel.client.gui;
 
 import com.elfmcys.yesstevemodel.client.gui.button.FlatColorButton;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -9,6 +8,8 @@ import net.minecraft.network.chat.Component;
 
 
 public class DownloadScreen extends Screen {
+
+    private static final int COMING_SOON_COLOR = 0xFFAA0000;
 
     private final PlayerModelScreen parentScreen;
 
@@ -33,7 +34,7 @@ public class DownloadScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
         GuiGraphicsExtractor guiGraphics = extractor;
         extractTransparentBackground(extractor);
-        guiGraphics.centeredText(this.font, Component.literal("Coming Soooooooooooooooooooooooooon™"), this.width / 2, (this.height / 2) - 5, ChatFormatting.DARK_RED.getColor().intValue());
+        guiGraphics.centeredText(this.font, Component.literal("Coming Soooooooooooooooooooooooooon™"), this.width / 2, (this.height / 2) - 5, COMING_SOON_COLOR);
         super.extractRenderState(extractor, mouseX, mouseY, partialTick);
     }
 }

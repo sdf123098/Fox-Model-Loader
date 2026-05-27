@@ -26,8 +26,10 @@ public abstract class PlayerRendererMixin {
         if (state instanceof AvatarRenderState avatarState && Minecraft.getInstance().level != null) {
             net.minecraft.world.entity.Entity entity = Minecraft.getInstance().level.getEntity(avatarState.id);
             if (entity instanceof AbstractClientPlayer player) {
+                float partialTick = ((MinecraftAccessor) Minecraft.getInstance()).ysm$getDeltaTracker().getGameTimeDeltaTicks();
                 float yaw = ModelPreviewRenderer.isPreview() ? 180.0f : state.yRot;
-                if (ReplacePlayerRenderEvent.onRenderPlayerPre(player, yaw, ((MinecraftAccessor) Minecraft.getInstance()).ysm$getDeltaTracker().getGameTimeDeltaTicks(), poseStack, ((MinecraftAccessor) Minecraft.getInstance()).ysm$renderBuffers().bufferSource(), collector, 0xF000F0)) {
+                int packedLight = ((MinecraftAccessor) Minecraft.getInstance()).ysm$getEntityRenderDispatcher().getPackedLightCoords(player, partialTick);
+                if (ReplacePlayerRenderEvent.onRenderPlayerPre(player, yaw, partialTick, poseStack, ((MinecraftAccessor) Minecraft.getInstance()).ysm$renderBuffers().bufferSource(), collector, packedLight)) {
                     ci.cancel();
                 }
             }

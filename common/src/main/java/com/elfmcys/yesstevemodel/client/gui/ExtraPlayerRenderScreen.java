@@ -17,6 +17,8 @@ import net.minecraft.util.Mth;
 
 public class ExtraPlayerRenderScreen extends Screen {
 
+    private static final int TEXT_COLOR = 0xFFFFFFFF;
+
     private static final char RESET_KEY = 'r';
 
     private int mouseStartX;
@@ -92,7 +94,7 @@ public class ExtraPlayerRenderScreen extends Screen {
         guiGraphics.fillGradient(boxRight - this.offsetX, boxBottom - this.offsetX, boxRight + this.offsetX, boxBottom + this.offsetX, -16777057, -16777057);
         int tipY = 15;
         for (FormattedCharSequence formattedCharSequence : this.font.split(Component.translatable("gui.yes_steve_model.extra_player_render.tips"), 500)) {
-            guiGraphics.text(this.font, formattedCharSequence, (this.width - 15) - this.font.width(formattedCharSequence), tipY, 16777215);
+            guiGraphics.text(this.font, formattedCharSequence, (this.width - 15) - this.font.width(formattedCharSequence), tipY, TEXT_COLOR);
             tipY += 10;
         }
         guiGraphics.pose().popMatrix();

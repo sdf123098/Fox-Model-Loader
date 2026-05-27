@@ -43,16 +43,18 @@ public class NativeModelRenderer {
         OculusCompat.updatePBRState();
         new Matrix4f().mul(new Matrix4f(), projectionModelViewMatrix);
         boolean isPreview = ModelPreviewRenderer.isPreview() || ModelPreviewRenderer.isExtraPlayer();
+        boolean shaderPackInUse = OculusCompat.isShaderPackInUse() && !isPreview;
+        boolean disableGlow = shouldDisableModelGlow(shaderPackInUse);
 
         // Submit-based world renders must keep the normal geometry path so the
         // entity still reaches the feature/shadow pipeline.
-        boolean useGpuRenderer = allowDirectGpuRenderer && textureLocation != null && SubmitRenderContext.get() == null && ModelPreviewRenderer.isWorldRender() && !isPreview && !ModelPreviewRenderer.isFirstPerson() && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get();
+        boolean useGpuRenderer = allowDirectGpuRenderer && !disableGlow && textureLocation != null && SubmitRenderContext.get() == null && ModelPreviewRenderer.isWorldRender() && !isPreview && !ModelPreviewRenderer.isFirstPerson() && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get();
         if (useGpuRenderer) {
             if (!GpuCapability.isAvailable()) {
                 ChatLogger.INSTANCE.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason());
                 GeneralConfig.USE_GPU_RENDERER.set(false);
                 GeneralConfig.USE_GPU_RENDERER.save();
-            } else if (OculusCompat.isShaderPackInUse() && !isPreview) {
+            } else if (shaderPackInUse) {
                 if (IrisRenderPath.tryRender(model, pose, boneParams, renderPartMask, packedLight, packedOverlay, red, green, blue, alpha, textureLocation)) {
                     return;
                 }
@@ -63,7 +65,7 @@ public class NativeModelRenderer {
             }
         }
 
-        if (NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get()) { // WIP: SIMD MODEL RENDER
+        if (NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && !disableGlow) { // WIP: SIMD MODEL RENDER
             nativeRenderModel(
                     buffer,
                     pose,
@@ -93,9 +95,14 @@ public class NativeModelRenderer {
                     packedLight,
                     packedOverlay,
                     red, green, blue, alpha,
-                    isPreview
+                    isPreview,
+                    disableGlow
             );
         }
+    }
+
+    private static boolean shouldDisableModelGlow(boolean shaderPackInUse) {
+        return shaderPackInUse && GeneralConfig.safeGet(GeneralConfig.DISABLE_MODEL_GLOW_IN_SHADERPACK, true);
     }
 
     public static void renderModel(
@@ -110,6 +117,37 @@ public class NativeModelRenderer {
             int packedLight, int packedOverlay,
             float r, float g, float b, float a,
             boolean isPreview) {
+        renderModel(
+                vertexConsumer,
+                pose,
+                projectionModelViewMatrix,
+                isCompatMode,
+                mesh,
+                boneParams,
+                stateBuffer,
+                textureIndex,
+                renderPartMask,
+                packedLight,
+                packedOverlay,
+                r, g, b, a,
+                isPreview,
+                false
+        );
+    }
+
+    public static void renderModel(
+            VertexConsumer vertexConsumer,
+            PoseStack.Pose pose,
+            Matrix4f projectionModelViewMatrix,
+            boolean isCompatMode,
+            GeoModel mesh,
+            float[] boneParams,
+            float[] stateBuffer,
+            int textureIndex, int renderPartMask,
+            int packedLight, int packedOverlay,
+            float r, float g, float b, float a,
+            boolean isPreview,
+            boolean disableGlow) {
 
         if (mesh.bakedBones == null || mesh.bakedBones.isEmpty()) return;
 
@@ -154,7 +192,7 @@ public class NativeModelRenderer {
             localBoneMat.normal(localNormalMat);
             globalNormalMat.set(rootNormalMC).mul(localNormalMat);
 
-            int currentPackedLight = bone.glow ? FULL_BRIGHT_LIGHT : packedLight;
+            int currentPackedLight = bone.glow && !disableGlow ? FULL_BRIGHT_LIGHT : packedLight;
 
             for (GeoModel.BakedCube cube : bone.cubes) {
                 for (GeoModel.BakedQuad quad : cube.quads) {

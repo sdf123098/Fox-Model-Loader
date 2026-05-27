@@ -29,6 +29,8 @@ import java.util.Objects;
 
 public class AnimationDebugOverlay {
 
+    private static final int TEXT_COLOR = 0xFFFFFFFF;
+
     private static final MolangWatchRegistry MOLANG_WATCH = new MolangWatchRegistry();
     private static final ReferenceArrayList<String> DEBUG_LINES = new ReferenceArrayList<>();
     private static WeakReference<GeoEntity<?>> activeModel = null;
@@ -155,8 +157,8 @@ public class AnimationDebugOverlay {
         } else {
             guiGraphics.fill(2, currentY[0] - 1, screenWidth, currentY[0] + 9, -1068474288);
         }
-        guiGraphics.text(font, key, 5, currentY[0], 16777215);
-        guiGraphics.text(font, value, screenWidth / 2, currentY[0], 16777215);
+        guiGraphics.text(font, key, 5, currentY[0], TEXT_COLOR);
+        guiGraphics.text(font, value, screenWidth / 2, currentY[0], TEXT_COLOR);
         currentY[0] = currentY[0] + 10;
     }
 }

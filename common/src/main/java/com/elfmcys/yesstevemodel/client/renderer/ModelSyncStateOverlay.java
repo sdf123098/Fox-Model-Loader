@@ -10,6 +10,8 @@ import net.minecraft.network.chat.MutableComponent;
 import rip.ysm.api.client.HudOverlay;
 
 public class ModelSyncStateOverlay implements HudOverlay {
+    private static final int TEXT_COLOR = 0xFFFFFFFF;
+
     @Override
     public void render(GuiGraphicsExtractor guiGraphics, Font font, float partialTick, int screenWidth, int screenHeight) {
         int textX;
@@ -76,7 +78,8 @@ public class ModelSyncStateOverlay implements HudOverlay {
                 MutableComponent loadingText = Component.translatable("gui.yes_steve_model.sync_hint.title").append(Component.translatable("gui.yes_steve_model.sync_hint.loading_models", pendingModelCount, totalModelCount).withStyle(ChatFormatting.YELLOW));
                 renderSyncText(font, guiGraphics, loadingText, textX, textY, screenWidth);
                 guiGraphics.fill(barX, barY, barX + 150, barY + 10, -11184811);
-                guiGraphics.fill(barX, barY, barX + (150 * (loadedModelCount / totalModelCount)), barY + 10, -256);
+                int progressWidth = (int) (150.0f * ((float) loadedModelCount / totalModelCount));
+                guiGraphics.fill(barX, barY, barX + progressWidth, barY + 10, -256);
             }
             return;
         }
@@ -116,6 +119,6 @@ public class ModelSyncStateOverlay implements HudOverlay {
             case TOP_CENTER, BOTTOM_CENTER -> (screenWidth - textWidth) / 2;
             case TOP_RIGHT, BOTTOM_RIGHT -> baseX - textWidth;
         };
-        guiGraphics.text(font, textComponent, drawX, textY, 16777215);
+        guiGraphics.text(font, textComponent, drawX, textY, TEXT_COLOR);
     }
 }

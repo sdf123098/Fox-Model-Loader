@@ -32,6 +32,8 @@ public class GeneralConfig {
 
     public static ModConfigSpec.BooleanValue USE_GPU_RENDERER;
 
+    public static ModConfigSpec.BooleanValue DISABLE_MODEL_GLOW_IN_SHADERPACK;
+
     public static ModConfigSpec.EnumValue<RouletteSettingsMode> ROULETTE_SETTINGS_MODE;
 
     public static ModConfigSpec.EnumValue<RouletteMode> ROULETTE_MODE;
@@ -63,7 +65,11 @@ public class GeneralConfig {
     }
 
     public static boolean safeGet(ModConfigSpec.BooleanValue value) {
-        try { return value.get(); } catch (IllegalStateException e) { return false; }
+        return safeGet(value, false);
+    }
+
+    public static boolean safeGet(ModConfigSpec.BooleanValue value, boolean fallback) {
+        try { return value == null ? fallback : value.get(); } catch (IllegalStateException e) { return fallback; }
     }
 
     public static boolean effectiveModernRoulette() {
@@ -101,6 +107,8 @@ public class GeneralConfig {
         USE_COMPATIBILITY_RENDERER = builder.define("UseCompatibilityRenderer", true);
         builder.comment("Test renderer.");
         USE_GPU_RENDERER = builder.define("UseGpuRenderer", false);
+        builder.comment("Render ysmGlow bones with normal entity lighting while a shader pack is active.");
+        DISABLE_MODEL_GLOW_IN_SHADERPACK = builder.define("DisableModelGlowInShaderpack", true);
         ROULETTE_SETTINGS_MODE = builder.defineEnum("RouletteSettingsMode", RouletteSettingsMode.MODERN);
         ROULETTE_MODE = builder.defineEnum("RouletteMode", RouletteMode.CLASSIC);
         BLUR_GUI = builder.define("BlurGui", false);
