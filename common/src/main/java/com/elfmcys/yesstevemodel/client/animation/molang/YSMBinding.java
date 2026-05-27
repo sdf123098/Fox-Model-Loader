@@ -65,7 +65,8 @@ public class YSMBinding extends ContextBinding {
     public static final LazySupplier<YSMBinding> INSTANCE = new LazySupplier<>(YSMBinding::new);
     private static final float BOAT_CHEST_BODY_Z_OFFSET = -0.15f * 16.0f;
     private static final float BOAT_DEFAULT_BODY_Y_OFFSET = 0.0f;
-    private static final float BOAT_RAFT_BODY_Y_OFFSET = 0.0f;
+    // Rafts seat passengers 5 model units higher, while vanilla raft paddles render 1 unit lower than boat paddles.
+    private static final float BOAT_RAFT_BODY_Y_OFFSET = -((0.8888889f - 1.0f / 3.0f) * 0.5625f * 16.0f + 1.0f);
     private static final float BOAT_DEFAULT_PADDLE_SCALE = 1.0f;
     private static final float BOAT_RAFT_PADDLE_SCALE = 1.0f;
 
@@ -287,7 +288,7 @@ public class YSMBinding extends ContextBinding {
         if (boat == null) {
             return 0.0f;
         }
-        return boat.getRowingTime(paddle, context.animationEvent().getPartialTick());
+        return -boat.getRowingTime(paddle, context.animationEvent().getPartialTick());
     }
 
     private static boolean isBoatChest(IContext<Entity> context) {
