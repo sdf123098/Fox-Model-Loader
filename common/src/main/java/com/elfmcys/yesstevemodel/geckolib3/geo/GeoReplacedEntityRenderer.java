@@ -170,7 +170,13 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, T 
                 }
             }
         }
-        if (tentity.getPose() != Pose.SLEEPING) {
+        if (tentity.getPose() == Pose.SLEEPING) {
+            Direction bedOrientation = tentity.getBedOrientation();
+            float sleepRotation = bedOrientation == null ? rotationYaw : sleepDirectionToRotation(bedOrientation);
+            poseStack.mulPose(Axis.YP.rotationDegrees(sleepRotation));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f));
+            poseStack.mulPose(Axis.YP.rotationDegrees(270.0f));
+        } else {
             poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - rotationYaw));
         }
         if (t > 0) {
@@ -179,6 +185,16 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, T 
         if (zIsAutoSpinAttack) {
             ((LivingEntityAccessor) tentity).invokeSetLivingEntityFlag(4, true);
         }
+    }
+
+    private static float sleepDirectionToRotation(Direction direction) {
+        return switch (direction) {
+            case SOUTH -> 90.0f;
+            case WEST -> 0.0f;
+            case NORTH -> 270.0f;
+            case EAST -> 180.0f;
+            default -> 0.0f;
+        };
     }
 
     public boolean shouldShowName(TEntity entity) {

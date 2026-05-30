@@ -22,6 +22,7 @@ public class OggVorbisAudioStream implements IAudioStreamSupport {
 
     private final AudioFormat audioFormat;
     private final long decoderHandle;
+    private final ByteBuffer inputBuffer;
     private final int channels;
 
     @Nullable
@@ -37,29 +38,47 @@ public class OggVorbisAudioStream implements IAudioStreamSupport {
         directBuffer.put(byteBuffer.duplicate());
         directBuffer.flip();
 
+        long handle = MemoryUtil.NULL;
+        boolean success = false;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer error = stack.mallocInt(1);
 
-            decoderHandle = STBVorbis.stb_vorbis_open_memory(directBuffer, error, null);
-            if (decoderHandle == MemoryUtil.NULL) {
-                MemoryUtil.memFree(directBuffer);
+            handle = STBVorbis.stb_vorbis_open_memory(directBuffer, error, null);
+            if (handle == MemoryUtil.NULL) {
                 throw new IOException("Failed to open OGG Vorbis stream, error: " + error.get(0));
             }
 
             STBVorbisInfo info = STBVorbisInfo.malloc();
-            STBVorbis.stb_vorbis_get_info(decoderHandle, info);
-            channels = info.channels();
-            int sampleRate = info.sample_rate();
-            info.free();
-
-            if (channels != 1 && channels != 2) {
-                MemoryUtil.memFree(directBuffer);
-                STBVorbis.stb_vorbis_close(decoderHandle);
-                throw new UnsupportedAudioFileException("Unsupported channel count: " + channels);
+            int channelCount;
+            int sampleRate;
+            try {
+                STBVorbis.stb_vorbis_get_info(handle, info);
+                channelCount = info.channels();
+                sampleRate = info.sample_rate();
+            } finally {
+                info.free();
             }
 
+            if (channelCount != 1 && channelCount != 2) {
+                throw new UnsupportedAudioFileException("Unsupported channel count: " + channelCount);
+            }
+
+            this.decoderHandle = handle;
+            this.inputBuffer = directBuffer;
+            this.channels = channelCount;
             this.audioFormat = new AudioFormat(sampleRate, 16, 1, true, false);
             this.cacheBuilder = cacheBuilder;
+            success = true;
+        } finally {
+            if (!success) {
+                if (handle != MemoryUtil.NULL) {
+                    STBVorbis.stb_vorbis_close(handle);
+                }
+                MemoryUtil.memFree(directBuffer);
+                if (cacheBuilder != null) {
+                    cacheBuilder.discard();
+                }
+            }
         }
     }
 
@@ -91,18 +110,15 @@ public class OggVorbisAudioStream implements IAudioStreamSupport {
             ShortBuffer readView = shortBuffer.duplicate();
             readView.limit(samplesRead * channels);
 
-            byte[] pcmBytes = new byte[samplesRead * channels * 2];
-            ByteBuffer byteBuf = ByteBuffer.wrap(pcmBytes).order(ByteOrder.nativeOrder());
+            ByteBuffer byteBuf = BufferUtils.createByteBuffer(samplesRead * 2).order(ByteOrder.LITTLE_ENDIAN);
 
             if (channels == 2) {
-                byte[] monoBytes = new byte[samplesRead * 2];
-                ByteBuffer monoBuf = ByteBuffer.wrap(monoBytes).order(ByteOrder.nativeOrder());
+                ByteBuffer monoBuf = byteBuf;
                 for (int i = 0; i < samplesRead; i++) {
                     short left = readView.get();
                     short right = readView.get();
                     monoBuf.putShort((short) Math.round((left + right) / 2.0f));
                 }
-                byteBuf = ByteBuffer.wrap(monoBytes).order(ByteOrder.nativeOrder());
                 shortBuffer.limit(samplesRead); // for view consistency
                 monoBuf.flip();
                 if (this.cacheBuilder != null) {
@@ -126,8 +142,15 @@ public class OggVorbisAudioStream implements IAudioStreamSupport {
 
     public void close() {
         if (!this.isClosed) {
-            STBVorbis.stb_vorbis_close(decoderHandle);
             this.isClosed = true;
+            try {
+                STBVorbis.stb_vorbis_close(decoderHandle);
+            } finally {
+                MemoryUtil.memFree(this.inputBuffer);
+                if (!this.isEndOfStream && this.cacheBuilder != null) {
+                    this.cacheBuilder.discard();
+                }
+            }
         }
     }
 

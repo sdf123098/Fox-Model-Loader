@@ -16,6 +16,7 @@ sourceSets {
         }
         resources {
             srcDir rootProject.file('common/src/main/resources')
+            exclude 'native/**'
         }
     }
 }

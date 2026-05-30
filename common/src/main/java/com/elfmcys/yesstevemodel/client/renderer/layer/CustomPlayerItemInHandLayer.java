@@ -3,6 +3,7 @@ package com.elfmcys.yesstevemodel.client.renderer.layer;
 import rip.ysm.compat.slashblade.SlashBladeRenderer;
 import rip.ysm.compat.slashblade.SlashBladeCompat;
 import rip.ysm.compat.gun.swarfare.SWarfareCompat;
+import com.elfmcys.yesstevemodel.client.animation.condition.InnerClassify;
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity;
 import com.elfmcys.yesstevemodel.geckolib3.geo.GeoLayerRenderer;
 import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.component.KineticWeapon;
 import com.mojang.math.Axis;
 import org.joml.Matrix4f;
+import rip.ysm.api.item.WeaponKind;
 
 public class CustomPlayerItemInHandLayer extends GeoLayerRenderer<CustomPlayerEntity> {
 
@@ -84,8 +86,7 @@ public class CustomPlayerItemInHandLayer extends GeoLayerRenderer<CustomPlayerEn
             boolean isLeftHand = humanoidArm == HumanoidArm.LEFT;
             poseStack.pushPose();
             if (!applyItemBoneTransform(humanoidArm, poseStack, model)) {
-                poseStack.translate(0.0d, -0.0625d, -0.1d);
-                poseStack.mulPose(Axis.XP.rotationDegrees(-90.0f));
+                applyFallbackHandTransform(itemStack, poseStack, true);
                 if (SWarfareCompat.isGunItem(itemStack)) {
                     poseStack.translate(0.1d, 0.0d, 0.0d);
                     poseStack.scale(1.25f, 1.25f, 1.25f);
@@ -96,8 +97,7 @@ public class CustomPlayerItemInHandLayer extends GeoLayerRenderer<CustomPlayerEn
             (isLeftHand ? model.rightHandChain() : model.leftHandChains()).forEach(list -> {
                 poseStack.pushPose();
                 if (!RenderUtils.prepMatrixForLocator(poseStack, list)) {
-                    poseStack.translate(0.0d, -0.0625d, -0.1d);
-                    poseStack.mulPose(Axis.XP.rotationDegrees(-90.0f));
+                    applyFallbackHandTransform(itemStack, poseStack, false);
                     if (SWarfareCompat.isGunItem(itemStack)) {
                         poseStack.scale(1.25f, 1.25f, 1.25f);
                     }
@@ -106,6 +106,37 @@ public class CustomPlayerItemInHandLayer extends GeoLayerRenderer<CustomPlayerEn
                 poseStack.popPose();
             });
         }
+    }
+
+    private void applyFallbackHandTransform(ItemStack itemStack, PoseStack poseStack, boolean directHandBone) {
+        switch (InnerClassify.getWeaponKind(itemStack)) {
+            case TRIDENT -> applyTridentHandTransform(poseStack, directHandBone);
+            case LANCE -> applyLanceHandTransform(poseStack, directHandBone);
+            case MACE -> applyMaceHandTransform(poseStack, directHandBone);
+            case NONE -> applyDefaultHandTransform(poseStack);
+        }
+    }
+
+    private void applyTridentHandTransform(PoseStack poseStack, boolean directHandBone) {
+        applyDefaultHandTransform(poseStack);
+        if (!directHandBone) {
+            poseStack.translate(0.0d, 0.0d, -0.0125d);
+        }
+    }
+
+    private void applyLanceHandTransform(PoseStack poseStack, boolean directHandBone) {
+        applyDefaultHandTransform(poseStack);
+        poseStack.translate(0.0d, directHandBone ? -0.01875d : -0.0125d, -0.025d);
+    }
+
+    private void applyMaceHandTransform(PoseStack poseStack, boolean directHandBone) {
+        applyDefaultHandTransform(poseStack);
+        poseStack.translate(0.0d, directHandBone ? -0.0125d : 0.0d, 0.01875d);
+    }
+
+    private void applyDefaultHandTransform(PoseStack poseStack) {
+        poseStack.translate(0.0d, -0.0625d, -0.1d);
+        poseStack.mulPose(Axis.XP.rotationDegrees(-90.0f));
     }
 
     private void renderVanillaItemWithUseOrientation(LivingEntity livingEntity, ItemStack itemStack, ItemDisplayContext itemDisplayContext, HumanoidArm humanoidArm, PoseStack poseStack, int packedLight, float partialTick) {

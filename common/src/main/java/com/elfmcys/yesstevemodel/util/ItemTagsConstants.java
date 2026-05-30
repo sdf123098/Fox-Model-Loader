@@ -30,6 +30,10 @@ public class ItemTagsConstants {
 
     public static final TagKey<Item> TRIDENTS = createTag("tridents");
 
+    public static final TagKey<Item> PIKE = createTag("pike");
+
+    public static final TagKey<Item> MACE = createTag("mace");
+
     public static final TagKey<Item> SLASHBLADE = createTag("slashblade");
 
     private static TagKey<Item> createTag(String str) {

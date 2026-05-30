@@ -86,7 +86,10 @@ public class HandRenderFunction extends LivingEntityFunction {
         }
         if (id.startsWith(TYPE_PREFIX)) {
             String itemType = InnerClassify.getItemType(itemBySlot);
-            if ((!StringUtils.isNotBlank(itemType) || !itemType.equals(strSubstring)) && !itemBySlot.getUseAnimation().name().toLowerCase(Locale.ENGLISH).equals(strSubstring)) {
+            String legacyAlias = InnerClassify.getLegacyAlias(itemType);
+            if ((!StringUtils.isNotBlank(itemType) || !itemType.equals(strSubstring))
+                    && (!StringUtils.isNotBlank(legacyAlias) || !legacyAlias.equals(strSubstring))
+                    && !itemBySlot.getUseAnimation().name().toLowerCase(Locale.ENGLISH).equals(strSubstring)) {
                 return 0;
             }
             return 1;

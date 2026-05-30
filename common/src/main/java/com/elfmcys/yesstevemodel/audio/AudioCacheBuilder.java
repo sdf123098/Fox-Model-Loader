@@ -17,7 +17,7 @@ public class AudioCacheBuilder {
 
     private final IntArrayList chunkSizes = new IntArrayList(5);
 
-    private boolean isClosed = false;
+    private boolean closed = false;
 
     public AudioCacheBuilder(AudioStreamCache.CachedAudioStreamProvider cacheProvider, AudioTrackData trackData) {
         this.cacheProvider = cacheProvider;
@@ -25,21 +25,34 @@ public class AudioCacheBuilder {
         this.audioBuffer = PooledByteBufAllocator.DEFAULT.directBuffer(((int) trackData.getDuration()) * 2);
     }
 
-    public void appendAudio(ByteBuffer byteBuffer) {
-        if (!this.isClosed && this.audioBuffer.writableBytes() > 0) {
-            int iMin = Math.min(this.audioBuffer.writableBytes(), byteBuffer.remaining());
-            this.audioBuffer.writeBytes(byteBuffer.limit(iMin));
-            this.chunkSizes.add(iMin);
+    public synchronized void appendAudio(ByteBuffer byteBuffer) {
+        if (!this.closed && this.audioBuffer.writableBytes() > 0) {
+            ByteBuffer source = byteBuffer.slice();
+            int iMin = Math.min(this.audioBuffer.writableBytes(), source.remaining());
+            if (iMin > 0) {
+                source.limit(iMin);
+                this.audioBuffer.writeBytes(source);
+                this.chunkSizes.add(iMin);
+            }
         }
     }
 
-    public void flushToCache() {
-        if (!this.isClosed) {
-            this.isClosed = true;
+    public synchronized void flushToCache() {
+        if (!this.closed) {
+            this.closed = true;
             ByteBuffer byteBuffer = BufferUtils.createByteBuffer(this.audioBuffer.readableBytes());
-            this.audioBuffer.readBytes(byteBuffer.duplicate());
+            this.audioBuffer.readBytes(byteBuffer);
+            byteBuffer.flip();
             this.audioBuffer.release();
             this.cacheProvider.cacheAudioData(this.trackData, byteBuffer, this.chunkSizes);
+        }
+    }
+
+    public synchronized void discard() {
+        if (!this.closed) {
+            this.closed = true;
+            this.audioBuffer.release();
+            this.cacheProvider.cancelAudioData(this.trackData);
         }
     }
 }

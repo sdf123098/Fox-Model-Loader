@@ -14,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import org.apache.commons.lang3.StringUtils;
+import rip.ysm.api.item.WeaponKind;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -83,15 +84,34 @@ public class ConditionHold {
         if (entity.getItemInHand(hand).isEmpty()) {
             return hand == InteractionHand.MAIN_HAND ? EMPTY_MAINHAND : EMPTY_OFFHAND;
         }
-        String result = doIdTest(entity, hand);
+        String result = doWeaponClassifyTest(entity, hand);
         if (result.isEmpty()) {
-            result = doTagTest(entity, hand);
+            result = doIdTest(entity, hand);
             if (result.isEmpty()) {
-                return doExtraTest(entity, hand);
+                result = doTagTest(entity, hand);
+                if (result.isEmpty()) {
+                    return doExtraTest(entity, hand);
+                }
+                return result;
             }
             return result;
         }
         return result;
+    }
+
+    private String doWeaponClassifyTest(LivingEntity entity, InteractionHand hand) {
+        if (InnerClassify.getWeaponKind(entity.getItemInHand(hand)) == WeaponKind.NONE) {
+            return EMPTY;
+        }
+        String innerName = InnerClassify.doClassifyTest(this.extraPre, entity, hand);
+        if (StringUtils.isNotBlank(innerName) && this.innerTest.contains(innerName)) {
+            return innerName;
+        }
+        String legacyInnerName = InnerClassify.doLegacyClassifyTest(this.extraPre, entity, hand);
+        if (StringUtils.isNotBlank(legacyInnerName) && this.innerTest.contains(legacyInnerName)) {
+            return legacyInnerName;
+        }
+        return EMPTY;
     }
 
     private String doIdTest(LivingEntity livingEntity, InteractionHand interactionHand) {
@@ -122,6 +142,10 @@ public class ConditionHold {
         String innerName = InnerClassify.doClassifyTest(this.extraPre, entity, hand);
         if (StringUtils.isNotBlank(innerName) && this.innerTest.contains(innerName)) {
             return innerName;
+        }
+        String legacyInnerName = InnerClassify.doLegacyClassifyTest(this.extraPre, entity, hand);
+        if (StringUtils.isNotBlank(legacyInnerName) && this.innerTest.contains(legacyInnerName)) {
+            return legacyInnerName;
         }
         ItemUseAnimation anim = entity.getItemInHand(hand).getUseAnimation();
         if (this.extraTes.contains(anim)) {

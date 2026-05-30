@@ -1,23 +1,13 @@
 {
+  "replace": false,
   "values": [
+    "minecraft:trident",
+    {
+      "id": "#c:tools/tridents",
+      "required": false
+    },
     {
       "id": "#forge:tools/tridents",
-      "required": false
-    },
-    {
-      "id": "tconstruct:sky_staff",
-      "required": false
-    },
-    {
-      "id": "tconstruct:earth_staff",
-      "required": false
-    },
-    {
-      "id": "tconstruct:ichor_staff",
-      "required": false
-    },
-    {
-      "id": "tconstruct:ender_staff",
       "required": false
     }
   ]

@@ -1,6 +1,12 @@
 package com.elfmcys.yesstevemodel.network.message;
 
+import com.elfmcys.yesstevemodel.model.ServerModelManager;
+import com.elfmcys.yesstevemodel.network.NetworkHandler;
+import com.elfmcys.yesstevemodel.util.YSMThreadPool;
+import dev.architectury.utils.GameInstance;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import rip.ysm.api.network.PacketContext;
 
 public record C2SModelUploadFinishPacket(long uploadId) {
@@ -14,5 +20,18 @@ public record C2SModelUploadFinishPacket(long uploadId) {
     }
 
     public static void handle(C2SModelUploadFinishPacket message, PacketContext ctx) {
+        if (ctx.isServerSide() && ctx.getSender() != null) {
+            ServerPlayer sender = ctx.getSender();
+            ctx.enqueueWork(() -> YSMThreadPool.submit(() -> {
+                ServerModelManager.UploadFinishResult result = ServerModelManager.finishModelUpload(sender, message.uploadId);
+                MinecraftServer server = GameInstance.getServer();
+                Runnable sendResult = () -> NetworkHandler.sendToClientPlayer(new S2CModelUploadResultPacket(result.uploadId(), result.status(), result.modelId(), result.hash1(), result.hash2(), result.message()), sender);
+                if (server != null) {
+                    server.execute(sendResult);
+                } else {
+                    sendResult.run();
+                }
+            }));
+        }
     }
 }

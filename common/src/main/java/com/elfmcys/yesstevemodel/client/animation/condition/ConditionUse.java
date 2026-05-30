@@ -138,6 +138,10 @@ public class ConditionUse {
         if (StringUtils.isNotBlank(innerName) && this.innerTest.contains(innerName)) {
             return innerName;
         }
+        String legacyInnerName = InnerClassify.doLegacyClassifyTest(this.extraPre, entity, hand);
+        if (StringUtils.isNotBlank(legacyInnerName) && this.innerTest.contains(legacyInnerName)) {
+            return legacyInnerName;
+        }
         if (this.extraTes.contains(anim)) {
             return this.extraPre + anim.name().toLowerCase(Locale.US);
         }

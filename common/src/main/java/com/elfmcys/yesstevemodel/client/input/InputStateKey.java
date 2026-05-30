@@ -7,6 +7,8 @@ import dev.architectury.event.events.client.ClientRawInputEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import rip.ysm.api.PlatformAPI;
 
 public class InputStateKey {
@@ -66,9 +68,13 @@ public class InputStateKey {
     }
 
     private static InteractionHand resolveClickHand(LocalPlayer player, int button) {
-        if (button == 1 && player.getMainHandItem().isEmpty() && !player.getOffhandItem().isEmpty()) {
+        if (button == 1 && player.getMainHandItem().isEmpty() && shouldSwingOffhandOnRightClick(player.getOffhandItem())) {
             return InteractionHand.OFF_HAND;
         }
         return InteractionHand.MAIN_HAND;
+    }
+
+    private static boolean shouldSwingOffhandOnRightClick(ItemStack offhandItem) {
+        return !offhandItem.isEmpty() && !offhandItem.is(Items.TOTEM_OF_UNDYING);
     }
 }

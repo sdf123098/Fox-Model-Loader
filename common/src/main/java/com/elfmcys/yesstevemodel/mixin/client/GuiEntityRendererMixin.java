@@ -30,7 +30,6 @@ public abstract class GuiEntityRendererMixin {
             return;
         }
         poseStack.popPose();
-        ModelPreviewRenderer.setPreviewMode(false);
     }
 
     @Inject(method = "renderToTexture(Lnet/minecraft/client/renderer/state/gui/pip/GuiEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At("RETURN"))

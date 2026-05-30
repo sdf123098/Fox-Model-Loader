@@ -1,10 +1,14 @@
 package com.elfmcys.yesstevemodel.client.upload;
 
+import com.elfmcys.yesstevemodel.client.ClientModelManager;
 import com.elfmcys.yesstevemodel.network.NetworkHandler;
 import com.elfmcys.yesstevemodel.network.message.C2SModelUploadChunkPacket;
 import com.elfmcys.yesstevemodel.network.message.C2SModelUploadFinishPacket;
 import com.elfmcys.yesstevemodel.network.message.C2SModelUploadStartPacket;
 import com.elfmcys.yesstevemodel.util.DigestUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import rip.ysm.legacy.YesModelUtils;
 
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -16,6 +20,7 @@ public final class ModelUploadSession {
     private static volatile int lastMaxTotalBytes = 16777216; // 16MB
     private static volatile int lastChunksPerTick = 4;
     private final String modelId;
+    private final String fileName;
     private final byte[] data;
     private final String sha256;
     private volatile State state = State.STARTING;
@@ -23,10 +28,11 @@ public final class ModelUploadSession {
     private volatile int chunkSize = 32000;
     private volatile int chunksPerTick = 4;
     private volatile int nextOffset = 0;
-    private volatile String message = "";
+    private volatile Component message = Component.empty();
 
-    private ModelUploadSession(String modelId, byte[] data) {
+    private ModelUploadSession(String modelId, String fileName, byte[] data) {
         this.modelId = modelId;
+        this.fileName = fileName;
         this.data = data;
         this.sha256 = DigestUtil.sha256Hex(data);
     }
@@ -35,23 +41,36 @@ public final class ModelUploadSession {
         return instance;
     }
 
-    public static synchronized String start(String modelId, byte[] data) {
+    public static synchronized Component start(String modelId, String fileName, byte[] data) {
         if (instance != null && !instance.isTerminal()) {
-            return "Upload already in progress";
+            return Component.translatable("gui.yes_steve_model.import.error.in_progress");
+        }
+        if (!NetworkHandler.isClientConnected() || !ClientModelManager.isOysmServer()) {
+            return Component.translatable("gui.yes_steve_model.import.error.waiting_handshake");
+        }
+        if (!ClientModelManager.isAllowUpload()) {
+            return Component.translatable("gui.yes_steve_model.import.error.disabled_by_server");
         }
         if (data.length == 0) {
-            return "Empty file";
+            return Component.translatable("gui.yes_steve_model.import.error.empty_file");
         }
         if (serverLimitsKnown && data.length > lastMaxTotalBytes) {
-            return "File exceeds server limit (" + formatBytes(lastMaxTotalBytes) + ")";
+            return Component.translatable("gui.yes_steve_model.import.error.server_limit", formatBytes(lastMaxTotalBytes));
         }
-        if (!isYsmFile(data)) {
-            return "Invalid file type!";
+        ImportKind kind = ImportKind.fromFileName(fileName);
+        if (kind == ImportKind.UNKNOWN) {
+            return Component.translatable("gui.yes_steve_model.import.error.invalid_extension");
         }
-        ModelUploadSession session = new ModelUploadSession(modelId, data);
+        if (kind == ImportKind.YSM && !isYsmFile(data)) {
+            return Component.translatable("gui.yes_steve_model.import.error.invalid_ysm");
+        }
+        if (kind == ImportKind.ZIP && !isZipFile(data)) {
+            return Component.translatable("gui.yes_steve_model.import.error.invalid_zip");
+        }
+        ModelUploadSession session = new ModelUploadSession(modelId, fileName, data);
         instance = session;
         notifyListeners();
-        NetworkHandler.sendToServer(new C2SModelUploadStartPacket(modelId, data.length, session.sha256));
+        NetworkHandler.sendToServer(new C2SModelUploadStartPacket(modelId, fileName == null ? "" : fileName, data.length, session.sha256));
         return null;
     }
 
@@ -105,14 +124,14 @@ public final class ModelUploadSession {
             return;
         }
         if (status != 0) {
-            s.fail(getRequestErrorText(status) + (message.isEmpty() ? "" : ": " + message));
+            s.fail(appendServerMessage(getRequestErrorText(status), message));
             return;
         }
         s.uploadId = uploadId;
         s.chunkSize = Math.max(1, chunkSize);
         s.chunksPerTick = Math.max(1, chunksPerTick);
         s.state = State.UPLOADING;
-        s.message = "Uploading…";
+        s.message = Component.translatable("gui.yes_steve_model.import.state.importing");
         notifyListeners();
     }
 
@@ -123,9 +142,9 @@ public final class ModelUploadSession {
         }
         if (status == 0) {
             s.state = State.COMPLETED;
-            s.message = "Uploaded as " + modelId;
+            s.message = Component.translatable("gui.yes_steve_model.import.state.imported_as", modelId);
         } else {
-            s.fail(getResponseErrorText(status) + (message.isEmpty() ? "" : ": " + message));
+            s.fail(appendServerMessage(getResponseErrorText(status), message));
         }
         notifyListeners();
     }
@@ -146,39 +165,70 @@ public final class ModelUploadSession {
     }
 
     private static boolean isYsmFile(byte[] data) {
-        byte[] ysmHeader = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF, 0x59, 0x53, 0x47, 0x50};
-        if (data.length < ysmHeader.length) {
-            return false;
-        }
-        for (int i = 0; i < ysmHeader.length; i++) {
-            if (data[i] != ysmHeader[i]) {
-                return false;
-            }
-        }
-        return true;
+        return YesModelUtils.getYsmCryptoVersion(data) != -1;
     }
 
-    private static String getRequestErrorText(byte status) {
+    private static boolean isZipFile(byte[] data) {
+        return data.length >= 4
+                && data[0] == 0x50
+                && data[1] == 0x4b
+                && (data[2] == 0x03 || data[2] == 0x05 || data[2] == 0x07)
+                && (data[3] == 0x04 || data[3] == 0x06 || data[3] == 0x08);
+    }
+
+    private static Component getRequestErrorText(byte status) {
         return switch (status) {
-            case 1 -> "Model ID already exists";
-            case 2 -> "File exceeds server limit";
-            case 3 -> "No upload permission";
-            case 4 -> "Server busy, try again later";
-            case 5 -> "Invalid model ID or hash";
-            case 6 -> "Uploads disabled on server";
-            default -> "error: " + status;
+            case 1 -> Component.translatable("gui.yes_steve_model.import.error.model_exists");
+            case 2 -> Component.translatable("gui.yes_steve_model.import.error.file_exceeds_server_limit");
+            case 3 -> Component.translatable("gui.yes_steve_model.import.error.no_permission");
+            case 4 -> Component.translatable("gui.yes_steve_model.import.error.server_busy");
+            case 5 -> Component.translatable("gui.yes_steve_model.import.error.invalid_model_id_or_hash");
+            case 6 -> Component.translatable("gui.yes_steve_model.import.error.disabled_by_server");
+            case 7 -> Component.translatable("gui.yes_steve_model.import.error.unsupported_7z");
+            default -> Component.translatable("gui.yes_steve_model.import.error.status", status);
         };
     }
 
-    private static String getResponseErrorText(byte status) {
+    private static Component getResponseErrorText(byte status) {
         return switch (status) {
-            case 1 -> "Hash mismatch";
-            case 2 -> "Server failed to parse model";
-            case 3 -> "Server storage error";
-            case 4 -> "Session expired";
-            case 5 -> "Incomplete upload";
-            case 6 -> "Server rejected write";
-            default -> "error: " + status;
+            case 1 -> Component.translatable("gui.yes_steve_model.import.error.hash_mismatch");
+            case 2 -> Component.translatable("gui.yes_steve_model.import.error.server_parse_failed");
+            case 3 -> Component.translatable("gui.yes_steve_model.import.error.server_storage");
+            case 4 -> Component.translatable("gui.yes_steve_model.import.error.session_expired");
+            case 5 -> Component.translatable("gui.yes_steve_model.import.error.incomplete_upload");
+            case 6 -> Component.translatable("gui.yes_steve_model.import.error.server_rejected_write");
+            case 8 -> Component.translatable("gui.yes_steve_model.import.error.scan_not_visible");
+            default -> Component.translatable("gui.yes_steve_model.import.error.status", status);
+        };
+    }
+
+    private static Component appendServerMessage(Component base, String serverMessage) {
+        if (serverMessage == null || serverMessage.isEmpty()) {
+            return base;
+        }
+        if (isKnownServerMessage(serverMessage)) {
+            return base;
+        }
+        MutableComponent result = base.copy();
+        result.append(Component.literal(": "));
+        result.append(Component.literal(serverMessage));
+        return result;
+    }
+
+    private static boolean isKnownServerMessage(String serverMessage) {
+        return switch (serverMessage.trim()) {
+            case "Model import disabled",
+                 "No import permission",
+                 "Invalid model id or hash",
+                 "File exceeds server limit",
+                 "Model ID already exists",
+                 "Session expired",
+                 "Incomplete upload",
+                 "Hash mismatch",
+                 "7z import is not supported yet",
+                 "Server failed to cache model",
+                 "Server rejected write" -> true;
+            default -> false;
         };
     }
 
@@ -195,13 +245,13 @@ public final class ModelUploadSession {
         }
         if (nextOffset >= data.length) {
             state = State.FINISHING;
-            message = "Verifying…";
+            message = Component.translatable("gui.yes_steve_model.import.state.verifying");
             NetworkHandler.sendToServer(new C2SModelUploadFinishPacket(uploadId));
         }
         notifyListeners();
     }
 
-    private void fail(String reason) {
+    private void fail(Component reason) {
         state = State.FAILED;
         message = reason;
     }
@@ -218,6 +268,10 @@ public final class ModelUploadSession {
         return modelId;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
     public int getTotalBytes() {
         return data.length;
     }
@@ -226,7 +280,7 @@ public final class ModelUploadSession {
         return Math.min(nextOffset, data.length);
     }
 
-    public String getMessage() {
+    public Component getMessage() {
         return message;
     }
 
@@ -241,6 +295,30 @@ public final class ModelUploadSession {
     }
 
     public enum State {STARTING, UPLOADING, FINISHING, COMPLETED, FAILED}
+
+    private enum ImportKind {
+        YSM,
+        ZIP,
+        SEVEN_ZIP,
+        UNKNOWN;
+
+        private static ImportKind fromFileName(String fileName) {
+            if (fileName == null) {
+                return UNKNOWN;
+            }
+            String lower = fileName.toLowerCase(java.util.Locale.ROOT);
+            if (lower.endsWith(".ysm")) {
+                return YSM;
+            }
+            if (lower.endsWith(".zip")) {
+                return ZIP;
+            }
+            if (lower.endsWith(".7z")) {
+                return SEVEN_ZIP;
+            }
+            return UNKNOWN;
+        }
+    }
 
     public interface Listener {
         void onSessionUpdate(ModelUploadSession session);

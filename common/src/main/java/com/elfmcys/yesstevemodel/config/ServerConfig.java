@@ -17,6 +17,12 @@ public class ServerConfig {
 
     public static ModConfigSpec.BooleanValue CAN_SWITCH_MODEL;
 
+    public static ModConfigSpec.BooleanValue ALLOW_MODEL_UPLOAD;
+
+    public static ModConfigSpec.IntValue MODEL_UPLOAD_MAX_MB;
+
+    public static ModConfigSpec.IntValue MODEL_UPLOAD_CHUNKS_PER_TICK;
+
     public static ModConfigSpec.ConfigValue<String> DEFAULT_MODEL_ID;
 
     public static ModConfigSpec.ConfigValue<String> DEFAULT_MODEL_TEXTURE;
@@ -38,6 +44,12 @@ public class ServerConfig {
         DEFAULT_MODEL_TEXTURE = builder.define("DefaultModelTexture", "default");
         builder.comment("Whether or not players are allowed to switch models");
         CAN_SWITCH_MODEL = builder.define("CanSwitchModel", true);
+        builder.comment("Whether clients are allowed to upload .ysm files into the server custom model folder");
+        ALLOW_MODEL_UPLOAD = builder.define("AllowModelUpload", true);
+        builder.comment("Maximum size of a single uploaded .ysm file, in MiB");
+        MODEL_UPLOAD_MAX_MB = builder.defineInRange("ModelUploadMaxMiB", 128, 1, 512);
+        builder.comment("How many upload chunks a client may send per tick");
+        MODEL_UPLOAD_CHUNKS_PER_TICK = builder.defineInRange("ModelUploadChunksPerTick", 4, 1, 32);
         builder.comment("Models that are not displayed on the client model selection screen");
         builder.comment("Example: [\"default\", \"misc_3_default_boy\", \"misc_1_alex\", \"misc_2_steve\"]");
         CLIENT_NOT_DISPLAY_MODELS = builder.define("ClientNotDisplayModels", Lists.newArrayList());

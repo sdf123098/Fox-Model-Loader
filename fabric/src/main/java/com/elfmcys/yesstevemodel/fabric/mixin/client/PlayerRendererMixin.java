@@ -27,10 +27,45 @@ public abstract class PlayerRendererMixin {
             net.minecraft.world.entity.Entity entity = Minecraft.getInstance().level.getEntity(avatarState.id);
             if (entity instanceof AbstractClientPlayer player) {
                 float partialTick = ((MinecraftAccessor) Minecraft.getInstance()).ysm$getDeltaTracker().getGameTimeDeltaTicks();
-                float yaw = ModelPreviewRenderer.isPreview() ? 180.0f : state.yRot;
                 int packedLight = ((MinecraftAccessor) Minecraft.getInstance()).ysm$getEntityRenderDispatcher().getPackedLightCoords(player, partialTick);
-                if (ReplacePlayerRenderEvent.onRenderPlayerPre(player, yaw, partialTick, poseStack, ((MinecraftAccessor) Minecraft.getInstance()).ysm$renderBuffers().bufferSource(), collector, packedLight)) {
-                    ci.cancel();
+                boolean preview = ModelPreviewRenderer.isPreview();
+                float yaw = preview ? state.bodyRot : state.yRot;
+
+                float oldBodyRot = player.yBodyRot;
+                float oldBodyRotO = player.yBodyRotO;
+                float oldYRot = player.getYRot();
+                float oldYRotO = player.yRotO;
+                float oldXRot = player.getXRot();
+                float oldXRotO = player.xRotO;
+                float oldHeadRot = player.yHeadRot;
+                float oldHeadRotO = player.yHeadRotO;
+                if (preview) {
+                    float bodyRot = state.bodyRot;
+                    float headRot = bodyRot + state.yRot;
+                    player.yBodyRot = bodyRot;
+                    player.yBodyRotO = bodyRot;
+                    player.setYRot(headRot);
+                    player.yRotO = headRot;
+                    player.setXRot(state.xRot);
+                    player.xRotO = state.xRot;
+                    player.yHeadRot = headRot;
+                    player.yHeadRotO = headRot;
+                }
+                try {
+                    if (ReplacePlayerRenderEvent.onRenderPlayerPre(player, yaw, partialTick, poseStack, ((MinecraftAccessor) Minecraft.getInstance()).ysm$renderBuffers().bufferSource(), collector, packedLight)) {
+                        ci.cancel();
+                    }
+                } finally {
+                    if (preview) {
+                        player.yBodyRot = oldBodyRot;
+                        player.yBodyRotO = oldBodyRotO;
+                        player.setYRot(oldYRot);
+                        player.yRotO = oldYRotO;
+                        player.setXRot(oldXRot);
+                        player.xRotO = oldXRotO;
+                        player.yHeadRot = oldHeadRot;
+                        player.yHeadRotO = oldHeadRotO;
+                    }
                 }
             }
         }

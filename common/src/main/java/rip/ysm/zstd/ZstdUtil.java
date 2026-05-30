@@ -31,7 +31,7 @@ public final class ZstdUtil {
         output += ZstdFrameCompressor.writeMagic(buffer, output, outputLimit);
         output += ZstdFrameCompressor.writeFrameHeader(buffer, output, outputLimit, inputLength, parameters.getWindowSize());
         output += ZstdFrameCompressor.compressFrame(input, inputAddress, inputLimit, buffer, output, outputLimit, parameters);
-//        output += ZstdFrameCompressor.writeChecksum(buffer, output, outputLimit, input, inputAddress, inputLimit);
+        output += ZstdFrameCompressor.writeChecksum(buffer, output, outputLimit, input, inputAddress, inputLimit);
 
         int compressedSize = (int) (output - outputAddress);
         if (compressedSize == buffer.length) {

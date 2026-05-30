@@ -52,6 +52,10 @@ public class AudioStreamCache {
             this.pendingTracks.remove(trackData);
         }
 
+        void cancelAudioData(AudioTrackData trackData) {
+            this.pendingTracks.remove(trackData);
+        }
+
         @Override
         public IAudioStreamSupport createAudioStream(AudioTrackData trackData) throws UnsupportedAudioFileException, IOException {
             AudioCacheBuilder cacheBuilder;
@@ -65,11 +69,18 @@ public class AudioStreamCache {
             } else {
                 cacheBuilder = null;
             }
-            return switch (trackData.getCodec()) {
-                case VORBIS -> new OggVorbisAudioStream(trackData.getData(), cacheBuilder);
-                case OPUS -> new OggOpusAudioStream(trackData.getData(), cacheBuilder);
-                default -> throw new UnsupportedAudioFileException();
-            };
+            try {
+                return switch (trackData.getCodec()) {
+                    case VORBIS -> new OggVorbisAudioStream(trackData.getData(), cacheBuilder);
+                    case OPUS -> new OggOpusAudioStream(trackData.getData(), cacheBuilder);
+                    default -> throw new UnsupportedAudioFileException();
+                };
+            } catch (UnsupportedAudioFileException | IOException | RuntimeException e) {
+                if (cacheBuilder != null) {
+                    cacheBuilder.discard();
+                }
+                throw e;
+            }
         }
 
         private record CachedAudioEntry(ByteBuffer audioData, AudioFormat audioFormat, IntArrayList seekPositions) {

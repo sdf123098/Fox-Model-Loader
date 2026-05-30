@@ -85,8 +85,8 @@ public class ClientModelManager {
     private static final ConcurrentLinkedQueue<Pair<ModelAssembly, String>> pendingModelQueue = new ConcurrentLinkedQueue<>();
     private static final WeakHashMap<IGuiWidget, Object> guiWidgets = new WeakHashMap<>();
     private static final SyncStatus syncState = new SyncStatus();
-    private static boolean isOysmServer = false;
-    private static boolean allowUpload = false;
+    private static volatile boolean isOysmServer = false;
+    private static volatile boolean allowUpload = false;
 
     public enum SyncState {
         WAITING, LOADING, IDLE, PREPARING, SYNCING

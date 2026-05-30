@@ -24,9 +24,12 @@
 						{"bow": "ctrl.hold('offhand', ':bow')"},
 						{"shield": "ctrl.hold('offhand', ':shield')"},
 						{"spear": "ctrl.hold('offhand', ':spear')"},
-						{"pickaxe": "ctrl.hold('offhand', ':pickaxe')||ctrl.hold('offhand', ':shovel')||ctrl.hold('offhand', ':hoe')"},
+						{"lance": "ctrl.hold('offhand', ':lance')"},
+						{"pickaxe": "ctrl.hold('offhand', ':pickaxe')"},
+						{"shovel": "ctrl.hold('offhand', ':shovel')||ctrl.hold('offhand', ':spade')"},
+						{"hoe": "ctrl.hold('offhand', ':hoe')"},
 						{"axe": "ctrl.hold('offhand', ':axe')"},
-						{"mace": "ctrl.hold('offhand', '$minecraft:mace')"},
+						{"mace": "ctrl.hold('offhand', ':mace')||ctrl.hold('offhand', '$minecraft:mace')"},
 						{"crossbow": "ysm.offhand_charged_crossbow"},
 						{"potion": "ctrl.hold('offhand', ':throwable_potion')"}
 					],
@@ -233,10 +236,34 @@
 					},
 					"blend_via_shortest_path": true
 				},
+				"lance": {
+					"animations": ["hold_offhand:lance"],
+					"transitions": [
+						{"default": "!ctrl.hold('offhand', ':lance')"}
+					],
+					"blend_transition": 0.15,
+					"blend_via_shortest_path": true
+				},
 				"pickaxe": {
 					"animations": ["hold_offhand:pickaxe"],
 					"transitions": [
-						{"default": "!(ctrl.hold('offhand', ':pickaxe')||ctrl.hold('offhand', ':shovel')||ctrl.hold('offhand', ':hoe'))"}
+						{"default": "!ctrl.hold('offhand', ':pickaxe')"}
+					],
+					"blend_transition": 0.15,
+					"blend_via_shortest_path": true
+				},
+				"shovel": {
+					"animations": ["hold_offhand:shovel"],
+					"transitions": [
+						{"default": "!(ctrl.hold('offhand', ':shovel')||ctrl.hold('offhand', ':spade'))"}
+					],
+					"blend_transition": 0.15,
+					"blend_via_shortest_path": true
+				},
+				"hoe": {
+					"animations": ["hold_offhand:hoe"],
+					"transitions": [
+						{"default": "!ctrl.hold('offhand', ':hoe')"}
 					],
 					"blend_transition": 0.15,
 					"blend_via_shortest_path": true
@@ -248,9 +275,9 @@
 					]
 				},
 				"mace": {
-					"animations": ["hold_offhand$minecraft:mace"],
+					"animations": ["hold_offhand:mace"],
 					"transitions": [
-						{"default": "!ctrl.hold('offhand', '$minecraft:mace')"}
+						{"default": "!(ctrl.hold('offhand', ':mace')||ctrl.hold('offhand', '$minecraft:mace'))"}
 					],
 					"blend_transition": 0.15,
 					"blend_via_shortest_path": true
@@ -385,9 +412,12 @@
 						{"bow": "ctrl.hold('mainhand', ':bow')"},
 						{"shield": "ctrl.hold('mainhand', ':shield')"},
 						{"spear": "ctrl.hold('mainhand', ':spear')"},
-						{"pickaxe": "ctrl.hold('mainhand', ':pickaxe')||ctrl.hold('mainhand', ':shovel')||ctrl.hold('mainhand', ':hoe')"},
+						{"lance": "ctrl.hold('mainhand', ':lance')"},
+						{"pickaxe": "ctrl.hold('mainhand', ':pickaxe')"},
+						{"shovel": "ctrl.hold('mainhand', ':shovel')||ctrl.hold('mainhand', ':spade')"},
+						{"hoe": "ctrl.hold('mainhand', ':hoe')"},
 						{"axe": "ctrl.hold('mainhand', ':axe')"},
-						{"mace": "ctrl.hold('mainhand', '$minecraft:mace')"},
+						{"mace": "ctrl.hold('mainhand', ':mace')||ctrl.hold('mainhand', '$minecraft:mace')"},
 						{"crossbow": "ysm.mainhand_charged_crossbow"}
 					],
 					"blend_transition": {
@@ -553,10 +583,34 @@
 					},
 					"blend_via_shortest_path": true
 				},
+				"lance": {
+					"animations": ["hold_mainhand:lance"],
+					"transitions": [
+						{"default": "!ctrl.hold('mainhand', ':lance')"}
+					],
+					"blend_transition": 0.15,
+					"blend_via_shortest_path": true
+				},
 				"pickaxe": {
 					"animations": ["hold_mainhand:pickaxe"],
 					"transitions": [
-						{"default": "!(ctrl.hold('mainhand', ':pickaxe')||ctrl.hold('mainhand', ':shovel')||ctrl.hold('mainhand', ':hoe'))"}
+						{"default": "!ctrl.hold('mainhand', ':pickaxe')"}
+					],
+					"blend_transition": 0.15,
+					"blend_via_shortest_path": true
+				},
+				"shovel": {
+					"animations": ["hold_mainhand:shovel"],
+					"transitions": [
+						{"default": "!(ctrl.hold('mainhand', ':shovel')||ctrl.hold('mainhand', ':spade'))"}
+					],
+					"blend_transition": 0.15,
+					"blend_via_shortest_path": true
+				},
+				"hoe": {
+					"animations": ["hold_mainhand:hoe"],
+					"transitions": [
+						{"default": "!ctrl.hold('mainhand', ':hoe')"}
 					],
 					"blend_transition": 0.15,
 					"blend_via_shortest_path": true
@@ -570,9 +624,9 @@
 					"blend_via_shortest_path": true
 				},
 				"mace": {
-					"animations": ["hold_mainhand$minecraft:mace"],
+					"animations": ["hold_mainhand:mace"],
 					"transitions": [
-						{"default": "!ctrl.hold('mainhand', '$minecraft:mace')"}
+						{"default": "!(ctrl.hold('mainhand', ':mace')||ctrl.hold('mainhand', '$minecraft:mace'))"}
 					],
 					"blend_transition": 0.15,
 					"blend_via_shortest_path": true

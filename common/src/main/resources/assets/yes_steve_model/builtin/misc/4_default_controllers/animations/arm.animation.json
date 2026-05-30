@@ -8607,7 +8607,7 @@
 		},
 		"hold_offhand:pickaxe": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 1000,
+			"animation_length": 2.5,
 			"bones": {
 				"LeftArm": {
 					"rotation": {
@@ -8722,7 +8722,7 @@
 		},
 		"hold_mainhand:shovel": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 1000,
+			"animation_length": 2.5,
 			"bones": {
 				"RightArm": {
 					"rotation": {
@@ -8837,7 +8837,7 @@
 		},
 		"hold_offhand:shovel": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 1000,
+			"animation_length": 2.5,
 			"bones": {
 				"LeftArm": {
 					"rotation": {
@@ -8951,8 +8951,8 @@
 			}
 		},
 		"hold_mainhand:hoe": {
-			"loop": true,
-			"animation_length": 1000,
+			"loop": "hold_on_last_frame",
+			"animation_length": 2.5,
 			"bones": {
 				"RightArm": {
 					"rotation": {
@@ -9067,7 +9067,7 @@
 		},
 		"hold_offhand:hoe": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 1000,
+			"animation_length": 2.5,
 			"bones": {
 				"LeftArm": {
 					"rotation": {
@@ -9276,7 +9276,7 @@
 		},
 		"hold_offhand:axe": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 1000,
+			"animation_length": 1,
 			"bones": {
 				"LeftArm": {
 					"rotation": {

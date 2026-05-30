@@ -55,6 +55,12 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import dev.architectury.platform.Platform;
 import rip.ysm.api.attribute.ForgeAttributes;
+import rip.ysm.api.item.LanceActionState;
+import rip.ysm.api.item.MaceActionState;
+import rip.ysm.api.item.TridentActionState;
+import rip.ysm.api.item.WeaponActionBridge;
+import rip.ysm.api.item.WeaponActionState;
+import rip.ysm.api.item.WeaponKind;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -150,6 +156,48 @@ public class YSMBinding extends ContextBinding {
 
         livingEntityVar("mainhand_charged_crossbow", ctx -> isChargedCrossbow(ctx, InteractionHand.MAIN_HAND));
         livingEntityVar("offhand_charged_crossbow", ctx -> isChargedCrossbow(ctx, InteractionHand.OFF_HAND));
+        livingEntityVar("weapon_type", ctx -> getWeaponType(ctx));
+        livingEntityVar("weapon_is_trident", ctx -> getWeaponState(ctx).kind() == WeaponKind.TRIDENT);
+        livingEntityVar("weapon_is_lance", ctx -> getWeaponState(ctx).kind() == WeaponKind.LANCE);
+        livingEntityVar("weapon_is_mace", ctx -> getWeaponState(ctx).kind() == WeaponKind.MACE);
+        livingEntityVar("weapon_attacking", ctx -> isWeaponAttacking(getWeaponState(ctx)));
+        livingEntityVar("weapon_using", ctx -> isWeaponUsing(getWeaponState(ctx)));
+        livingEntityVar("weapon_riding", ctx -> isWeaponRiding(getWeaponState(ctx)));
+        livingEntityVar("weapon_fall_flying", ctx -> isWeaponFallFlying(getWeaponState(ctx)));
+        livingEntityVar("weapon_speed", ctx -> getWeaponState(ctx).speed());
+        livingEntityVar("weapon_attack_ticks", ctx -> getWeaponAttackTicks(getWeaponState(ctx)));
+        livingEntityVar("weapon_use_ticks", ctx -> getWeaponUseTicks(getWeaponState(ctx)));
+        livingEntityVar("trident_holding", ctx -> getWeaponState(ctx).trident().holding());
+        livingEntityVar("trident_using", ctx -> getWeaponState(ctx).trident().using());
+        livingEntityVar("trident_throwing", ctx -> getWeaponState(ctx).trident().throwing());
+        livingEntityVar("trident_riptide", ctx -> getWeaponState(ctx).trident().riptide());
+        livingEntityVar("trident_attack", ctx -> getWeaponState(ctx).trident().attacking());
+        livingEntityVar("trident_use_ticks", ctx -> getWeaponState(ctx).trident().useTicks());
+        livingEntityVar("trident_attack_ticks", ctx -> getWeaponState(ctx).trident().attackTicks());
+        livingEntityVar("lance_holding", ctx -> getWeaponState(ctx).lance().holding());
+        livingEntityVar("lance_using", ctx -> getWeaponState(ctx).lance().using());
+        livingEntityVar("lance_charging", ctx -> getWeaponState(ctx).lance().charging());
+        livingEntityVar("lance_jabbing", ctx -> getWeaponState(ctx).lance().jabbing());
+        livingEntityVar("lance_lunging", ctx -> getWeaponState(ctx).lance().lunging());
+        livingEntityVar("lance_riding", ctx -> getWeaponState(ctx).lance().riding());
+        livingEntityVar("lance_riding_charge", ctx -> getWeaponState(ctx).lance().ridingCharge());
+        livingEntityVar("lance_fall_flying", ctx -> getWeaponState(ctx).lance().fallFlying());
+        livingEntityVar("lance_use_ticks", ctx -> getWeaponState(ctx).lance().useTicks());
+        livingEntityVar("lance_attack_ticks", ctx -> getWeaponState(ctx).lance().attackTicks());
+        livingEntityVar("lance_speed", ctx -> getWeaponState(ctx).lance().speed());
+        livingEntityVar("lance_charge_progress", ctx -> getWeaponState(ctx).lance().chargeProgress());
+        livingEntityVar("mace_holding", ctx -> getWeaponState(ctx).mace().holding());
+        livingEntityVar("mace_falling", ctx -> getWeaponState(ctx).mace().falling());
+        livingEntityVar("mace_can_smash", ctx -> getWeaponState(ctx).mace().canSmash());
+        livingEntityVar("mace_smashing", ctx -> getWeaponState(ctx).mace().smashing());
+        livingEntityVar("mace_wind_bursting", ctx -> getWeaponState(ctx).mace().windBursting());
+        livingEntityVar("mace_attacking", ctx -> getWeaponState(ctx).mace().attacking());
+        livingEntityVar("mace_riding", ctx -> getWeaponState(ctx).mace().riding());
+        livingEntityVar("mace_fall_flying", ctx -> getWeaponState(ctx).mace().fallFlying());
+        livingEntityVar("mace_fall_distance", ctx -> getWeaponState(ctx).mace().fallDistance());
+        livingEntityVar("mace_vertical_speed", ctx -> getWeaponState(ctx).mace().verticalSpeed());
+        livingEntityVar("mace_attack_ticks", ctx -> getWeaponState(ctx).mace().attackTicks());
+        livingEntityVar("mace_smash_progress", ctx -> getWeaponState(ctx).mace().smashProgress());
 
         livingEntityVar("is_fishing", YSMBinding::isFishing);
         livingEntityVar("swinging", ctx -> ctx.entity().swinging);
@@ -379,6 +427,46 @@ public class YSMBinding extends ContextBinding {
     private static boolean isChargedCrossbow(IContext<LivingEntity> context, InteractionHand interactionHand) {
         ItemStack itemInHand = context.entity().getItemInHand(interactionHand);
         return itemInHand.is(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand);
+    }
+
+    private static WeaponActionState getWeaponState(IContext<LivingEntity> context) {
+        return WeaponActionBridge.get(context.entity(), context.animationEvent().getPartialTick());
+    }
+
+    private static int getWeaponType(IContext<LivingEntity> context) {
+        return switch (getWeaponState(context).kind()) {
+            case TRIDENT -> 1;
+            case LANCE -> 2;
+            case MACE -> 3;
+            case NONE -> 0;
+        };
+    }
+
+    private static boolean isWeaponAttacking(WeaponActionState state) {
+        return state.trident().attacking() || state.lance().jabbing() || state.mace().attacking();
+    }
+
+    private static boolean isWeaponUsing(WeaponActionState state) {
+        return state.trident().using() || state.lance().using();
+    }
+
+    private static boolean isWeaponRiding(WeaponActionState state) {
+        return state.lance().riding() || state.mace().riding();
+    }
+
+    private static boolean isWeaponFallFlying(WeaponActionState state) {
+        return state.lance().fallFlying() || state.mace().fallFlying();
+    }
+
+    private static float getWeaponAttackTicks(WeaponActionState state) {
+        TridentActionState trident = state.trident();
+        LanceActionState lance = state.lance();
+        MaceActionState mace = state.mace();
+        return Math.max(trident.attackTicks(), Math.max(lance.attackTicks(), mace.attackTicks()));
+    }
+
+    private static float getWeaponUseTicks(WeaponActionState state) {
+        return Math.max(state.trident().useTicks(), state.lance().useTicks());
     }
 
     private static String getEntityTypeName(IContext<LivingEntity> context) {

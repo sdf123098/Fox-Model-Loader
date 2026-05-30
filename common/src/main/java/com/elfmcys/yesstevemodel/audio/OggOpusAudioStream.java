@@ -27,12 +27,25 @@ public class OggOpusAudioStream implements IAudioStreamSupport {
 
     private final NativeAudioDecoder decoder = ObjectPool.acquire();
 
-    private final ByteBuf outputBuffer = PooledByteBufAllocator.DEFAULT.buffer(((int) AUDIO_FORMAT.getSampleRate()) * 2);
+    private final ByteBuf outputBuffer = PooledByteBufAllocator.DEFAULT.directBuffer(((int) AUDIO_FORMAT.getSampleRate()) * 2);
 
     public OggOpusAudioStream(ByteBuffer byteBuffer, @Nullable AudioCacheBuilder cacheBuilder2) throws UnsupportedAudioFileException {
         this.cacheBuilder = cacheBuilder2;
-        this.outputBuffer.retain();
-        this.decoder.openStream(byteBuffer);
+        boolean opened = false;
+        try {
+            opened = this.decoder.openStream(byteBuffer);
+            if (!opened) {
+                throw new UnsupportedAudioFileException("File is not a valid Opus audio stream.");
+            }
+        } finally {
+            if (!opened) {
+                this.outputBuffer.release();
+                ObjectPool.release(this.decoder);
+                if (this.cacheBuilder != null) {
+                    this.cacheBuilder.discard();
+                }
+            }
+        }
     }
 
     @NotNull
@@ -51,6 +64,9 @@ public class OggOpusAudioStream implements IAudioStreamSupport {
             }
             if (i2 < 0) {
                 YesSteveModel.LOGGER.error("Decoder error: {}", Integer.valueOf(i2));
+                if (this.cacheBuilder != null) {
+                    this.cacheBuilder.discard();
+                }
             }
             this.endOfStream = true;
             return EMPTY_BUFFER;
@@ -69,9 +85,15 @@ public class OggOpusAudioStream implements IAudioStreamSupport {
 
     public void close() throws IOException {
         if (!this.closed) {
-            this.outputBuffer.release();
-            ObjectPool.release(this.decoder);
             this.closed = true;
+            try {
+                this.outputBuffer.release();
+            } finally {
+                ObjectPool.release(this.decoder);
+                if (!this.endOfStream && this.cacheBuilder != null) {
+                    this.cacheBuilder.discard();
+                }
+            }
         }
     }
 

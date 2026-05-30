@@ -2,6 +2,7 @@ package com.elfmcys.yesstevemodel.geckolib3.core.controller.controllers;
 
 import com.elfmcys.yesstevemodel.client.animation.condition.ConditionArmor;
 import com.elfmcys.yesstevemodel.client.animation.predicate.EquipmentSlotAnimationPredicate;
+import com.elfmcys.yesstevemodel.client.animation.predicate.FirstPersonLanceAnimationPredicate;
 import com.elfmcys.yesstevemodel.client.animation.predicate.NamedAnimationPredicate;
 import com.elfmcys.yesstevemodel.client.entity.PlayerGeoEntity;
 import com.elfmcys.yesstevemodel.client.model.PlayerModelBundle;
@@ -26,6 +27,19 @@ public class FirstPersonArmAnimationController {
 
     private static final String FP_ARM_PREFIX = "fp.arm";
 
+    private static final String[] REQUIRED_LANCE_ANIMATIONS = {
+            "hold_mainhand:lance",
+            "use_mainhand:lance",
+            "swing:lance",
+            "lance_stand",
+            "lance_charge",
+            "lance_jab",
+            "lance_lunge",
+            "lance_riding_idle",
+            "lance_riding_charge",
+            "lance_fall_flying_charge"
+    };
+
     private static final ProcessorPipeline<PlayerGeoEntity, PlayerModelBundle> processorRegistry = new ProcessorPipeline<>();
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -33,6 +47,7 @@ public class FirstPersonArmAnimationController {
         registerNamedProcessor("misc", null, true, (animationEntryKey, entity) -> new CompositeAnimationController(entity, animationEntryKey, 0.0f, new StopAnimationPredicate()));
         registerParallelProcessor("parallel", (animationEntryKey, entity, linkedAnimationName) -> new CompositeAnimationController(entity, animationEntryKey, 0.0f, linkedAnimationName != null ? new NamedAnimationPredicate(linkedAnimationName) : StopAnimationPredicate.INSTANCE, true));
         registerArmorProcessor("armor", (animationEntryKey, entity, equipmentSlot) -> new CompositeAnimationController(entity, animationEntryKey, 0.0f, new EquipmentSlotAnimationPredicate(equipmentSlot)));
+        registerNamedProcessor("lance", REQUIRED_LANCE_ANIMATIONS, false, (animationEntryKey, entity) -> new CompositeAnimationController(entity, animationEntryKey, 0.0f, new FirstPersonLanceAnimationPredicate()));
     }
 
     public static Consumer<PlayerGeoEntity> buildControllers(PlayerModelBundle modelBundle, ModelResourceBundle resourceBundle) {
