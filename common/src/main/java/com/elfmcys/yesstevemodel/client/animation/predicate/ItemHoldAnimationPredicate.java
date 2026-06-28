@@ -52,7 +52,7 @@ public class ItemHoldAnimationPredicate implements IAnimationPredicate<LivingAni
         }
         boolean hasLocalSwingPulse = isLocalSwingTarget(event, livingEntity) && InputStateKey.isLocalAnyHandSwinging();
         debugSwingEntry(event, livingEntity, hasLocalSwingPulse);
-        if ((InputStateKey.isAnyHandSwinging(livingEntity) || hasLocalSwingPulse) && !livingEntity.isSleeping()) {
+        if (InputStateKey.isAnyHandSwinging(livingEntity) && !livingEntity.isSleeping()) {
             if (!shouldStartSwingAnimation(event, livingEntity, hasLocalSwingPulse)) {
                 return PlayState.CONTINUE;
             }
