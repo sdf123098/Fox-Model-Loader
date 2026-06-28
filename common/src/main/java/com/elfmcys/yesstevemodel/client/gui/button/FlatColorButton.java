@@ -34,7 +34,8 @@ public class FlatColorButton extends Button {
     public void renderTooltip(GuiGraphicsExtractor guiGraphics, Screen screen, int mouseX, int mouseY) {
         if (this.isHovered && this.tooltip != null) {
             guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, this.tooltip, mouseX, mouseY);
-/*             GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.tooltip, mouseX, mouseY); */
+/*             GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.tooltip, mouseX, mouseY);
+ */
         }
     }
 
@@ -60,7 +61,8 @@ public class FlatColorButton extends Button {
         guiGraphics.enableScissor(getX() + 1, getY() + 1, getX() + this.width - 1, getY() + this.height - 1);
         guiGraphics.text(font, message, textX, textY, 0xFFF3F3E0, true);
         guiGraphics.disableScissor();
-/*         GuiGraphicsExtractor.renderScrollingString(font, getMessage(), getX() + 2, getY(), getX() + getWidth() - 2, getY() + getHeight(), 15986656); */
+/*         GuiGraphicsExtractor.renderScrollingString(font, getMessage(), getX() + 2, getY(), getX() + getWidth() - 2, getY() + getHeight(), 15986656);
+ */
     }
 
     public void setSelected(boolean selected) {

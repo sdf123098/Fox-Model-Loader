@@ -472,7 +472,8 @@ public class AnimationRouletteScreen extends Screen {
             String str = ModelMetadataPresenter.getLocalizedModelString(this.renderContext, "properties.extra_animation.%s.desc".formatted(this.currentProperties.getKeyAt(this.hoveredIndex)), StringPool.EMPTY);
             if (StringUtils.isNotBlank(str)) {
                 guiGraphics.setTooltipForNextFrame(this.font, this.font.split(Component.literal(str), 240), mouseX, mouseY);
-/*                 GuiGraphicsExtractor.renderTooltip(this.font, this.font.split(Component.literal(str), 240), mouseX, mouseY); */
+/*                 GuiGraphicsExtractor.renderTooltip(this.font, this.font.split(Component.literal(str), 240), mouseX, mouseY);
+ */
             }
         }
     }
@@ -784,9 +785,13 @@ public class AnimationRouletteScreen extends Screen {
         float red = ((color >> 16) & 255) / 255.0f;
         float green = ((color >> 8) & 255) / 255.0f;
         float blue = (color & 255) / 255.0f;
-/*         bufferBuilder.addVertex(matrix4f, this.centerX + (outerRadius * Mth.cos(startAngle)), this.centerY + (outerRadius * Mth.sin(startAngle)), 0.0f).setColor(color); */
-/*         bufferBuilder.addVertex(matrix4f, this.centerX + (innerRadius * Mth.cos(startAngle)), this.centerY + (innerRadius * Mth.sin(startAngle)), 0.0f).setColor(color); */
-/*         bufferBuilder.addVertex(matrix4f, this.centerX + (innerRadius * Mth.cos(endAngle)), this.centerY + (innerRadius * Mth.sin(endAngle)), 0.0f).setColor(color); */
-/*         bufferBuilder.addVertex(matrix4f, this.centerX + (outerRadius * Mth.cos(endAngle)), this.centerY + (outerRadius * Mth.sin(endAngle)), 0.0f).setColor(color); */
+/*         bufferBuilder.addVertex(matrix4f, this.centerX + (outerRadius * Mth.cos(startAngle)), this.centerY + (outerRadius * Mth.sin(startAngle)), 0.0f).setColor(color);
+ */
+/*         bufferBuilder.addVertex(matrix4f, this.centerX + (innerRadius * Mth.cos(startAngle)), this.centerY + (innerRadius * Mth.sin(startAngle)), 0.0f).setColor(color);
+ */
+/*         bufferBuilder.addVertex(matrix4f, this.centerX + (innerRadius * Mth.cos(endAngle)), this.centerY + (innerRadius * Mth.sin(endAngle)), 0.0f).setColor(color);
+ */
+/*         bufferBuilder.addVertex(matrix4f, this.centerX + (outerRadius * Mth.cos(endAngle)), this.centerY + (outerRadius * Mth.sin(endAngle)), 0.0f).setColor(color);
+ */
     }
 }

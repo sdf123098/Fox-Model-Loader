@@ -191,7 +191,8 @@ public class ModernAnimationRouletteScreen extends Screen {
             BlurStack.pushBlurPie(centerX - 128.0f, centerY, 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f);
             BlurStack.pushBlurPie(centerX + 128.0f, centerY, 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f);
         }
-/*         BlurStack.flush(g); */
+/*         BlurStack.flush(g);
+ */
     }
 
     private void updateHover(int mouseX, int mouseY) {
@@ -256,9 +257,11 @@ public class ModernAnimationRouletteScreen extends Screen {
         int iy = centerY + (int) (r * Math.sin(mid)) - 8;
         GlStateManager._enableBlend();
         GlStateManager._blendFuncSeparate(770, 771, 1, 0);
-/*         if (hover) g.setColor(1.0f, 1.0f, 0.6f, 1.0f); */
+/*         if (hover) g.setColor(1.0f, 1.0f, 0.6f, 1.0f);
+ */
         g.blit(settingsIcon, ix, iy, ix + 16, iy + 16, 0.0f, 1.0f, 0.0f, 1.0f);
-/*         if (hover) g.setColor(1.0f, 1.0f, 1.0f, 1.0f); */
+/*         if (hover) g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+ */
         GlStateManager._disableBlend();
     }
 

@@ -402,7 +402,8 @@ public abstract class OptionScreen extends Screen {
             if (r[2] <= 0 || r[3] <= 0) continue;
             BlurStack.pushBlur(r[0], r[1], r[2], r[3], 0.0f, 24.0f);
         }
-/*         BlurStack.flush(g); */
+/*         BlurStack.flush(g);
+ */
     }
 
     private void renderRowScrollbar(GuiGraphicsExtractor g) {

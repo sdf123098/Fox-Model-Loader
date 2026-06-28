@@ -199,13 +199,15 @@ public class ModelButton extends Button {
                     this.detailedTooltipLines = ModelMetadataPresenter.buildModelTooltip(this.renderContext, selected, this.modelIdHolder.getModelId(), true);
                 }
                 guiGraphics.setComponentTooltipForNextFrame(minecraft.font, this.detailedTooltipLines, mouseX, mouseY);
-/*                 GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.detailedTooltipLines, mouseX, mouseY); */
+/*                 GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.detailedTooltipLines, mouseX, mouseY);
+ */
             } else {
                 if (this.tooltipLines == null) {
                     this.tooltipLines = ModelMetadataPresenter.buildModelTooltip(this.renderContext, selected, this.modelIdHolder.getModelId(), false);
                 }
                 guiGraphics.setComponentTooltipForNextFrame(minecraft.font, this.tooltipLines, mouseX, mouseY);
-/*                 GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.tooltipLines, mouseX, mouseY); */
+/*                 GuiGraphicsExtractor.renderComponentTooltip(Minecraft.getInstance().font, this.tooltipLines, mouseX, mouseY);
+ */
             }
         }
     }

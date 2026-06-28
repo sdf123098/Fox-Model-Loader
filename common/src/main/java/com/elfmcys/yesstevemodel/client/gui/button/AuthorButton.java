@@ -182,7 +182,7 @@ public class AuthorButton extends Button {
             }, link, true));
             return;
         }
-        Minecraft.getInstance().setClipboard(link);
+        Minecraft.getInstance().keyboardHandler.setClipboard(link);
         if (this.selectedContactIndex == -1) {
             this.selectedContactIndex = 0;
         }
