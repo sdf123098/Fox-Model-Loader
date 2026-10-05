@@ -9,7 +9,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 
 /**
- * Keeps the current client session isolated from Fox Model Loader server state.
+ * Keeps the current client session isolated from Fox Model Loader: Revival server state.
  *
  * <p>Once enabled for a connected session it remains active until disconnect,
  * even if the config is switched off. This prevents a half-synchronised session

@@ -211,7 +211,7 @@ public class GeneralConfig {
 	       MAX_CACHED_GPU_MODELS = builder.defineInRange("MaxCachedGpuModels", 24, 0, 512);
         builder.comment("Load local and cached server models only when they are first rendered or selected.");
         LAZY_MODEL_LOADING = builder.define("LazyModelLoading", true);
-        builder.comment("Use local models only and block all Fox Model Loader client-to-server traffic.");
+        builder.comment("Use local models only and block all Fox Model Loader: Revival client-to-server traffic.");
         PRIVACY_MODE = builder.define("PrivacyMode", false);
         builder.comment("Maximum models whose CPU geometry and animation data stay resident. Idle models reload from their source when used again.");
         MAX_RESIDENT_CPU_MODELS = builder.defineInRange("MaxResidentCpuModels", 64, 1, 512);

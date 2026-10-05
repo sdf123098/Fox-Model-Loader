@@ -1,4 +1,4 @@
-# Fox Model Loader 1.2.2
+# Fox Model Loader: Revival 1.2.2
 
 ## 跨后端性能与稳定性 / 核心现代化系列
 
@@ -7,7 +7,7 @@
 
 > [English](RELEASE_NOTES_1.2.2_en-US.md) | **中文**
 
-Fox Model Loader 1.2.2 完成了 1.2.x 重构计划中“跨后端性能与稳定化”阶段的主要落地工作。六个实际代码仓库均已同步、构建并推送到对应 GitHub 分支。
+Fox Model Loader: Revival 1.2.2 完成了 1.2.x 重构计划中“跨后端性能与稳定化”阶段的主要落地工作。六个实际代码仓库均已同步、构建并推送到对应 GitHub 分支。
 
 ### 主要内容
 

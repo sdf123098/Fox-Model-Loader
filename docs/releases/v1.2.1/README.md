@@ -1,8 +1,8 @@
 > **English** | [简体中文](https://github.com/sdf123098/Fox-Model-Loader/blob/main/docs/releases/v1.2.1/README_zh.md)
 
-# Fox Model Loader 1.2.1
+# Fox Model Loader: Revival 1.2.1
 
-Fox Model Loader 1.2.1 fixes a singleplayer crash on the Fabric 26.x line, aligns the 26.2 branch with the real 26.2 APIs, and brings the rendering/network/Maid refactor series R0–R11 (recorded between 2026-08-10 and 2026-08-13, including everything from the 08-12 prerelease `1.2.0-beta-R11MAID`) into a formal release across Fabric and NeoForge × 1.21.1 / 26.1.2 / 26.2.
+Fox Model Loader: Revival 1.2.1 fixes a singleplayer crash on the Fabric 26.x line, aligns the 26.2 branch with the real 26.2 APIs, and brings the rendering/network/Maid refactor series R0–R11 (recorded between 2026-08-10 and 2026-08-13, including everything from the 08-12 prerelease `1.2.0-beta-R11MAID`) into a formal release across Fabric and NeoForge × 1.21.1 / 26.1.2 / 26.2.
 
 ---
 

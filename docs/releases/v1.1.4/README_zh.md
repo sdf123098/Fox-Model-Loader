@@ -1,8 +1,8 @@
 > [English](https://github.com/sdf123098/Fox-Model-Loader/releases/tag/v1.1.4) | **中文**
 
-# Fox Model Loader 1.1.4
+# Fox Model Loader: Revival 1.1.4
 
-Fox Model Loader 1.1.4 版本包含了对车万女仆 (Touhou Little Maid) 专用服务器崩溃问题的彻底修复，以及对多人游戏中远程玩家模型动画与位移流畅度的深度重构与优化。
+Fox Model Loader: Revival 1.1.4 版本包含了对车万女仆 (Touhou Little Maid) 专用服务器崩溃问题的彻底修复，以及对多人游戏中远程玩家模型动画与位移流畅度的深度重构与优化。
 
 ---
 

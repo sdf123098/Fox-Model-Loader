@@ -1,8 +1,8 @@
 > [English](https://github.com/sdf123098/Fox-Model-Loader/releases/tag/v1.1.5) | **中文**
 
-# Fox Model Loader 1.1.5
+# Fox Model Loader: Revival 1.1.5
 
-Fox Model Loader 1.1.5 紧急修复版本（Hotfix），主要修复了 Fabric 1.21.1 环境下车万女仆（Touhou Little Maid）客户端兼容实现类的包路径不匹配导致运行期抛出 `NoClassDefFoundError` 的严重问题。
+Fox Model Loader: Revival 1.1.5 紧急修复版本（Hotfix），主要修复了 Fabric 1.21.1 环境下车万女仆（Touhou Little Maid）客户端兼容实现类的包路径不匹配导致运行期抛出 `NoClassDefFoundError` 的严重问题。
 
 ---
 

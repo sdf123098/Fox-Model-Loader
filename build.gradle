@@ -22,7 +22,7 @@ subprojects {
 
     base {
         // Per-subproject archivesName: fabric jar is overridden in fabric/build.gradle to
-        // fox-model-loader-<ver>-fa1.21.1.jar; common stays a build-time intermediate.
+        // fox-model-loader-revival-<ver>-fa1.21.1.jar; common stays a build-time intermediate.
         // Use fa1.21.1 suffix instead of subproject name ("-common"/"-fabric") to keep
         // the published-name shape consistent across modules.
         archivesName = "$rootProject.archives_name-fa1.21.1"

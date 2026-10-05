@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Soft-link access to Touhou Little Maid Orihime.
  *
- * <p>All optional calls stay behind reflection so Fox Model Loader can still
+ * <p>All optional calls stay behind reflection so Fox Model Loader: Revival can still
  * load when the maid mod is absent and does not depend on its private API.</p>
  */
 public final class TouhouLittleMaidAccess {

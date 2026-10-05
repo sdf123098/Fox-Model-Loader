@@ -94,7 +94,7 @@ shadowJar {
 
 remapJar {
     input.set shadowJar.archiveFile
-    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-${project.version}-fa1.21.1")
+    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-revival-${project.version}-fa1.21.1")
 }
 
 

@@ -1,8 +1,8 @@
 > [English](https://github.com/sdf123098/Fox-Model-Loader/releases/tag/v1.2.1) | **简体中文**
 
-# Fox Model Loader 1.2.1
+# Fox Model Loader: Revival 1.2.1
 
-Fox Model Loader 1.2.1 修复了 Fabric 26.x 分支的单机进图崩溃，将 26.2 分支对齐到真实 26.2 API，并把 2026-08-10 至 08-13 的渲染/网络/Maid 重构系列 R0–R11（含 08-12 预发布 `1.2.0-beta-R11MAID` 全部内容）以正式版形式发布到 Fabric / NeoForge × 1.21.1 / 26.1.2 / 26.2 六个分支。
+Fox Model Loader: Revival 1.2.1 修复了 Fabric 26.x 分支的单机进图崩溃，将 26.2 分支对齐到真实 26.2 API，并把 2026-08-10 至 08-13 的渲染/网络/Maid 重构系列 R0–R11（含 08-12 预发布 `1.2.0-beta-R11MAID` 全部内容）以正式版形式发布到 Fabric / NeoForge × 1.21.1 / 26.1.2 / 26.2 六个分支。
 
 ---
 

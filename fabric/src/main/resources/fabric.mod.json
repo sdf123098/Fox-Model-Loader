@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "foxmodelloader",
   "version": "${version}",
-  "name": "Fox Model Loader",
-  "description": "Fox Model Loader (Fox Model Loader) - Custom player model system for Minecraft.",
+  "name": "Fox Model Loader: Revival",
+  "description": "Fox Model Loader: Revival - Custom player model system for Minecraft.",
   "authors": ["Micaftic"],
   "contact": {
     "homepage": "https://github.com/sdf123098/Fox-Model-Loader",

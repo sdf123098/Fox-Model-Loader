@@ -1,8 +1,8 @@
 > **English** | [中文版](https://github.com/sdf123098/Fox-Model-Loader/blob/main/docs/releases/v1.1.5/README_zh.md)
 
-# Fox Model Loader 1.1.5
+# Fox Model Loader: Revival 1.1.5
 
-Fox Model Loader 1.1.5 is a hotfix release that resolves a critical `NoClassDefFoundError` in Fabric 1.21.1 caused by a package path mismatch for the Touhou Little Maid client compatibility implementation.
+Fox Model Loader: Revival 1.1.5 is a hotfix release that resolves a critical `NoClassDefFoundError` in Fabric 1.21.1 caused by a package path mismatch for the Touhou Little Maid client compatibility implementation.
 
 ---
 

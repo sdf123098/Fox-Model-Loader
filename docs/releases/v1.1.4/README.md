@@ -1,8 +1,8 @@
 > **English** | [中文](https://github.com/sdf123098/Fox-Model-Loader/blob/main/docs/releases/v1.1.4/README_zh.md)
 
-# Fox Model Loader 1.1.4
+# Fox Model Loader: Revival 1.1.4
 
-Fox Model Loader 1.1.4 includes a comprehensive fix for the Touhou Little Maid dedicated server crash, alongside deep refactoring and optimizations for remote player model animation and movement smoothness in multiplayer mode.
+Fox Model Loader: Revival 1.1.4 includes a comprehensive fix for the Touhou Little Maid dedicated server crash, alongside deep refactoring and optimizations for remote player model animation and movement smoothness in multiplayer mode.
 
 ---
 
