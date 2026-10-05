@@ -129,7 +129,7 @@ remapJar {
 
     doLast {
         def bundledCompat = zipTree(archiveFile.get().asFile).matching {
-            include 'META-INF/jars/fox-model-loader-caustica-compat-*.jar'
+            include 'META-INF/jars/fox-model-loader-revival-caustica-compat-*.jar'
         }.files
         if (bundledCompat.size() != 1) {
             throw new GradleException("Expected exactly one bundled Caustica compatibility JAR, found ${bundledCompat.size()}")

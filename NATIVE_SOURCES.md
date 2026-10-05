@@ -1,6 +1,6 @@
 # Native source and build provenance
 
-Fox Model Loader 2.0 rebuilds the original Sparkle Morpher 1.2.9 native renderer from the source in this repository.
+Fox Model Loader: Revival 2.0 rebuilds the original Sparkle Morpher 1.2.9 native renderer from the source in this repository.
 Upstream: [OpenYSMDev/openysm.cpp](https://github.com/OpenYSMDev/openysm.cpp); historical fork: [sdf123098/openysm.cpp](https://github.com/sdf123098/openysm.cpp). The packaged files below are local rebuilds, not the historical fork's binaries.
 
 Source: `common/src/main/native/openysm.cpp`. Family: **vulkan**; JNI ABI: **3**.

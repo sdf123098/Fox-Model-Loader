@@ -57,7 +57,7 @@ public final class CausticaDynamicPbrResources implements ClientRenderCompatibil
     private static final String PACK_ID = "foxmodelloader_dynamic_pbr";
     private static final boolean CAUSTICA_LOADED = FabricLoader.getInstance().isModLoaded("caustica");
     private static final PackLocationInfo LOCATION = new PackLocationInfo(PACK_ID,
-            Component.literal("Fox Model Loader dynamic PBR textures"), PackSource.BUILT_IN,
+            Component.literal("Fox Model Loader: Revival dynamic PBR textures"), PackSource.BUILT_IN,
             Optional.<KnownPack>empty());
     private static final Map<Identifier, byte[]> RESOURCES = new ConcurrentHashMap<>();
     /** Ref-counted live claimants per content-addressed location (multiple model assemblies may share one). */

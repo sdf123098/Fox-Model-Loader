@@ -202,8 +202,8 @@ public final class ServerModelManager {
         Path blacklistFile = FOLDER.resolve("blacklist.txt");
         if (!Files.exists(blacklistFile)) {
             String content =
-                    "# Fox Model Loader 模组 - 内置模型黑名单配置文件\n" +
-                            "# Fox Model Loader Mod - Built-in Model Blacklist Configuration File\n" +
+                    "# Fox Model Loader: Revival 模组 - 内置模型黑名单配置文件\n" +
+                            "# Fox Model Loader: Revival Mod - Built-in Model Blacklist Configuration File\n" +
                             "\n" +
                             "# 功能说明：\n" +
                             "# 随着内置模型数量的增加，为了满足个性化定制需求，本模组提供了黑名单功能\n" +

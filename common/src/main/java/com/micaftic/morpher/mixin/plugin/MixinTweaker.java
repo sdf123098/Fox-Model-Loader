@@ -30,20 +30,20 @@ public class MixinTweaker implements IMixinConfigPlugin {
             property = System.getProperty("ysm.mixin." + simpleName);
         }
         if (property != null && property.equalsIgnoreCase("false")) {
-            System.out.println("[Fox Model Loader] Disabled mixin by property: " + str2);
+            System.out.println("[Fox Model Loader: Revival] Disabled mixin by property: " + str2);
             return false;
         }
 
         Set<String> disabled = disabledMixins();
         if (disabled.contains(simpleName.toLowerCase(Locale.ROOT)) || disabled.contains(str2.toLowerCase(Locale.ROOT))) {
-            System.out.println("[Fox Model Loader] Disabled mixin by disable list: " + str2);
+            System.out.println("[Fox Model Loader: Revival] Disabled mixin by disable list: " + str2);
             return false;
         }
         if (isHighRiskMixin(simpleName)) {
-            System.out.println("[Fox Model Loader] Applying high-risk migration mixin: " + str2);
+            System.out.println("[Fox Model Loader: Revival] Applying high-risk migration mixin: " + str2);
         }
         if (isTouhouLittleMaidCompatMixin(simpleName) && !isTouhouLittleMaidPresent()) {
-            System.out.println("[Fox Model Loader] TouhouLittleMaid not installed, skipping compat mixin: " + str2);
+            System.out.println("[Fox Model Loader: Revival] TouhouLittleMaid not installed, skipping compat mixin: " + str2);
             return false;
         }
         return true;

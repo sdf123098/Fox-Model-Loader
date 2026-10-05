@@ -9,7 +9,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 
 /**
- * Keeps the current client session isolated from Fox Model Loader server state.
+ * Keeps the current client session isolated from Fox Model Loader: Revival server state.
  *
  * <p>R9.2：状态语义归 {@link PrivacyState}（sessionActive / configured 双标志），
  * 本类只做客户端适配——从 GeneralConfig 读取配置并同步进 PrivacyState，以及执行
