@@ -1,6 +1,8 @@
-# Fox Model Loader 2.0
+# Fox Model Loader: Revival 2.0
 
-Fox Model Loader **2.0** revives the Sparkle Morpher **1.2.9** codebase. Mod ID and resource namespace: `foxmodelloader`. This version retains the original Minecraft server synchronization; multiplayer model sharing requires the mod on both server and clients. Individual model IDs and the `.ysm` format are preserved.
+<img src="src/main/resources/foxmodelloader.png" alt="Fox Model Loader: Revival" width="160">
+
+Fox Model Loader: Revival **2.0** revives the Sparkle Morpher **1.2.9** codebase. Mod ID and resource namespace: `foxmodelloader`. This version retains the original Minecraft server synchronization; multiplayer model sharing requires the mod on both server and clients. Individual model IDs and the `.ysm` format are preserved.
 
 > **English** | [中文](README_zh.md) | [日本語](README_ja.md) | [한국어](README_ko.md)
 
@@ -8,7 +10,7 @@ Fox Model Loader **2.0** revives the Sparkle Morpher **1.2.9** codebase. Mod ID 
 
 A comprehensive Minecraft custom model loader that lets players mount custom models, animations, and sound effects onto players (and select entities, vehicles, and projectiles) — say goodbye to the default blocky character.
 
-> Fox Model Loader is a **universal model loader**. It currently supports the `.ysm` format (based on OpenYSM, MIT licensed) and `.bbmodel` format (Blockbench), with support for additional mainstream model formats planned for future releases.
+> Fox Model Loader: Revival is a **universal model loader**. It currently supports the `.ysm` format (based on OpenYSM, MIT licensed) and `.bbmodel` format (Blockbench), with support for additional mainstream model formats planned for future releases.
 
 ## Features
 
@@ -85,7 +87,7 @@ Six variants cover Fabric and NeoForge on Minecraft 1.21.1, 26.1.2 and 26.2.
 
 ### Model Import Pipeline
 
-When you import a model file, Fox Model Loader runs it through an intelligent pipeline:
+When you import a model file, Fox Model Loader: Revival runs it through an intelligent pipeline:
 
 1. **Zip Sniffing** — Archives are classified by content: YSM folder, Figura avatar (contains `avatar.json` + `.bbmodel`), plain BBModel zip, or unknown.
 2. **Parsing** — `.ysm` files go through YSMParser; `.bbmodel` files are parsed by the built-in `BBModelParser` which handles outliner trees, cube/mesh elements, textures, animations, and controller states.
@@ -105,7 +107,7 @@ Full support for Blockbench's format including:
 
 ## Architecture
 
-Fox Model Loader uses a **common + platform adapter** layered architecture:
+Fox Model Loader: Revival uses a **common + platform adapter** layered architecture:
 
 - **`common`** — Core logic shared across all variants: model parsing, mesh processing, zip sniffing, animation controllers, audio decoding, and Molang evaluation.
 - **`fabric`** / **`neoforge`** — Platform-specific adapters for initialization, networking, component registration, and rendering hooks.

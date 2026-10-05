@@ -1,4 +1,4 @@
-# Fox Model Loader 2.0 §10 CI / Regression Gate
+# Fox Model Loader: Revival 2.0 §10 CI / Regression Gate
 # 同一份模板同步到六分支（作为 §4.6 同步清单的一部分维护）。
 # 每分支独立 job：common tests（含依赖方向边界测试）→ compile → build → artifact smoke。
 name: CI
@@ -23,7 +23,7 @@ jobs:
           - branch: '26.1.2neoforge'
             java: '25'
             gradle_task: ':build'
-            jar_glob: 'build/libs/fox-model-loader-*-neo26.1.x.jar'
+            jar_glob: 'build/libs/fox-model-loader-revival-*-neo26.1.x.jar'
             mod_meta: 'META-INF/neoforge.mods.toml'
 
     steps:
@@ -83,6 +83,6 @@ jobs:
           name: ${{ matrix.branch }}-jars
           path: |
             ${{ matrix.jar_glob }}
-            build/libs/fox-model-loader-*-neo26.1.x-curseforge.jar
+            build/libs/fox-model-loader-revival-*-neo26.1.x-curseforge.jar
             **/build/test-results/test/TEST-*.xml
           if-no-files-found: ignore

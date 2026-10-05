@@ -2,7 +2,7 @@ package com.micaftic.morpher.core.gui;
 
 /**
  * Layout constants and the color palette for the unified animation
- * roulette. All four Fox Model Loader subprojects ship an identical copy
+ * roulette. All four Fox Model Loader: Revival subprojects ship an identical copy
  * of this class so visual tweaks stay in lockstep.
  */
 public final class RouletteTheme {

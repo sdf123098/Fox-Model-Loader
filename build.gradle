@@ -12,11 +12,11 @@ apply from: rootProject.file('gradle/distribution.gradle')
 def isCurseForgeDist = rootProject.ext.isCurseForgeDist
 
 base {
-    archivesName = "fox-model-loader-${project.version}-neo26.1.x"
+    archivesName = "fox-model-loader-revival-${project.version}-neo26.1.x"
 }
 
 tasks.named("jar") {
-    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-${project.version}-neo26.1.x")
+    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-revival-${project.version}-neo26.1.x")
 }
 
 repositories {
