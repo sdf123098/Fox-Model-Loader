@@ -1,3 +1,7 @@
+# Run / IDE 运行产物
+run/
+.vscode/
+
 # Build
 build/
 dist/
@@ -5,7 +9,7 @@ out/
 
 # Gradle
 .gradle/
-gradle/wrapper/gradle-wrapper.jar
+!gradle-wrapper.jar
 
 # IDE
 .idea/
@@ -24,3 +28,28 @@ Thumbs.db
 
 # Logs
 *.log
+
+# 根目录构建产物 jar（gradle/wrapper/gradle-wrapper.jar 除外）
+/*.jar
+
+*.class
+
+# 运行时日志（游戏/测试产生，勿入库）
+logs/
+common/logs/
+
+# Keep original compile-only compatibility inputs reproducible.
+!libs/**/*.jar
+local-maven/
+
+# Native compiler outputs
+**/zig-out/
+**/.zig-cache/
+
+# Local tools and generated distribution files
+.codegraph/
+.architectury-transformer/
+dist/
+.gradle/
+**/build/
+**/run/

@@ -3,18 +3,39 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.141'
 }
 
+apply from: rootProject.file('gradle/verify-native-abi.gradle')
+
 version = mod_version
 group = maven_group
 
+apply from: rootProject.file('gradle/distribution.gradle')
+def isCurseForgeDist = rootProject.ext.isCurseForgeDist
+
 repositories {
     mavenLocal()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    maven { url = 'https://maven.creeperhost.net' }
     maven { url = 'https://maven.neoforged.net/releases' }
     maven { url = 'https://jitpack.io' }
     mavenCentral()
 }
 
 base {
-    archivesName = archives_name
+    archivesName = "fox-model-loader-${project.version}-neo1.21.1"
+}
+
+tasks.named("jar") {
+    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-${project.version}-neo1.21.1")
 }
 
 neoForge {
@@ -38,41 +59,62 @@ neoForge {
             sourceSet sourceSets.main
         }
     }
+
+    // ModDevGradle must own the test classpath and the generated Minecraft
+    // artifacts.  A plain Gradle test source set otherwise compiles before
+    // createMinecraftArtifacts on a clean CI runner.
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
+    }
 }
 
+sourceSets.main.java {
+    srcDir 'common/src/main/java'
+    srcDir 'src/neoforge/java'
+    if (!isCurseForgeDist) {
+        srcDir rootProject.ext.distributionNativeJavaSourceDir
+    }
+}
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+if (isCurseForgeDist) {
+    tasks.named('compileJava', JavaCompile) {
+        source = files(
+                fileTree('common/src/main/java'),
+                fileTree('src/neoforge/java'),
+                fileTree('src/curseforge/java')
+        )
+    }
+}
 
 repositories {
     flatDir { dirs 'libs' }
 }
 
-// ImageStream 提供 WebP / AVIF 解码（rip.ysm.imagestream.*）。
-// 部分模型作者会把 WebP 字节直接写进 .png 文件并把 imageFormat 标成 2(PNG)，
-// YSMClientMapper 探测到真签名后会改走 WebpDecoder，本依赖必须存在。
-configurations {
-    bundle {
-        canBeResolved = true
-        canBeConsumed = false
-    }
-}
-
 dependencies {
-    compileOnly files('libs/ImageStream--SNAPSHOT.jar')
-    bundle files('libs/ImageStream--SNAPSHOT.jar')
+    // Optional at runtime. Used only to compile the TaCZ 1.21.1 compatibility bridge.
+    compileOnly "maven.modrinth:OypNE65K:wPvGWIj9"
+    // Optional at runtime. Used only to compile the SlashBlade 1.21.1 compatibility bridge.
+    compileOnly "maven.modrinth:8T53F0sy:u02EDgAr"
+    implementation "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
+    jarJar "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
+
+    // R0: JVM 单测（JUnit 5），测试代码在 src/test/java。
+    // Minecraft / NeoForge 类路径由 neoForge.unitTest 统一管理，避免同时
+    // 注入普通和 merged 工件而在测试启动时产生重复类。
+    testImplementation "org.junit.jupiter:junit-jupiter:5.12.1"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
-// 把 ImageStream 的类直接打进最终 jar，避免 jarJar 元数据与 flatDir 的兼容问题
-jar {
-    from(configurations.bundle.collect { it.isDirectory() ? it : zipTree(it) }) {
-        exclude 'META-INF/MANIFEST.MF'
-        exclude 'META-INF/maven/**'
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+test {
+    useJUnitPlatform()
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 21
+    options.compilerArgs.addAll(["--add-modules", "jdk.incubator.vector"])
 }
 
 java {
@@ -94,5 +136,13 @@ processResources {
 
     filesMatching(['META-INF/neoforge.mods.toml']) {
         expand expandProps
+    }
+
+    from(rootProject.file('LICENSE')) {
+        rename { 'LICENSE' }
+    }
+
+    if (isCurseForgeDist) {
+        rootProject.ext.distributionResourceExcludes(delegate)
     }
 }

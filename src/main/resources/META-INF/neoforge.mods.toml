@@ -2,16 +2,7 @@ modLoader = "javafml"
 loaderVersion = "${loader_version_range}"
 license = "MIT"
 issueTrackerURL="https://github.com/sdf123098/Fox-Model-Loader/issues"
-logoFile="yesstevemodel.png"
-
-[[mixins]]
-config = "yes_steve_model.mixins.json"
-
-[[mixins]]
-config = "yes_steve_model_neoforge.mixins.json"
-
-[[accessTransformers]]
-file = "META-INF/accesstransformer.cfg"
+logoFile="foxmodelloader.png"
 
 [[mods]]
 modId = "${mod_id}"
@@ -19,12 +10,21 @@ version = "${version}"
 displayName = "Fox Model Loader"
 #updateJSONURL=""
 displayURL="https://github.com/sdf123098/Fox-Model-Loader"
-logoFile="yesstevemodel.png"
-credits="YSM Team"
+logoFile="foxmodelloader.png"
+credits=""
 authors="Micaftic"
 description='''
-Fox Model Loader - Custom player model system for Minecraft.
+Fox Model Loader (Fox Model Loader) - Custom player model system for Minecraft.
 '''
+
+[[mixins]]
+config = "foxmodelloader.mixins.json"
+
+[[mixins]]
+config = "foxmodelloader_neoforge.mixins.json"
+
+[[accessTransformers]]
+file = "META-INF/accesstransformer.cfg"
 
 [[dependencies.${mod_id}]]
 modId = "neoforge"
@@ -38,4 +38,18 @@ modId = "minecraft"
 type = "required"
 versionRange = "${mc_version}"
 ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "touhou_little_maid"
+type = "optional"
+versionRange = "[0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "slashblade"
+type = "optional"
+versionRange = "[0,)"
+ordering = "AFTER"
 side = "BOTH"
