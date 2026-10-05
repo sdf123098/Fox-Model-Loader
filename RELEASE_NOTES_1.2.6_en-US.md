@@ -1,4 +1,4 @@
-# Fox Model Loader 1.2.6
+# Fox Model Loader: Revival 1.2.6
 
 ## Responsive 3D card catalog / i18n completion / Paper Doll split and ride fixes
 
@@ -7,7 +7,7 @@ Supported branches: Fabric 1.21.1, Fabric 26.1.2, Fabric 26.2, NeoForge 1.21.1, 
 
 > **English** | [中文](RELEASE_NOTES_1.2.6_zh-CN.md)
 
-Fox Model Loader 1.2.6 brings a **responsive live-3D card catalog** to the model picker, adds **Traditional Chinese (Hong Kong) and Literary Chinese (lzh)** while localizing built-in model metadata into **15 languages**, splits the player paper-doll rendering out of a single file into a maintainable preview package with a set of classic HUD doll options, and fixes two bugs: **Happy Ghast sit pose** and **non-player model selection leaking into the player's own selection**. All six source repositories are synchronized, clean-built, and pushed to their GitHub branches.
+Fox Model Loader: Revival 1.2.6 brings a **responsive live-3D card catalog** to the model picker, adds **Traditional Chinese (Hong Kong) and Literary Chinese (lzh)** while localizing built-in model metadata into **15 languages**, splits the player paper-doll rendering out of a single file into a maintainable preview package with a set of classic HUD doll options, and fixes two bugs: **Happy Ghast sit pose** and **non-player model selection leaking into the player's own selection**. All six source repositories are synchronized, clean-built, and pushed to their GitHub branches.
 
 ### Highlights
 

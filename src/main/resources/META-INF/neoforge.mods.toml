@@ -7,14 +7,14 @@ logoFile="foxmodelloader.png"
 [[mods]]
 modId = "${mod_id}"
 version = "${version}"
-displayName = "Fox Model Loader"
+displayName = "Fox Model Loader: Revival"
 #updateJSONURL=""
 displayURL="https://github.com/sdf123098/Fox-Model-Loader"
 logoFile="foxmodelloader.png"
 credits=""
 authors="Micaftic"
 description='''
-Fox Model Loader (Fox Model Loader) - Custom player model system for Minecraft.
+Fox Model Loader: Revival - Custom player model system for Minecraft.
 '''
 
 [[mixins]]

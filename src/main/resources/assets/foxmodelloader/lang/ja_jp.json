@@ -650,7 +650,7 @@
   "gui.foxmodelloader.upload_custom_folder.upload_one": "アップロード",
   "gui.foxmodelloader.url.donate": "寄付する",
   "gui.foxmodelloader.url.home": "ホームページ",
-  "key.category.foxmodelloader": "花火のモーファー",
+  "key.category.foxmodelloader": "Fox Model Loader: Revival",
   "key.foxmodelloader.animation_roulette.desc": "アニメーションルーレットを開く",
   "key.foxmodelloader.debug_animation.desc": "アニメーションデバッグを開く",
   "key.foxmodelloader.extra_animation.0.desc": "エクストラアニメーション0を再生",
@@ -686,7 +686,7 @@
   "message.foxmodelloader.roulette.editor.reverted": "カスタムルーレット設定を復元しました",
   "message.foxmodelloader.roulette.editor.saved": "カスタムルーレット設定を保存しました",
   "modmenu.descriptionTranslation.foxmodelloader": "このModでは、デフォルトのプレイヤーモデルを置き換え、外見やアニメーションを自由に変更できます。Bedrock Edition形式のモデルファイルとアニメーションファイルに対応しています。",
-  "modmenu.nameTranslation.foxmodelloader": "花火のモーファー",
+  "modmenu.nameTranslation.foxmodelloader": "Fox Model Loader: Revival",
   "modmenu.summaryTranslation.foxmodelloader": "プレイヤーの外見とアニメーションの変更",
   "subtitle.foxmodelloader.custom": "SMカスタムサウンド",
   "top.foxmodelloader.model_info.id": "SMモデル: ",
@@ -830,7 +830,7 @@
   "gui.foxmodelloader.model_panel.setting.privacy_mode": "プライバシーモード（ローカルモデルのみ）",
   "gui.foxmodelloader.model_panel.setting.disable_face_culling": "モデルの面カリングを無効化",
   "gui.foxmodelloader.model_panel.setting.lazy_model_loading": "オンデマンドモデル読み込み",
-  "message.foxmodelloader.privacy_mode.enabled": "プライバシーモードが有効です。サーバーモデルの同期と、Fox Model Loaderのクライアントからサーバーへの通信はすべてブロックされます。",
+  "message.foxmodelloader.privacy_mode.enabled": "プライバシーモードが有効です。サーバーモデルの同期と、Fox Model Loader: Revivalのクライアントからサーバーへの通信はすべてブロックされます。",
   "message.foxmodelloader.privacy_mode.reconnect": "プライバシーモードは切断するまで有効です。再接続するとサーバー同期が再開されます。",
   "gui.foxmodelloader.model_panel.model.on_demand": "初回使用時に読み込み"
 }

@@ -650,7 +650,7 @@
   "gui.foxmodelloader.upload_custom_folder.upload_one": "Subir",
   "gui.foxmodelloader.url.donate": "Donar",
   "gui.foxmodelloader.url.home": "Página de inicio",
-  "key.category.foxmodelloader": "Morfeador de Sparkle",
+  "key.category.foxmodelloader": "Fox Model Loader: Revival",
   "key.foxmodelloader.animation_roulette.desc": "Abrir Ruleta de animación",
   "key.foxmodelloader.debug_animation.desc": "Abrir Debug de animaciones",
   "key.foxmodelloader.extra_animation.0.desc": "Reproducir Animación Extra 0",
@@ -686,7 +686,7 @@
   "message.foxmodelloader.roulette.editor.reverted": "Diseño de ruleta personalizada restaurado",
   "message.foxmodelloader.roulette.editor.saved": "Diseño de ruleta personalizada guardado",
   "modmenu.descriptionTranslation.foxmodelloader": "Este mod permite reemplazar el modelo predeterminado del jugador y modificar libremente la apariencia y las animaciones. Es compatible con archivos de modelo y animación en formato Bedrock Edition.",
-  "modmenu.nameTranslation.foxmodelloader": "Morfeador de Sparkle",
+  "modmenu.nameTranslation.foxmodelloader": "Fox Model Loader: Revival",
   "modmenu.summaryTranslation.foxmodelloader": "Modificación de apariencia y animaciones del jugador",
   "subtitle.foxmodelloader.custom": "Sonido custom de SM",
   "top.foxmodelloader.model_info.id": "Modelo SM: ",
@@ -830,7 +830,7 @@
   "gui.foxmodelloader.model_panel.setting.privacy_mode": "Modo privacidad (solo modelos locales)",
   "gui.foxmodelloader.model_panel.setting.disable_face_culling": "Desactivar el descarte de caras del modelo",
   "gui.foxmodelloader.model_panel.setting.lazy_model_loading": "Carga de modelos bajo demanda",
-  "message.foxmodelloader.privacy_mode.enabled": "Modo privacidad activado. La sincronización de modelos con el servidor y todo el tráfico de cliente a servidor de Fox Model Loader están bloqueados.",
+  "message.foxmodelloader.privacy_mode.enabled": "Modo privacidad activado. La sincronización de modelos con el servidor y todo el tráfico de cliente a servidor de Fox Model Loader: Revival están bloqueados.",
   "message.foxmodelloader.privacy_mode.reconnect": "El modo privacidad permanecerá activo hasta que te desconectes. Vuelve a conectarte para reanudar la sincronización con el servidor.",
   "gui.foxmodelloader.model_panel.model.on_demand": "Se carga al usarse por primera vez"
 }

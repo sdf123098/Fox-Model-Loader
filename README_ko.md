@@ -1,6 +1,8 @@
-# Fox Model Loader 2.0
+# Fox Model Loader: Revival 2.0
 
-Fox Model Loader **2.0**은 Sparkle Morpher **1.2.9** 소스 코드를 기반으로 다시 시작합니다. 모드 ID와 리소스 네임스페이스는 `foxmodelloader`입니다. 기존 Minecraft 서버 동기화를 유지하므로 멀티플레이 모델 공유에는 서버와 클라이언트 모두 모드를 설치해야 합니다. 개별 모델 ID와 `.ysm` 형식은 유지됩니다.
+<img src="src/main/resources/foxmodelloader.png" alt="Fox Model Loader: Revival" width="160">
+
+Fox Model Loader: Revival **2.0**은 Sparkle Morpher **1.2.9** 소스 코드를 기반으로 다시 시작합니다. 모드 ID와 리소스 네임스페이스는 `foxmodelloader`입니다. 기존 Minecraft 서버 동기화를 유지하므로 멀티플레이 모델 공유에는 서버와 클라이언트 모두 모드를 설치해야 합니다. 개별 모델 ID와 `.ysm` 형식은 유지됩니다.
 
 > [English](README.md) | [中文](README_zh.md) | [日本語](README_ja.md) | **한국어**
 
@@ -77,7 +79,7 @@ Minecraft 1.21.1, 26.1.2, 26.2의 Fabric 및 NeoForge를 위한 6개 빌드를 �
 
 ### 모델 임포트 파이프라인
 
-모델 파일을 임포트하면 Fox Model Loader가 지능형 처리 파이프라인을 실행합니다:
+모델 파일을 임포트하면 Fox Model Loader: Revival가 지능형 처리 파이프라인을 실행합니다:
 
 1. **ZIP 스니핑** — 아카이브를 콘텐츠로 분류: YSM 폴더、Figura 아바타(`avatar.json` + `.bbmodel` 포함)、일반 BBModel ZIP 또는 미지정.
 2. **파싱** — `.ysm` 파일은 YSMParser로 처리. `.bbmodel` 파일은 내장 `BBModelParser`로 아웃라인 트리、큐브/메쉬 요소、텍스처、애니메이션、컨트롤러 상태를 처리.
@@ -99,7 +101,7 @@ Blockbench 형식을 완전 지원:
 
 ## 아키텍처
 
-Fox Model Loader는**공통 코어 + 플랫폼 어댑터**계층 아키텍처를 채택:
+Fox Model Loader: Revival는**공통 코어 + 플랫폼 어댑터**계층 아키텍처를 채택:
 
 - **`common`** — 모든 변형이 공유하는 코어 로직: 모델 파싱、메쉬 처리、ZIP 스니핑、애니메이션 컨트롤러、오디오 디코딩、Molang 평가.
 - **`fabric`** / **`neoforge`** — 초기화、네트워킹、컴포넌트 등록、렌더링 훅을 처리하는 플랫폼별 어댑터.

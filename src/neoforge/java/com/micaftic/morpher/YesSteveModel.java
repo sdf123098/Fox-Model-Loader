@@ -20,7 +20,7 @@ public class YesSteveModel {
     private YesSteveModel() {}
     public static void init() {
         ModelStoragePaths.init(net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get().resolve(MOD_ID));
-        LOGGER.info("Initializing Fox Model Loader, platform: " + PlatformAPI.getPlatformName());
+        LOGGER.info("Initializing Fox Model Loader: Revival, platform: " + PlatformAPI.getPlatformName());
         try { RuntimeAccelerationLoader.init(); } catch (IOException e) { LOGGER.error("Failed to initialize native lib", e); }
         if (!RuntimeAccelerationLoader.isAvailable()) LOGGER.error(getErrorMessage());
         CommonEvent.init();

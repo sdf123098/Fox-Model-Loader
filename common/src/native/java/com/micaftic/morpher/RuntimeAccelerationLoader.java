@@ -118,7 +118,7 @@ public final class RuntimeAccelerationLoader {
             }
             detail = "expected sha256 " + artifact.sha256() + ", got " + actual;
         }
-        String msg = "YSM_CORE_LIB override is not a trusted Fox Model Loader native build (" + detail + "): "
+        String msg = "YSM_CORE_LIB override is not a trusted Fox Model Loader: Revival native build (" + detail + "): "
                 + overridePath + ". Refusing to load a stale or unknown native library. "
                 + "Set YSM_CORE_LIB_FORCE=1 only if you built it yourself.";
         YesSteveModel.LOGGER.error("Failed native trust chain: {}", msg);

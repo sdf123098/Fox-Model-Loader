@@ -1,4 +1,4 @@
-# Fox Model Loader 1.2.5
+# Fox Model Loader: Revival 1.2.5
 
 ## Player Visual Runtime / Render Pipeline and Developer Tooling
 
@@ -7,7 +7,7 @@ Supported branches: Fabric 1.21.1, Fabric 26.1.2, Fabric 26.2, NeoForge 1.21.1, 
 
 > **English** | [中文](RELEASE_NOTES_1.2.5_zh-CN.md)
 
-Fox Model Loader 1.2.5 delivers the **Player Visual Runtime** stage of the 1.2.x plan, adds a default-off Blaze3D frame-graph render channel, and gives model authors a unified **Developer options** panel. All six actual source repositories were synchronized, cleanly built, and pushed to their matching GitHub branches.
+Fox Model Loader: Revival 1.2.5 delivers the **Player Visual Runtime** stage of the 1.2.x plan, adds a default-off Blaze3D frame-graph render channel, and gives model authors a unified **Developer options** panel. All six actual source repositories were synchronized, cleanly built, and pushed to their matching GitHub branches.
 
 ### Highlights
 

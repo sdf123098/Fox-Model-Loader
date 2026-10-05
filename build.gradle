@@ -31,11 +31,11 @@ repositories {
 }
 
 base {
-    archivesName = "fox-model-loader-${project.version}-neo1.21.1"
+    archivesName = "fox-model-loader-revival-${project.version}-neo1.21.1"
 }
 
 tasks.named("jar") {
-    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-${project.version}-neo1.21.1")
+    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-revival-${project.version}-neo1.21.1")
 }
 
 neoForge {

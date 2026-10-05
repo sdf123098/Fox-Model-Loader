@@ -650,7 +650,7 @@
   "gui.foxmodelloader.upload_custom_folder.upload_one": "Tải lên",
   "gui.foxmodelloader.url.donate": "Quyên góp",
   "gui.foxmodelloader.url.home": "Trang chủ",
-  "key.category.foxmodelloader": "Bộ Biến Hình của Sparkle",
+  "key.category.foxmodelloader": "Fox Model Loader: Revival",
   "key.foxmodelloader.animation_roulette.desc": "Mở Hoạt Ảnh Roulette",
   "key.foxmodelloader.debug_animation.desc": "Bật gỡ lỗi hoạt ảnh",
   "key.foxmodelloader.extra_animation.0.desc": "Phát hoạt ảnh bổ sung 0",
@@ -686,7 +686,7 @@
   "message.foxmodelloader.roulette.editor.reverted": "Bố cục roulette tùy chỉnh đã hoàn nguyên",
   "message.foxmodelloader.roulette.editor.saved": "Bố cục roulette tùy chỉnh đã lưu",
   "modmenu.descriptionTranslation.foxmodelloader": "Mod này cho phép thay thế mô hình người chơi mặc định và tự do chỉnh sửa ngoại hình cùng hoạt ảnh. Mod hỗ trợ tệp mô hình và hoạt ảnh định dạng Bedrock Edition.",
-  "modmenu.nameTranslation.foxmodelloader": "Bộ Biến Hình của Sparkle",
+  "modmenu.nameTranslation.foxmodelloader": "Fox Model Loader: Revival",
   "modmenu.summaryTranslation.foxmodelloader": "Thay đổi ngoại hình và hoạt ảnh người chơi",
   "subtitle.foxmodelloader.custom": "Âm Thanh Tuỳ Chỉnh SM",
   "top.foxmodelloader.model_info.id": " Mô hình: ",
@@ -830,7 +830,7 @@
   "gui.foxmodelloader.model_panel.setting.privacy_mode": "Chế độ riêng tư (chỉ mô hình cục bộ)",
   "gui.foxmodelloader.model_panel.setting.disable_face_culling": "Tắt loại bỏ mặt mô hình",
   "gui.foxmodelloader.model_panel.setting.lazy_model_loading": "Tải mô hình theo yêu cầu",
-  "message.foxmodelloader.privacy_mode.enabled": "Đã bật chế độ riêng tư. Đồng bộ mô hình máy chủ và mọi lưu lượng từ máy khách tới máy chủ của Fox Model Loader đều bị chặn.",
+  "message.foxmodelloader.privacy_mode.enabled": "Đã bật chế độ riêng tư. Đồng bộ mô hình máy chủ và mọi lưu lượng từ máy khách tới máy chủ của Fox Model Loader: Revival đều bị chặn.",
   "message.foxmodelloader.privacy_mode.reconnect": "Chế độ riêng tư sẽ duy trì cho đến khi bạn ngắt kết nối. Kết nối lại để tiếp tục đồng bộ máy chủ.",
   "gui.foxmodelloader.model_panel.model.on_demand": "Tải khi dùng lần đầu"
 }

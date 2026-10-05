@@ -650,7 +650,7 @@
   "gui.foxmodelloader.upload_custom_folder.upload_one": "Завантажити",
   "gui.foxmodelloader.url.donate": "Пожертвувати",
   "gui.foxmodelloader.url.home": "Домашня сторінка",
-  "key.category.foxmodelloader": "Морфер Спарклі",
+  "key.category.foxmodelloader": "Fox Model Loader: Revival",
   "key.foxmodelloader.animation_roulette.desc": "Відкрити рулетку анімацій",
   "key.foxmodelloader.debug_animation.desc": "Відкрити налагодження анімації",
   "key.foxmodelloader.extra_animation.0.desc": "Відтворити додаткову анімацію 0",
@@ -686,7 +686,7 @@
   "message.foxmodelloader.roulette.editor.reverted": "Макет користувацької рулетки скасовано",
   "message.foxmodelloader.roulette.editor.saved": "Макет користувацької рулетки збережено",
   "modmenu.descriptionTranslation.foxmodelloader": "Цей мод дозволяє замінювати стандартну модель гравця та вільно змінювати зовнішність і анімації. Він підтримує файли моделей і анімацій формату Bedrock Edition.",
-  "modmenu.nameTranslation.foxmodelloader": "Морфер Спарклі",
+  "modmenu.nameTranslation.foxmodelloader": "Fox Model Loader: Revival",
   "modmenu.summaryTranslation.foxmodelloader": "Зміна зовнішності та анімацій гравця",
   "subtitle.foxmodelloader.custom": "Власний звук",
   "top.foxmodelloader.model_info.id": " Модель: ",
@@ -830,7 +830,7 @@
   "gui.foxmodelloader.model_panel.setting.privacy_mode": "Режим приватності (лише локальні моделі)",
   "gui.foxmodelloader.model_panel.setting.disable_face_culling": "Вимкнути відсікання граней моделі",
   "gui.foxmodelloader.model_panel.setting.lazy_model_loading": "Завантаження моделей на вимогу",
-  "message.foxmodelloader.privacy_mode.enabled": "Режим приватності увімкнено. Синхронізацію моделей із сервером і весь трафік Fox Model Loader від клієнта до сервера заблоковано.",
+  "message.foxmodelloader.privacy_mode.enabled": "Режим приватності увімкнено. Синхронізацію моделей із сервером і весь трафік Fox Model Loader: Revival від клієнта до сервера заблоковано.",
   "message.foxmodelloader.privacy_mode.reconnect": "Режим приватності діятиме, доки ви не від’єднаєтеся. Повторно підключіться, щоб відновити синхронізацію з сервером.",
   "gui.foxmodelloader.model_panel.model.on_demand": "Завантажується при першому використанні"
 }
