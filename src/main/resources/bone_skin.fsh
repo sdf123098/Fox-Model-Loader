@@ -10,6 +10,7 @@ uniform float u_fogEnd;
 uniform vec4  u_fogColor;
 uniform int   u_alphaMode;
 in float v_cullable;
+flat in float v_facingSign;
 
 in vec2  v_uv;
 in vec3  v_normal;
@@ -26,7 +27,8 @@ vec4 linearFog(vec4 inColor, float vd, float fs, float fe, vec4 fc) {
 }
 
 void main() {
-    if (u_alphaMode != 2 && v_cullable > 0.5 && !gl_FrontFacing) {
+    bool doCull = v_facingSign >= 0.0;
+    if (doCull && u_alphaMode != 2 && v_cullable > 0.5 && !gl_FrontFacing) {
         discard;
     }
 
