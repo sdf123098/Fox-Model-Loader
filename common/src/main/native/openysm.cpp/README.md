@@ -1,4 +1,4 @@
-# Fox Model Loader 2.0 native renderer
+# Fox Model Loader: Revival 2.0 native renderer
 
 This directory is the native source used by this branch. It is independent of the SPM workspace.
 

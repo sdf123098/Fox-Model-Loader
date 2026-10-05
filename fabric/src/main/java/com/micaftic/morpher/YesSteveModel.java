@@ -40,7 +40,7 @@ public class YesSteveModel {
 
     public static void init() {
         ModelStoragePaths.init(Platform.getConfigFolder().resolve(MOD_ID));
-        LOGGER.info("Initializing Fox Model Loader, platform: " + PlatformAPI.getPlatformName());
+        LOGGER.info("Initializing Fox Model Loader: Revival, platform: " + PlatformAPI.getPlatformName());
         try {
             RuntimeAccelerationLoader.init();
         } catch (IOException e) {

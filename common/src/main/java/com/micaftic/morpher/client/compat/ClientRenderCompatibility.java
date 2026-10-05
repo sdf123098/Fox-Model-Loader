@@ -24,7 +24,7 @@ public interface ClientRenderCompatibility {
         return false;
     }
 
-    /** Called immediately after discovery, before Fox Model Loader starts loading client models. */
+    /** Called immediately after discovery, before Fox Model Loader: Revival starts loading client models. */
     default void initialize() {
     }
 

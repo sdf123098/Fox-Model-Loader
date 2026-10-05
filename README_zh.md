@@ -1,6 +1,8 @@
-# Fox Model Loader 2.0
+# Fox Model Loader: Revival 2.0
 
-Fox Model Loader **2.0** 基于 Sparkle Morpher **1.2.9** 源码重新开始维护。模组 ID 与资源命名空间统一为 `foxmodelloader`。此版本保留原有 Minecraft 服务端同步；联机共享模型需要服务器与客户端都安装模组。各模型自身的 ID 与 `.ysm` 格式保持兼容。
+<img src="common/src/main/resources/foxmodelloader.png" alt="Fox Model Loader: Revival" width="160">
+
+Fox Model Loader: Revival **2.0** 基于 Sparkle Morpher **1.2.9** 源码重新开始维护。模组 ID 与资源命名空间统一为 `foxmodelloader`。此版本保留原有 Minecraft 服务端同步；联机共享模型需要服务器与客户端都安装模组。各模型自身的 ID 与 `.ysm` 格式保持兼容。
 
 > [English](README.md) | **中文** | [日本語](README_ja.md) | [한국어](README_ko.md)
 
@@ -89,7 +91,7 @@ BandwidthLimit = 5
 
 ### 模型导入管线
 
-导入模型文件时，Fox Model Loader 会执行智能处理管线：
+导入模型文件时，Fox Model Loader: Revival 会执行智能处理管线：
 
 1. **压缩包嗅探** — 按内容分类：YSM 文件夹、Figura 头像（含 `avatar.json` + `.bbmodel`）、纯 BBModel 压缩包或未知格式。
 2. **解析** — `.ysm` 文件经 YSMParser 处理；`.bbmodel` 文件由内置 `BBModelParser` 解析，处理大纲树、立方体/网格元素、纹理、动画和控制器状态。
@@ -111,7 +113,7 @@ BandwidthLimit = 5
 
 ## 架构
 
-Fox Model Loader 采用**公共核心 + 平台适配器**分层架构：
+Fox Model Loader: Revival 采用**公共核心 + 平台适配器**分层架构：
 
 - **`common`** — 所有变体共享的核心逻辑：模型解析、网格处理、压缩包嗅探、动画控制器、音频解码和 Molang 求值。
 - **`fabric`** / **`neoforge`** — 平台特定适配器，处理初始化、网络通信、组件注册和渲染钩子。
