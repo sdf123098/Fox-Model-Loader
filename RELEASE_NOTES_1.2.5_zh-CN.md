@@ -1,4 +1,4 @@
-# Fox Model Loader 1.2.5
+# Fox Model Loader: Revival 1.2.5
 
 ## Player Visual Runtime / 渲染管线与开发者工具
 
@@ -7,7 +7,7 @@
 
 > [English](RELEASE_NOTES_1.2.5_en-US.md) | **中文**
 
-Fox Model Loader 1.2.5 完成 1.2.x 计划中的 **Player Visual Runtime** 阶段，新增一条默认关闭的 Blaze3D 帧图渲染通道，并为模型作者补上统一的「开发者选项」面板。六个实际代码仓库均已同步、干净构建并推送到对应 GitHub 分支。
+Fox Model Loader: Revival 1.2.5 完成 1.2.x 计划中的 **Player Visual Runtime** 阶段，新增一条默认关闭的 Blaze3D 帧图渲染通道，并为模型作者补上统一的「开发者选项」面板。六个实际代码仓库均已同步、干净构建并推送到对应 GitHub 分支。
 
 ### 主要内容
 

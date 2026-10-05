@@ -248,7 +248,7 @@ public class GeneralConfig {
         WARN_REPEATED_ANIMATION_EVALUATION = builder.define("WarnRepeatedAnimationEvaluation", true);
         builder.comment("Reduce animation update rates for distant entities. Disabled by default for smoother animation.");
         ANIMATION_DISTANCE_LOD = builder.define("AnimationDistanceLod", false);
-        builder.comment("Use the incubating Java Vector API for part of the Java fallback renderer. Experimental and default off; if the module is unavailable, Fox Model Loader automatically falls back to scalar Java math.");
+        builder.comment("Use the incubating Java Vector API for part of the Java fallback renderer. Experimental and default off; if the module is unavailable, Fox Model Loader: Revival automatically falls back to scalar Java math.");
         EXPERIMENTAL_JAVA_VECTOR_RENDERER = builder.define("ExperimentalJavaVectorRenderer", false);
         builder.comment("Print [SM-NATIVE-COMPAT] diagnostics when a model uses Native SIMD compatibility culling safeguards. Intended for model troubleshooting only.");
         NATIVE_SIMD_COMPATIBILITY_LOG = builder.define("NativeSimdCompatibilityLog", false);
@@ -266,7 +266,7 @@ public class GeneralConfig {
         MAX_CACHED_GPU_MODELS = builder.defineInRange("MaxCachedGpuModels", 0, 0, 512);
         builder.comment("Load local and cached server models only when they are first rendered or selected.");
         LAZY_MODEL_LOADING = builder.define("LazyModelLoading", true);
-        builder.comment("Use local models only and block all Fox Model Loader client-to-server traffic.");
+        builder.comment("Use local models only and block all Fox Model Loader: Revival client-to-server traffic.");
         PRIVACY_MODE = builder.define("PrivacyMode", false);
         builder.comment("Maximum models whose CPU geometry and animation data stay resident. Idle models reload from their source when used again.");
         MAX_RESIDENT_CPU_MODELS = builder.defineInRange("MaxResidentCpuModels", 64, 1, 512);

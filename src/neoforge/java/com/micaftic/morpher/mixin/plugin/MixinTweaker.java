@@ -23,7 +23,7 @@ public class MixinTweaker implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String str, String str2) {
         String simpleName = str2 == null ? "" : str2.substring(str2.lastIndexOf('.') + 1);
         if (isTouhouLittleMaidCompatMixin(simpleName) && !isTouhouLittleMaidPresent()) {
-            System.out.println("[Fox Model Loader] TouhouLittleMaid not installed, skipping compat mixin: " + str2);
+            System.out.println("[Fox Model Loader: Revival] TouhouLittleMaid not installed, skipping compat mixin: " + str2);
             return false;
         }
         return true;

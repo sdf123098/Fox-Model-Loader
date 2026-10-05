@@ -14,9 +14,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Injects three Fox Model Loader buttons into the vanilla pause screen
+ * Injects three Fox Model Loader: Revival buttons into the vanilla pause screen
  * when the server has the Android online-model bridge enabled. The set
- * is identical across all Fox Model Loader subprojects: skin,
+ * is identical across all Fox Model Loader: Revival subprojects: skin,
  * animation roulette, and a YSM settings shortcut.
  */
 public class PauseScreenButtonBuilder {

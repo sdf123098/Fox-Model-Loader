@@ -30,7 +30,7 @@ public final class YesSteveModelNeoForge {
                     .getMethod("init", IEventBus.class, ModContainer.class)
                     .invoke(null, modBus, container);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Failed to initialize Fox Model Loader client hooks", e);
+            throw new RuntimeException("Failed to initialize Fox Model Loader: Revival client hooks", e);
         }
     }
 }
