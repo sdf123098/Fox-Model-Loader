@@ -2,6 +2,12 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
+loom {
+    accessWidenerPath = file('src/main/resources/foxmodelloader.accesswidener')
+}
+
+apply from: rootProject.file('gradle/verify-native-abi.gradle')
+
 configurations {
     shadowBundle {
         canBeResolved = true
@@ -9,47 +15,78 @@ configurations {
     }
 }
 
-def releaseArchiveName = "${rootProject.archives_name}-${project.version}-fa26.1.x"
+def releaseArchiveName = "${rootProject.archives_name}-${project.version}-fa26.2"
 
 sourceSets {
     main {
         java {
             srcDir rootProject.file('common/src/main/java')
+            if (!rootProject.ext.isCurseForgeDist) {
+                srcDir rootProject.ext.distributionNativeJavaSourceDir
+            }
         }
         resources {
             srcDir rootProject.file('common/src/main/resources')
             exclude 'native/**'
         }
     }
+    // R0: JVM 单测挂靠 fabric 模块，但测试代码随核心代码放 common/src/test/java，
+    // 未来抽 spm-core 模块时测试自然跟随。
+    test {
+        java {
+            srcDir rootProject.file('common/src/test/java')
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    // jdk.zipfs 不在默认 ALL-DEFAULT 解析集（java.se 闭包不含），.ysm 容器解析需要 jar: FileSystem
+    jvmArgs "--add-modules", "jdk.zipfs"
+}
+
+if (rootProject.ext.isCurseForgeDist) {
+    tasks.named('compileJava', JavaCompile) {
+        source = files(
+                fileTree('src/main/java'),
+                fileTree(rootProject.file('common/src/main/java')),
+                fileTree(rootProject.file('common/src/curseforge/java'))
+        )
+    }
 }
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
-    modImplementation fabricApi.module("fabric-networking-api-v1", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-entity-events-v1", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-command-api-v2", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-rendering-v1", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-sound-api-v1", rootProject.fabric_api_version)
-    // fabric-key-binding-api-v1 not compatible with custom Mojang mappings
+    testImplementation "org.junit.jupiter:junit-jupiter:5.12.1"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
-    modImplementation "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
-    include "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
+    // Ship optional renderer integrations as Fabric nested JARs. The compatibility implementation
+    // stays in its own subproject/API entrypoint, while the primary distribution remains one file.
+    include(project(path: ':caustica-compat', configuration: 'namedElements')) {
+        transitive = false
+    }
+
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+
+
+    modImplementation "curse.maven:forge-config-api-port-547434:$rootProject.forge_config_api_port_curse_file_id"
+    include "curse.maven:forge-config-api-port-547434:$rootProject.forge_config_api_port_curse_file_id"
 
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-base:$rootProject.cardinal_components_version"
     modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-entity:$rootProject.cardinal_components_version"
     include "org.ladysnake.cardinal-components-api:cardinal-components-base:$rootProject.cardinal_components_version"
     include "org.ladysnake.cardinal-components-api:cardinal-components-entity:$rootProject.cardinal_components_version"
 
+    implementation "com.electronwill.night-config:core:3.9.0"
+    implementation "com.electronwill.night-config:toml:3.9.0"
+
     modCompileOnly "com.terraformersmc:modmenu:$rootProject.modmenu_version"
 
     implementation "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
     include "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
 
-    implementation "com.github.luben:zstd-jni:$rootProject.zstd_jni_version"
-    include "com.github.luben:zstd-jni:$rootProject.zstd_jni_version"
+    // zstd-jni dependency removed: project now uses YSM native �?pure-Java ZstdUtil �?raw-frame fallback chain.
 }
 
 processResources {
@@ -58,20 +95,49 @@ processResources {
     filesMatching('fabric.mod.json') {
         expand version: project.version
     }
+
+    from(rootProject.file('LICENSE')) {
+        rename { 'LICENSE' }
+    }
+
+    if (rootProject.ext.isCurseForgeDist) {
+        rootProject.ext.distributionResourceExcludes(delegate)
+    }
 }
 
 shadowJar {
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
     archiveFileName = "${releaseArchiveName}-dev-shadow.jar"
-    exclude 'net/minecraft/**'
+    includeEmptyDirs = false
+    eachFile { details ->
+        def path = details.path
+        if (path == 'com/micaftic/morpher/mixin/client/BufferSourceMixin.class') {
+            details.exclude()
+        }
+        if (path.startsWith('net/minecraft/') &&
+                path != 'net/minecraft/client/renderer/MultiBufferSource.class' &&
+                path != 'net/minecraft/client/renderer/MultiBufferSource$BufferSource.class') {
+            details.exclude()
+        }
+    }
 }
 
 remapJar {
     input.set shadowJar.archiveFile
-    archiveFileName = "${releaseArchiveName}.jar"
+    archiveFileName = rootProject.ext.distributionArchiveName(releaseArchiveName)
+
+    doLast {
+        def bundledCompat = zipTree(archiveFile.get().asFile).matching {
+            include 'META-INF/jars/fox-model-loader-caustica-compat-*.jar'
+        }.files
+        if (bundledCompat.size() != 1) {
+            throw new GradleException("Expected exactly one bundled Caustica compatibility JAR, found ${bundledCompat.size()}")
+        }
+    }
 }
 
 tasks.named('remapSourcesJar') {
     archiveFileName = "${releaseArchiveName}-sources.jar"
 }
+

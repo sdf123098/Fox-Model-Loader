@@ -1,0 +1,13 @@
+{
+  "custom": {
+    "category": "neutral",
+    "subtitle": "subtitle.foxmodelloader.custom",
+    "sounds": [
+      {
+        "name": "foxmodelloader:empty",
+        "preload": false,
+        "stream": true
+      }
+    ]
+  }
+}

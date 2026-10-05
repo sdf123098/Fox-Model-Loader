@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "foxmodelloader_caustica_compat",
+  "version": "${version}",
+  "name": "Fox Model Loader Caustica Compatibility",
+  "description": "Optional Caustica PBR and vanilla emissive-material integration for Fox Model Loader.",
+  "authors": ["Micaftic"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "foxmodelloader_render_compat": [
+      "com.micaftic.morpher.compat.caustica.CausticaDynamicPbrResources"
+    ]
+  },
+  "mixins": [
+    "foxmodelloader_caustica_compat.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": ">=26.2 <26.3",
+    "java": ">=25",
+    "fabric-api": "*",
+    "foxmodelloader": ">=1.1.5"
+  },
+  "suggests": {
+    "caustica": "*"
+  }
+}

@@ -3,6 +3,8 @@ plugins {
     id 'com.gradleup.shadow' version '9.0.0-beta4' apply false
 }
 
+apply from: rootProject.file('gradle/distribution.gradle')
+
 allprojects {
     group = rootProject.maven_group
     version = rootProject.mod_version
@@ -30,6 +32,13 @@ subprojects {
             }
         }
         maven {
+            name = "CurseMaven"
+            url = "https://www.cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        }
+        maven {
             name = "JitPack"
             url = "https://jitpack.io"
             content {
@@ -54,7 +63,7 @@ subprojects {
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.layered{
-            mappings file("mappings/mapping.tiny")
+            mappings rootProject.file("fabric/mappings/mapping.tiny")
         }
     }
 
@@ -75,6 +84,7 @@ subprojects {
                 '-Xlint:-removal',
                 '-Xlint:-unchecked',
                 '-nowarn',
+                '--add-modules', 'jdk.incubator.vector',
                 '-Xmaxerrs', '10000',
                 '-Xmaxwarns', '10000'
         ])
@@ -85,6 +95,14 @@ subprojects {
             mavenJava(MavenPublication) {
                 artifactId = base.archivesName.get()
                 from components.java
+            }
+        }
+    }
+
+    afterEvaluate {
+        tasks.withType(ProcessResources).configureEach {
+            if (rootProject.ext.isCurseForgeDist) {
+                rootProject.ext.distributionResourceExcludes(delegate)
             }
         }
     }
