@@ -2,7 +2,30 @@ architectury {
     common rootProject.enabled_platforms.split(',')
 }
 
+loom {
+    // Classic Architectury multi-module layout: common 模块独立编译（:common:compileJava），
+    // 必须自己声明 AW，否则 common 里对 access-widened 成员的直调在编译期仍是 protected。
+    accessWidenerPath = file('../fabric/src/main/resources/foxmodelloader.accesswidener')
+}
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+if (!rootProject.ext.isCurseForgeDist) {
+    sourceSets.main.java.srcDir rootProject.ext.distributionNativeJavaSourceDir
+}
+
+test {
+    useJUnitPlatform()
+}
+
+if (rootProject.ext.isCurseForgeDist) {
+    tasks.named('compileJava', JavaCompile) {
+        source = files(
+                fileTree('src/main/java'),
+                fileTree('src/curseforge/java')
+        )
+    }
+}
 
 dependencies {
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,
@@ -10,78 +33,21 @@ dependencies {
     // Do NOT use other classes from Fabric Loader.
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
+    // R0: JVM 单测（JUnit 5），测试代码在 common/src/test/java，仅依赖核心纯 Java 类。
+    testImplementation "org.junit.jupiter:junit-jupiter:5.12.1"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+
     // Architectury API common artifact — 提供 Event<>、ClientLifecycleEvent、PlayerEvent 等抽象事件类型。
     modCompileOnly "dev.architectury:architectury:$rootProject.architectury_api_version"
 
     // Forge Config API Port — 让 common 在编译期看到 net.minecraftforge.common.ForgeConfigSpec 等类。
     // 运行时不绑定：Forge 平台由 Forge 自身提供这些类，Fabric 平台由 fabric 子项目的 modImplementation 引入 port。
     modCompileOnly "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
+    testRuntimeOnly "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
 
     // ImageStream — 用于 avif/webp/jpeg 解码。运行时由 forge 子项目通过 jar-in-jar 内嵌。
     compileOnly "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
 }
 
-tasks.register('compileNative') {
-    if (true) { // TODO
-        return false
-    }
-    def osName = System.getProperty("os.name").toLowerCase(Locale.ROOT)
-    def isWindows = osName.contains("win")
-    def isLinux = osName.contains("linux")
-    def isMac = osName.contains("mac")
-    def isCI = System.getenv("GITHUB_ACTIONS") == "true"
-
-    def generatedBase = file("src/generated/resources/META-INF/native")
-    def cmake = isWindows ? "cmake.exe" : "cmake"
-    if (!isCI && isMac) cmake = "/opt/local/bin/cmake"
-
-    inputs.dir("src/main/native")
-    outputs.dir(generatedBase)
-
-    onlyIf {
-        try {
-            return [cmake, "--version"].execute().waitFor() == 0
-        } catch (ignored) {
-            println "CMake not found."
-            return false
-        }
-    }
-
-    doLast {
-        def configs
-        if (isWindows) configs = [[arch: "x64", folder: "windows-x64"], [arch: "Win32", folder: "windows-x86"]]
-        else if (isMac) configs = [[arch: "x86_64", folder: "macos-x64"], [arch: "arm64", folder: "macos-arm64"]]
-        else if (isLinux) configs = [[arch: "x64", folder: "linux-x64"]]
-        else configs = []
-
-        def libName = isWindows ? "ysm-core.dll" : (isMac ? "libysm-core.dylib" : "libysm-core.so")
-
-        configs.each { conf ->
-            def buildDir = file("${project.buildDir}/cmake-temp/${conf.folder}")
-            def targetDir = file("${generatedBase}/${conf.folder}")
-            buildDir.mkdirs()
-
-            def configArgs = [cmake, "-S", projectDir.absolutePath, "-B", buildDir.absolutePath, "-DCMAKE_BUILD_TYPE=Release"]
-            if (isWindows) {
-                if (isCI) configArgs += ["-G", "Visual Studio 17 2022"]
-                configArgs += ["-A", conf.arch]
-            } else if (isMac) {
-                configArgs += "-DCMAKE_OSX_ARCHITECTURES=${conf.arch}"
-            }
-            exec { commandLine configArgs }
-
-            exec { commandLine cmake, "--build", buildDir.absolutePath, "--config", "Release" }
-
-            def builtFile = isWindows ? file("${buildDir}/Release/${libName}") : file("${buildDir}/${libName}")
-            if (!builtFile.exists()) throw new GradleException("File not found: ${builtFile}")
-
-            targetDir.mkdirs()
-            copy {
-                from builtFile
-                into targetDir
-            }
-        }
-    }
-}
-
-processResources.dependsOn compileNative
+// R1.3：删除失效的 compileNative 任务（if(true) return false 永不执行）。
+// native 构建/校验属于 openysm.cpp 仓库与 gradle/verify-native-abi.gradle，不在此处。

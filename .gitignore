@@ -106,3 +106,26 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+
+*.class
+*.log
+
+# 运行时日志（游戏/测试产生，勿入库）
+logs/
+common/logs/
+
+# Keep original compile-only compatibility inputs reproducible.
+!libs/**/*.jar
+local-maven/
+
+# Native compiler outputs
+**/zig-out/
+**/.zig-cache/
+
+# Local tools and generated distribution files
+.codegraph/
+.architectury-transformer/
+dist/
+.gradle/
+**/build/
+**/run/

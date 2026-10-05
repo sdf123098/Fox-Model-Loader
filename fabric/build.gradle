@@ -2,6 +2,12 @@ plugins {
     id 'com.github.johnrengelman.shadow'
 }
 
+loom {
+    accessWidenerPath = file('src/main/resources/foxmodelloader.accesswidener')
+}
+
+apply from: rootProject.file('gradle/verify-native-abi.gradle')
+
 architectury {
     platformSetupLoomIde()
     fabric()
@@ -25,12 +31,14 @@ configurations {
 }
 
 dependencies {
+    // Loom 1.14 + JDK21 源码重映射（Mercury）需要 javax.annotation；缺失会导致
+    // cardinal-components 等依赖的 sources 重映射报 Pb(347) 并在配置阶段失败。
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    // Optional at runtime. Used only to compile the TaCZ: Refabricated compatibility bridge.
+    modCompileOnly "maven.modrinth:1j76DVHU:sqMweCpe"
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
-    modImplementation fabricApi.module("fabric-networking-api-v1", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-rendering-v1", rootProject.fabric_api_version)
-    modImplementation fabricApi.module("fabric-sound-api-v1", rootProject.fabric_api_version)
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
 
     modImplementation "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
 
@@ -49,6 +57,12 @@ dependencies {
     include "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
 
     modCompileOnly "maven.modrinth:iris:1.8.8+1.21.1-fabric"
+    implementation "com.electronwill.night-config:core:3.9.0"
+    implementation "com.electronwill.night-config:toml:3.9.0"
+
+    implementation "com.electronwill.night-config:core:3.9.0"
+    implementation "com.electronwill.night-config:toml:3.9.0"
+
     modCompileOnly "com.terraformersmc:modmenu:$rootProject.modmenu_version"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
@@ -63,7 +77,14 @@ processResources {
     }
 
     from(project(':common').sourceSets.main.resources)
+    from(rootProject.file('LICENSE.txt')) {
+        rename { 'LICENSE' }
+    }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    if (rootProject.ext.isCurseForgeDist) {
+        rootProject.ext.distributionResourceExcludes(delegate)
+    }
 }
 
 shadowJar {
@@ -73,5 +94,7 @@ shadowJar {
 
 remapJar {
     input.set shadowJar.archiveFile
-    archiveFileName = "fox-model-loader-${project.version}-fa1.21.1.jar"
+    archiveFileName = rootProject.ext.distributionArchiveName("fox-model-loader-${project.version}-fa1.21.1")
 }
+
+

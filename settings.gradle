@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'yes_steve_model'
+rootProject.name = 'foxmodelloader'
 
 include 'common'
 include 'fabric'
