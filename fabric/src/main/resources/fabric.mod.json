@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "yes_steve_model",
+  "id": "foxmodelloader",
   "version": "${version}",
   "name": "Fox Model Loader",
-  "description": "Originally based on OpenYSM.",
+  "description": "Fox Model Loader (Fox Model Loader) - Custom player model system for Minecraft.",
   "authors": ["Micaftic"],
   "contact": {
     "homepage": "https://github.com/sdf123098/Fox-Model-Loader",
@@ -11,26 +11,27 @@
     "issues": "https://github.com/sdf123098/Fox-Model-Loader/issues"
   },
   "license": "MIT",
-  "icon": "assets/yes_steve_model/texture/mod_icon.png",
+  "icon": "assets/foxmodelloader/texture/mod_icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.elfmcys.yesstevemodel.fabric.YesSteveModelFabric"
+      "com.micaftic.morpher.fabric.YesSteveModelFabric"
     ],
     "client": [
-      "com.elfmcys.yesstevemodel.fabric.client.YesSteveModelFabricClient"
+      "com.micaftic.morpher.fabric.client.YesSteveModelFabricClient"
     ],
     "modmenu": [
-      "com.elfmcys.yesstevemodel.fabric.client.YesSteveModelModMenu"
+      "com.micaftic.morpher.fabric.client.YesSteveModelModMenu"
     ],
     "cardinal-components-entity": [
-      "com.elfmcys.yesstevemodel.fabric.YsmComponents"
+      "com.micaftic.morpher.fabric.YsmComponents"
     ]
   },
   "mixins": [
-    "yes_steve_model.mixins.json",
-    "yes_steve_model_fabric.mixins.json"
+    "foxmodelloader.mixins.json",
+    "foxmodelloader_fabric.mixins.json"
   ],
+  "accessWidener": "foxmodelloader.accesswidener",
   "depends": {
     "fabricloader": ">=0.16.10",
     "minecraft": ">=26.1 <26.2",
@@ -39,15 +40,15 @@
     "forgeconfigapiport": "*"
   },
   "suggests": {
-    "another-mod": "*"
+    "touhou_little_maid": "*"
   },
   "custom": {
     "cardinal-components": [
-      "yes_steve_model:star_models",
-      "yes_steve_model:auth_models",
-      "yes_steve_model:model_info",
-      "yes_steve_model:projectile_model",
-      "yes_steve_model:vehicle_model"
+      "foxmodelloader:star_models",
+      "foxmodelloader:auth_models",
+      "foxmodelloader:model_info",
+      "foxmodelloader:projectile_model",
+      "foxmodelloader:vehicle_model"
     ]
   }
 }

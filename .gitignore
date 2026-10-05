@@ -120,3 +120,25 @@ dist/
 dep.txt
 level_javap.txt
 
+
+*.class
+*.log
+
+# 运行时日志（游戏/测试产生，勿入库）
+fabric/logs/
+
+# Keep original compile-only compatibility inputs reproducible.
+!libs/**/*.jar
+local-maven/
+
+# Native compiler outputs
+**/zig-out/
+**/.zig-cache/
+
+# Local tools and generated distribution files
+.codegraph/
+.architectury-transformer/
+dist/
+.gradle/
+**/build/
+**/run/

@@ -5,3 +5,7 @@ tools/zig/
 tools/android-ndk/
 tools/*.zip
 *.pdb
+
+# Keep original compile-only compatibility inputs reproducible.
+!libs/**/*.jar
+local-maven/

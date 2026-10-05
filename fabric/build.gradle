@@ -2,6 +2,12 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
+loom {
+    accessWidenerPath = file('src/main/resources/foxmodelloader.accesswidener')
+}
+
+apply from: rootProject.file('gradle/verify-native-abi.gradle')
+
 configurations {
     shadowBundle {
         canBeResolved = true
@@ -15,27 +21,46 @@ sourceSets {
     main {
         java {
             srcDir rootProject.file('common/src/main/java')
+            if (!rootProject.ext.isCurseForgeDist) {
+                srcDir rootProject.ext.distributionNativeJavaSourceDir
+            }
         }
         resources {
             srcDir rootProject.file('common/src/main/resources')
             exclude 'native/**'
         }
     }
+    // R0: JVM 单测挂靠 fabric 模块，但测试代码随核心代码放 common/src/test/java，
+    // 未来抽 spm-core 模块时测试自然跟随。
+    test {
+        java {
+            srcDir rootProject.file('common/src/test/java')
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+if (rootProject.ext.isCurseForgeDist) {
+    tasks.named('compileJava', JavaCompile) {
+        source = files(
+                fileTree('src/main/java'),
+                fileTree(rootProject.file('common/src/main/java')),
+                fileTree(rootProject.file('common/src/curseforge/java'))
+        )
+    }
 }
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
-//    modImplementation fabricApi.module("fabric-networking-api-v1", rootProject.fabric_api_version)
-//    modImplementation fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api_version)
-//    modImplementation fabricApi.module("fabric-entity-events-v1", rootProject.fabric_api_version)
-//    modImplementation fabricApi.module("fabric-command-api-v2", rootProject.fabric_api_version)
-//    modImplementation fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api_version)
-//    modImplementation fabricApi.module("fabric-rendering-v1", rootProject.fabric_api_version)
-//    modImplementation fabricApi.module("fabric-sound-api-v1", rootProject.fabric_api_version)
-    // fabric-key-binding-api-v1 not compatible with custom Mojang mappings
+    testImplementation "org.junit.jupiter:junit-jupiter:5.12.1"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+
 
     modImplementation "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
     include "maven.modrinth:forge-config-api-port:$rootProject.forge_config_api_port_version"
@@ -53,8 +78,7 @@ dependencies {
     implementation "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
     include "com.github.TartaricAlkaline:ImageStream:-SNAPSHOT"
 
-    implementation "com.github.luben:zstd-jni:$rootProject.zstd_jni_version"
-    include "com.github.luben:zstd-jni:$rootProject.zstd_jni_version"
+    // zstd-jni dependency removed: project now uses YSM native �?pure-Java ZstdUtil �?raw-frame fallback chain.
 }
 
 processResources {
@@ -62,6 +86,14 @@ processResources {
 
     filesMatching('fabric.mod.json') {
         expand version: project.version
+    }
+
+    from(rootProject.file('LICENSE')) {
+        rename { 'LICENSE' }
+    }
+
+    if (rootProject.ext.isCurseForgeDist) {
+        rootProject.ext.distributionResourceExcludes(delegate)
     }
 }
 
@@ -74,9 +106,10 @@ shadowJar {
 
 remapJar {
     input.set shadowJar.archiveFile
-    archiveFileName = "${releaseArchiveName}.jar"
+    archiveFileName = rootProject.ext.distributionArchiveName(releaseArchiveName)
 }
 
 tasks.named('remapSourcesJar') {
     archiveFileName = "${releaseArchiveName}-sources.jar"
 }
+

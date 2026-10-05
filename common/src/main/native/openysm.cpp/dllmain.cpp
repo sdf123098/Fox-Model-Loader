@@ -195,6 +195,13 @@ static inline uint32_t packNormal_2_10_10_10_REV(float x, float y, float z) {
 }
 
 extern "C" {
+static constexpr jint YSM_NATIVE_ABI_VERSION = 3;
+
+JNIEXPORT jint JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built_GeoModel_nGetAbiVersion(
+    JNIEnv *, jclass) {
+    return YSM_NATIVE_ABI_VERSION;
+}
+
 JNIEXPORT jlong JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built_GeoModel_nInitModelCache(
     JNIEnv *env, jclass clazz, jobject buffer) {
     char *data = (char *) env->GetDirectBufferAddress(buffer);
@@ -349,6 +356,11 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
 
     jfloat *matricesData = static_cast<jfloat *>(env->GetPrimitiveArrayCritical(matrixArray, nullptr));
     jfloat *animData = static_cast<jfloat *>(env->GetPrimitiveArrayCritical(animArray, nullptr));
+    if (!matricesData || !animData) {
+        if (matricesData) env->ReleasePrimitiveArrayCritical(matrixArray, matricesData, JNI_ABORT);
+        if (animData) env->ReleasePrimitiveArrayCritical(animArray, animData, JNI_ABORT);
+        return;
+    }
 
     Mat4 rootPoseMat(matricesData);
     float *rootNormalArr = matricesData + 16;
@@ -405,7 +417,9 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         float animRx = animData[pOffset + 0], animRy = animData[pOffset + 1], animRz = animData[pOffset + 2];
         float animTx = animData[pOffset + 3], animTy = animData[pOffset + 4], animTz = animData[pOffset + 5];
         float animSx = animData[pOffset + 6], animSy = animData[pOffset + 7], animSz = animData[pOffset + 8];
-        float skipChildrenFlag = animData[pOffset + 10];
+        // NOTE: anim[pOffset + 10] (skipChildrenFlag) is intentionally not consumed
+        // here. The Java fallback does not apply a subtree-skip rule on that flag, so
+        // native must match Java (see NATIVE_SIMD_26X_AGGRESSIVE_ROLLOUT_PLAN Phase 1.2).
 
         float px = bone.pivotX * 0.0625f, py = bone.pivotY * 0.0625f, pz = bone.pivotZ * 0.0625f;
         float dx = px - animTx * 0.0625f;
@@ -457,7 +471,10 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         precomp.gn_c2 = _mm_load_ps(&globalNormalMat.m[8]);
         precomp.currentLight = bone.glow ? glowLight : packedLight;
 
-        if (animSx == 0.0f || animSy == 0.0f || animSz == 0.0f) {
+        // Phase 1.1: hide a bone subtree only when ALL scale channels are zero,
+        // matching the Java fallback (calculateBoneMatrixLinear). The previous
+        // any-zero rule hid one-axis-zero bones that Java still renders.
+        if (animSx == 0.0f && animSy == 0.0f && animSz == 0.0f) {
             k += bone.subtreeCount + 1;
             continue;
         }
@@ -490,21 +507,15 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
                 }
             }
             if (outside) {
-                if (skipChildrenFlag != 0.0f) {
-                    k += bone.subtreeCount + 1;
-                } else {
-                    k++;
-                }
+                // Phase 1.2: frustum culling must not skip whole subtrees on the
+                // native-only skipChildrenFlag; Java renders children regardless, so
+                // only this (off-screen) bone is skipped.
+                k++;
                 continue;
             }
         }
 
         model->visibleBones.push_back(bIdx);
-
-        if (skipChildrenFlag != 0.0f) {
-            k += bone.subtreeCount + 1;
-            continue;
-        }
         k++;
     }
 
@@ -536,12 +547,9 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
 
     int actualVertices = 0;
 
-    __m128 p00 = _mm_set1_ps(projMat.m[0]), p01 = _mm_set1_ps(projMat.m[4]), p02 = _mm_set1_ps(projMat.m[8]), p03 =
-            _mm_set1_ps(projMat.m[12]);
-    __m128 p10 = _mm_set1_ps(projMat.m[1]), p11 = _mm_set1_ps(projMat.m[5]), p12 = _mm_set1_ps(projMat.m[9]), p13 =
-            _mm_set1_ps(projMat.m[13]);
-    __m128 p30 = _mm_set1_ps(projMat.m[3]), p31 = _mm_set1_ps(projMat.m[7]), p32 = _mm_set1_ps(projMat.m[11]), p33 =
-            _mm_set1_ps(projMat.m[15]);
+    // Projection-column constants formerly used for the in-native back-face
+    // cull test are removed; culling is now delegated to OpenGL (see comment
+    // in the quad loop below). projMat is still used for frustum culling above.
 
     for (int bIdx: model->visibleBones) {
         const NativeBone &bone = model->bones[bIdx];
@@ -565,25 +573,16 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
             __m128 gY = MADD_PS(gb1, fq.x, MADD_PS(gb5, fq.y, MADD_PS(gb9, fq.z, gb13)));
             __m128 gZ = MADD_PS(gb2, fq.x, MADD_PS(gb6, fq.y, MADD_PS(gb10, fq.z, gb14)));
 
-            if (fq.cullable) {
-                __m128 pX = MADD_PS(p00, gX, MADD_PS(p01, gY, MADD_PS(p02, gZ, p03)));
-                __m128 pY = MADD_PS(p10, gX, MADD_PS(p11, gY, MADD_PS(p12, gZ, p13)));
-                __m128 pW = MADD_PS(p30, gX, MADD_PS(p31, gY, MADD_PS(p32, gZ, p33)));
-
-                __m128 pY_120 = _mm_shuffle_ps(pY, pY, _MM_SHUFFLE(3, 0, 2, 1));
-                __m128 pW_201 = _mm_shuffle_ps(pW, pW, _MM_SHUFFLE(3, 1, 0, 2));
-                __m128 pY_201 = _mm_shuffle_ps(pY, pY, _MM_SHUFFLE(3, 1, 0, 2));
-                __m128 pW_120 = _mm_shuffle_ps(pW, pW, _MM_SHUFFLE(3, 0, 2, 1));
-
-                __m128 sub = _mm_sub_ps(_mm_mul_ps(pY_120, pW_201), _mm_mul_ps(pY_201, pW_120));
-                __m128 mx = _mm_mul_ps(pX, sub);
-                __m128 mx1 = _mm_shuffle_ps(mx, mx, _MM_SHUFFLE(1, 1, 1, 1));
-                __m128 mx2 = _mm_shuffle_ps(mx, mx, _MM_SHUFFLE(2, 2, 2, 2));
-                __m128 sum = _mm_add_ps(mx, _mm_add_ps(mx1, mx2));
-
-                float det = _mm_cvtss_f32(sum);
-                if (det <= 0.0f) continue;
-            }
+            // Back-face culling is delegated to OpenGL (glCullFace GL_BACK), which
+            // the Minecraft entity render pipeline enables. The previous in-native
+            // 2D screen-space determinant test (det <= 0 using only 3 of 4 quad
+            // vertices) was incorrect: it mis-culled visible faces at certain
+            // rotations (broken/missing faces that flickered with camera angle).
+            // Relying on GL matches the Java render path exactly, so NATIVE_SIMD
+            // and Java now produce identical culling behavior. fq.cullable is still
+            // read from the model cache and stored on GpuVertex flags (see mesh
+            // build path), but no longer drives a cull decision here.
+            (void)fq.cullable;
 
             __m128 n_res = MADD_PS(pMat.gn_c0, _mm_set1_ps(fq.nx),
                                    MADD_PS(pMat.gn_c1, _mm_set1_ps(fq.ny), _mm_mul_ps(pMat.gn_c2, _mm_set1_ps(fq.nz))));
@@ -835,11 +834,18 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
     if (!mesh) return;
 
     auto *outRaw = static_cast<BoneDataOut *>(env->GetDirectBufferAddress(outBoneBuffer));
-    if (!outRaw) return;
+    jlong outCapacity = env->GetDirectBufferCapacity(outBoneBuffer);
+    if (!outRaw || outCapacity < static_cast<jlong>(mesh->bones.size() * sizeof(BoneDataOut))) return;
 
     jfloat *rootPose = static_cast<jfloat *>(env->GetPrimitiveArrayCritical(rootPoseArr, nullptr));
     jfloat *rootNormal = static_cast<jfloat *>(env->GetPrimitiveArrayCritical(rootNormalArr, nullptr));
     jfloat *anim = static_cast<jfloat *>(env->GetPrimitiveArrayCritical(animArray, nullptr));
+    if (!rootPose || !rootNormal || !anim) {
+        if (rootPose) env->ReleasePrimitiveArrayCritical(rootPoseArr, rootPose, JNI_ABORT);
+        if (rootNormal) env->ReleasePrimitiveArrayCritical(rootNormalArr, rootNormal, JNI_ABORT);
+        if (anim) env->ReleasePrimitiveArrayCritical(animArray, anim, JNI_ABORT);
+        return;
+    }
 
     Mat4 rootPoseMat(rootPose);
     Mat4 rootNormalMat(UNINITIALIZED);
@@ -870,7 +876,8 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         float animRx = anim[pOffset + 0], animRy = anim[pOffset + 1], animRz = anim[pOffset + 2];
         float animTx = anim[pOffset + 3], animTy = anim[pOffset + 4], animTz = anim[pOffset + 5];
         float animSx = anim[pOffset + 6], animSy = anim[pOffset + 7], animSz = anim[pOffset + 8];
-        float skipChildrenFlag = anim[pOffset + 10];
+        // Phase 1.2: skipChildrenFlag (anim[pOffset + 10]) is intentionally not
+        // consumed; Java fallback does not hide children on this flag.
 
         float px = bone.pivotX * 0.0625f, py = bone.pivotY * 0.0625f, pz = bone.pivotZ * 0.0625f;
         float dx = px - animTx * 0.0625f;
@@ -901,7 +908,8 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         localMat.m[15] = 1.0f;
 
         bool inheritedHidden = (bone.parentIdx != -1) && mesh->hiddenInherited[bone.parentIdx] != 0;
-        bool selfHidden = inheritedHidden || (animSx == 0.0f || animSy == 0.0f || animSz == 0.0f);
+        // Phase 1.1: hide only when ALL scale channels are zero, matching Java.
+        bool selfHidden = inheritedHidden || (animSx == 0.0f && animSy == 0.0f && animSz == 0.0f);
 
         const Mat4 &parentGlobal = (bone.parentIdx != -1) ? mesh->globalTransforms[bone.parentIdx] : rootPoseMat;
         Mat4 &globalMat = mesh->globalTransforms[bIdx];
@@ -921,7 +929,7 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         out.isHidden = selfHidden ? 1 : 0;
         out.pad[0] = out.pad[1] = 0;
 
-        mesh->hiddenInherited[bIdx] = (selfHidden || skipChildrenFlag != 0.0f) ? 1 : 0;
+        mesh->hiddenInherited[bIdx] = selfHidden ? 1 : 0;
     }
 
     env->ReleasePrimitiveArrayCritical(rootPoseArr, rootPose, JNI_ABORT);
@@ -935,9 +943,11 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
     if (!mesh) return;
 
     auto *outRaw = static_cast<BoneDataOut *>(env->GetDirectBufferAddress(outBoneBuffer));
-    if (!outRaw) return;
+    jlong outCapacity = env->GetDirectBufferCapacity(outBoneBuffer);
+    if (!outRaw || outCapacity < static_cast<jlong>(mesh->bones.size() * sizeof(BoneDataOut))) return;
 
     jfloat *anim = static_cast<jfloat *>(env->GetPrimitiveArrayCritical(animArray, nullptr));
+    if (!anim) return;
 
     const int glowLight = (15 << 4) | (15 << 20);
     std::fill(mesh->hiddenInherited.begin(), mesh->hiddenInherited.end(), 0);
@@ -949,7 +959,8 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         float animRx = anim[pOffset + 0], animRy = anim[pOffset + 1], animRz = anim[pOffset + 2];
         float animTx = anim[pOffset + 3], animTy = anim[pOffset + 4], animTz = anim[pOffset + 5];
         float animSx = anim[pOffset + 6], animSy = anim[pOffset + 7], animSz = anim[pOffset + 8];
-        float skipChildrenFlag = anim[pOffset + 10];
+        // Phase 1.2: skipChildrenFlag (anim[pOffset + 10]) is intentionally not
+        // consumed; Java fallback does not hide children on this flag.
 
         float px = bone.pivotX * 0.0625f, py = bone.pivotY * 0.0625f, pz = bone.pivotZ * 0.0625f;
         float dx = px - animTx * 0.0625f;
@@ -980,7 +991,8 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         localMat.m[15] = 1.0f;
 
         bool inheritedHidden = (bone.parentIdx != -1) && mesh->hiddenInherited[bone.parentIdx] != 0;
-        bool selfHidden = inheritedHidden || (animSx == 0.0f || animSy == 0.0f || animSz == 0.0f);
+        // Phase 1.1: hide only when ALL scale channels are zero, matching Java.
+        bool selfHidden = inheritedHidden || (animSx == 0.0f && animSy == 0.0f && animSz == 0.0f);
 
         Mat4 &globalMat = mesh->globalTransforms[bIdx];
         Mat4 localNormalMat = localMat.normalMatrix4x4();
@@ -1004,13 +1016,17 @@ JNIEXPORT void JNICALL Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built
         out.isHidden = selfHidden ? 1 : 0;
         out.pad[0] = out.pad[1] = 0;
 
-        mesh->hiddenInherited[bIdx] = (selfHidden || skipChildrenFlag != 0.0f) ? 1 : 0;
+        mesh->hiddenInherited[bIdx] = selfHidden ? 1 : 0;
     }
 
     env->ReleasePrimitiveArrayCritical(animArray, anim, JNI_ABORT);
 }
 
 static const JNINativeMethod gMethods[] = {
+    {
+        (char *) "nGetAbiVersion", (char *) "()I",
+        reinterpret_cast<void *>(Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built_GeoModel_nGetAbiVersion)
+    },
     {
         (char *) "nInitModelCache", (char *) "(Ljava/nio/ByteBuffer;)J",
         reinterpret_cast<void *>(Java_com_elfmcys_yesstevemodel_geckolib3_geo_render_built_GeoModel_nInitModelCache)
@@ -1094,15 +1110,22 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
         return JNI_ERR;
     }
 
-    jclass clazzModel = env->FindClass("com/elfmcys/yesstevemodel/geckolib3/geo/render/built/GeoModel");
-    if (clazzModel == nullptr) return JNI_ERR;
-    if (env->RegisterNatives(clazzModel, gMethods, sizeof(gMethods) / sizeof(gMethods[0])) < 0) return JNI_ERR;
+    jclass clazzModelAccelerationBridge = env->FindClass(
+        "com/elfmcys/yesstevemodel/geckolib3/geo/render/built/ModelAccelerationBridge");
+    if (clazzModelAccelerationBridge == nullptr) return JNI_ERR;
+    if (env->RegisterNatives(clazzModelAccelerationBridge, gMethods, sizeof(gMethods) / sizeof(gMethods[0])) < 0) {
+        return JNI_ERR;
+    }
 
-    jclass clazzRenderer = env->FindClass("com/elfmcys/yesstevemodel/geckolib3/geo/NativeModelRenderer");
-    if (clazzRenderer != nullptr) {
-        g_NativeModelRendererClass = (jclass) env->NewGlobalRef(clazzRenderer);
-        g_submitVerticesID = env->GetStaticMethodID(g_NativeModelRendererClass, "submitVertices",
-                                                    "(Ljava/lang/Object;ILjava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)V");
+    jclass clazzRenderer = env->FindClass("com/elfmcys/yesstevemodel/geckolib3/geo/ModelRendererBridge");
+    if (clazzRenderer == nullptr) return JNI_ERR;
+    g_NativeModelRendererClass = (jclass) env->NewGlobalRef(clazzRenderer);
+    g_submitVerticesID = env->GetStaticMethodID(g_NativeModelRendererClass, "submitVertices",
+                                                "(Ljava/lang/Object;ILjava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)V");
+    if (g_submitVerticesID == nullptr) {
+        env->DeleteGlobalRef(g_NativeModelRendererClass);
+        g_NativeModelRendererClass = nullptr;
+        return JNI_ERR;
     }
 
     return JNI_VERSION_1_6;

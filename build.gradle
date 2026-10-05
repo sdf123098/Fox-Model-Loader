@@ -3,6 +3,8 @@ plugins {
     id 'com.gradleup.shadow' version '9.0.0-beta4' apply false
 }
 
+apply from: rootProject.file('gradle/distribution.gradle')
+
 allprojects {
     group = rootProject.maven_group
     version = rootProject.mod_version
@@ -75,6 +77,7 @@ subprojects {
                 '-Xlint:-removal',
                 '-Xlint:-unchecked',
                 '-nowarn',
+                '--add-modules', 'jdk.incubator.vector',
                 '-Xmaxerrs', '10000',
                 '-Xmaxwarns', '10000'
         ])
@@ -85,6 +88,14 @@ subprojects {
             mavenJava(MavenPublication) {
                 artifactId = base.archivesName.get()
                 from components.java
+            }
+        }
+    }
+
+    afterEvaluate {
+        tasks.withType(ProcessResources).configureEach {
+            if (rootProject.ext.isCurseForgeDist) {
+                rootProject.ext.distributionResourceExcludes(delegate)
             }
         }
     }
