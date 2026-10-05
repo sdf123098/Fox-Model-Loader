@@ -1,0 +1,88 @@
+# Fox Model Loader 2.0 §10 CI / Regression Gate
+# 同一份模板同步到六分支（作为 §4.6 同步清单的一部分维护）。
+# 每分支独立 job：common tests（含依赖方向边界测试）→ compile → build → artifact smoke。
+name: CI
+
+on:
+  push:
+    branches: ['26.2neoforge']
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref_name }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.branch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - branch: '26.2neoforge'
+            java: '25'
+            gradle_task: ':build'
+            jar_glob: 'build/libs/fox-model-loader-*-neo26.2.jar'
+            mod_meta: 'META-INF/neoforge.mods.toml'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: gradle
+
+      - name: Grant gradlew executable bit
+        run: chmod +x gradlew
+
+      - name: Build (${{ matrix.gradle_task }}) — common tests + compile + build
+        run: ./gradlew ${{ matrix.gradle_task }} --no-daemon --console=plain
+        env:
+          CI: 'true'
+
+      - name: Artifact smoke — jar exists and contains expected entries
+        shell: bash
+        run: |
+          set -eu
+          JAR=$(ls ${{ matrix.jar_glob }} 2>/dev/null | head -1)
+          test -n "$JAR" || { echo "::error::no jar matched ${{ matrix.jar_glob }}"; exit 1; }
+          echo "smoke jar: $JAR"
+          unzip -Z1 "$JAR" > jar-entries.txt
+          grep -q 'com/micaftic/morpher/YesSteveModel.class' jar-entries.txt \
+            || { echo "::error::missing YesSteveModel.class in $JAR"; exit 1; }
+          grep -q '${{ matrix.mod_meta }}' jar-entries.txt \
+            || { echo "::error::missing ${{ matrix.mod_meta }} in $JAR"; exit 1; }
+          grep -q 'natives/windows-x64/ysm-core.dll' jar-entries.txt \
+            || { echo "::error::missing natives in $JAR"; exit 1; }
+          grep -q 'native-manifest.json' jar-entries.txt \
+            || { echo "::error::missing native-manifest.json in $JAR"; exit 1; }
+          echo "smoke OK"
+
+      - name: Modrinth alias contract — uses native distribution
+        shell: bash
+        run: |
+          set -eu
+          ./gradlew -Pdist=modrinth printDistribution --no-daemon --console=plain | tee modrinth-distribution.txt
+          grep -q '^distribution=native$' modrinth-distribution.txt
+
+      - name: CurseForge variant build
+        run: ./gradlew ${{ matrix.gradle_task }} -Pdist=curseforge --no-daemon --console=plain
+
+      - name: Upload build artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.branch }}-jars
+          path: |
+            ${{ matrix.jar_glob }}
+            build/libs/fox-model-loader-*-neo26.2-curseforge.jar
+            **/build/test-results/test/TEST-*.xml
+          if-no-files-found: ignore
