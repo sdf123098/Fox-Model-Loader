@@ -65,15 +65,17 @@ Fox Model Loader は当初 Sparkle Morpher へと発展しました。Sparkle Mo
 
 ### MOD 互換性
 
-人気 MOD との併用に対応：
+互換性は Minecraft、ローダー、相手 MOD のバージョンに依存します。現在のアダプターの状態：
 
-| カテゴリ | 互換 MOD |
-|---------|---------|
-| 戦闘 | Better Combat |
-| アクセサリー | Curios |
-| 建造＆オートメーション | Create |
-| レンダリング | Iris、Sodium |
-| プレイヤースキン | スキンレイヤー互換 |
+| MOD | 現在の状態 |
+| --- | --- |
+| Carpet / 偽プレイヤー MOD | 実行時クラスによる識別とサーバー側のモデル選択。各移植版は対応バージョンでの検証が必要です。 |
+| Sodium | Minecraft の描画経路を使用し、Sodium 専用 Mixin はありません。すべての描画構成を実機検証したという意味ではありません。 |
+| Iris | シェーダーパックと影描画の任意検出。Fabric 26.x はリフレクションを使用し、Iris API クラスを同梱しません。 |
+| ParCool | NeoForge は互換 `Parkourability` API のアクションに対応。Fabric の実装は未有効のプレースホルダーです。 |
+| Better Combat、Create、Curios など | 引き継いだ一部のアダプターはプレースホルダーです。クラス名だけで完全対応を保証しません。 |
+
+ローダー差、Mod ID 移行、検証範囲は[互換性の説明](MOD_ID_COMPATIBILITY.md)を参照してください。同時インストールと専用アニメーション・装備スロットの対応は別の互換性です。
 
 ### 現在のリリース対象
 
