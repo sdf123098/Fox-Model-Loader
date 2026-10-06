@@ -74,15 +74,17 @@ BandwidthLimit = 5
 
 ### 模组兼容性
 
-兼容主流模组：
+兼容性取决于 Minecraft 版本、加载器和对方模组版本。当前适配状态：
 
-| 类别 | 兼容模组 |
-|------|---------|
-| 战斗 | Better Combat |
-| 饰品 | Curios |
-| 建造与自动化 | Create |
-| 渲染 | Iris、Sodium |
-| 玩家皮肤 | 皮肤层兼容 |
+| 模组 | 当前状态 |
+| --- | --- |
+| Carpet / 假人提供模组 | 按运行时类识别假人，保留服务端授权的模型选择；不同移植版需要在对应版本验证。 |
+| Sodium | 使用 Minecraft 渲染路径，没有直接针对 Sodium 的 Mixin；源码检查不代表所有渲染组合都已实测。 |
+| Iris | 可选光影包与阴影阶段检测；Fabric 26.x 使用反射桥接，不打包 Iris API 类。 |
+| ParCool | NeoForge 有针对兼容 `Parkourability` API 的动作适配；Fabric 仍为未启用的占位实现。 |
+| Better Combat、Create、Curios 等历史适配 | 部分继承的适配器仍是占位实现，不能仅凭类名宣称完整支持。 |
+
+加载器差异、Mod ID 迁移和验证范围见[兼容性说明](MOD_ID_COMPATIBILITY.md)。可以同时安装与支持专用动作、饰品栏等功能是两种不同的兼容承诺。
 
 ### 当前发布目标
 
