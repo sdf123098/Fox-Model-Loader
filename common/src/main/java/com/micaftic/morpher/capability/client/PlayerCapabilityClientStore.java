@@ -1,6 +1,7 @@
 package com.micaftic.morpher.capability.client;
 
 import com.micaftic.morpher.capability.PlayerCapability;
+import com.micaftic.morpher.client.compat.TweakerooCompat;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -17,7 +18,7 @@ public final class PlayerCapabilityClientStore {
     }
 
     public static Optional<PlayerCapability> get(Player player) {
-        if (!(player instanceof AbstractClientPlayer)) {
+        if (!(player instanceof AbstractClientPlayer) || TweakerooCompat.isCameraProxy(player)) {
             return Optional.empty();
         }
         UUID uuid = player.getUUID();
