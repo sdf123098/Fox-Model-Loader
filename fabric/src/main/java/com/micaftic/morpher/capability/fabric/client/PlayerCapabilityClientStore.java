@@ -1,6 +1,7 @@
 package com.micaftic.morpher.capability.fabric.client;
 
 import com.micaftic.morpher.capability.PlayerCapability;
+import com.micaftic.morpher.client.compat.TweakerooCompat;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.player.Player;
 import com.micaftic.morpher.YesSteveModel;
@@ -24,7 +25,7 @@ public final class PlayerCapabilityClientStore {
     }
 
     public static Optional<PlayerCapability> get(Player player) {
-        if (!(player instanceof AbstractClientPlayer)) {
+        if (!(player instanceof AbstractClientPlayer) || TweakerooCompat.isCameraProxy(player)) {
             return Optional.empty();
         }
         if (STORE.size() > 500 && System.nanoTime() - LAST_CLEANUP_NANOS.get() > 1_000_000_000L) {

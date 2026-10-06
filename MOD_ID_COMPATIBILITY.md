@@ -46,6 +46,10 @@ Better Combat, Create, Curios, Carry On, Player Animator, First Person, Real Cam
 
 These stubs do not prove a mod combination crashes or cannot coexist. They mean dedicated item-slot, movement or animation integration is not implemented there. Their names and inherited animation assets are not evidence of full compatibility. Full in-game tests with exact mod versions and shader packs remain separate from source checks, adapter fixtures and clean builds.
 
+## Tweakeroo free camera
+
+Free camera is handled independently of the Mod ID rename. The camera surrogate is excluded from the player model cache, and the local body's render gate uses its real game mode while that camera is active. See [Tweakeroo compatibility](TWEAKEROO_COMPATIBILITY.md) for the upstream contracts, regression coverage and in-game verification limits.
+
 ## Regression checks
 
 Run with Python 3.11+ and JDK 21 or newer (`JAVA_HOME` or `FOX_JAVA21_HOME`):
@@ -53,6 +57,7 @@ Run with Python 3.11+ and JDK 21 or newer (`JAVA_HOME` or `FOX_JAVA21_HOME`):
 ```sh
 python scripts/tests/test_mod_id_compat.py
 python scripts/tests/test_optional_shader_compat.py
+python scripts/tests/test_tweakeroo_freecam.py
 ./gradlew clean build
 ./gradlew clean build -Pdist=curseforge
 ```
