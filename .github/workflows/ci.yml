@@ -43,6 +43,9 @@ jobs:
       - name: Mod ID compatibility regression
         run: python3 scripts/tests/test_mod_id_compat.py
 
+      - name: Optional shader compatibility regression
+        run: python3 scripts/tests/test_optional_shader_compat.py
+
       - name: Grant gradlew executable bit
         run: chmod +x gradlew
 
@@ -67,6 +70,7 @@ jobs:
             || { echo "::error::missing natives in $JAR"; exit 1; }
           grep -q 'native-manifest.json' jar-entries.txt \
             || { echo "::error::missing native-manifest.json in $JAR"; exit 1; }
+          python3 scripts/tests/test_optional_shader_compat.py --jar "$JAR"
           echo "smoke OK"
 
       - name: Modrinth alias contract — uses native distribution
@@ -78,6 +82,9 @@ jobs:
 
       - name: CurseForge variant build
         run: ./gradlew ${{ matrix.gradle_task }} -Pdist=curseforge --no-daemon --console=plain
+
+      - name: Optional shader packaging — standard and CurseForge
+        run: python3 scripts/tests/test_optional_shader_compat.py --check-artifacts
 
       - name: Upload build artifacts
         if: ${{ always() }}

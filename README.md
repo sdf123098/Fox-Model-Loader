@@ -74,15 +74,17 @@ BandwidthLimit = 5
 
 ### Mod Compatibility
 
-Designed to work alongside popular mods:
+Compatibility depends on the Minecraft version, loader and installed mod release. Current adapter status:
 
-| Category | Compatible Mods |
-|----------|----------------|
-| Combat | Better Combat |
-| Accessories | Curios |
-| Building & Automation | Create |
-| Rendering | Iris, Sodium |
-| Player Skins | Skin layers compatible |
+| Mod | Current status |
+| --- | --- |
+| Carpet / fake-player providers | Class-based fake-player recognition and server-authoritative model selection; individual forks need matching-version validation. |
+| Sodium | Uses Minecraft rendering paths without Sodium-specific mixin targets; source audit does not certify every rendering combination. |
+| Iris | Optional shader-pack and shadow-pass detection. Fabric 26.x uses a reflective API bridge and does not bundle Iris API classes. |
+| ParCool | NeoForge has an action adapter for compatible `Parkourability` APIs; Fabric retains an inactive placeholder. |
+| Better Combat, Create, Curios and other historical adapters | Several inherited adapters remain placeholders; their class names do not imply full integration. |
+
+See [compatibility scope and verification](MOD_ID_COMPATIBILITY.md) for loader differences, the Mod ID migration and testing limits. Installing two mods together and supporting their special animations or item slots are separate compatibility claims.
 
 ### Current release targets
 
