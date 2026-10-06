@@ -21,12 +21,38 @@ Where supported, existing `sparkle_morpher.mixin.*`, `sparkle_morpher.disableMix
 
 External addons that declare a hard dependency on `sparkle_morpher`, use loader-level old-ID detection, old resource namespaces or old network channels still need a Fox-aware release. The internal script fallback and entrypoint key do not create a loader alias or make SPM/YSM network protocols interchangeable. Target `foxmodelloader` in addon metadata and use the matching Minecraft/loader API.
 
+## Other optional mods: current implementation scope
+
+Audited on 2026-10-06 against the six released SPM 1.2.9 source archives. The Mod ID rename does not, by itself, require rewriting adapters that detect the other mod's ID or provider classes. It also does not turn inherited placeholders into active integrations.
+
+| Mod | Fabric 1.21.1 / 26.1.2 / 26.2 | NeoForge 1.21.1 / 26.1.2 / 26.2 |
+| --- | --- | --- |
+| Carpet and fake-player providers | Runtime provider-class recognition, including `carpet.patches.EntityPlayerMPFake`; existing model selection/sync uses Fox's server-authoritative path. | Same recognition strategy for compatible forks; a port's availability and runtime behavior must be checked separately. |
+| Sodium | No direct Sodium mixin targets or Sodium implementation-class imports. No rename-induced detection regression found. | Same boundary. This is a source audit, not a guarantee for every renderer/mod combination. |
+| Iris | Detects `iris`; 1.21.1 uses compile-only Iris API, while 26.x uses optional reflection. No Iris API placeholder is shipped. | Detects `iris` or `oculus` and uses an optional reflective API bridge. |
+| ParCool | Inactive placeholder: detection/action/controller methods return false, empty or no action. | Active reflective adapter, gated by `parcool` and `com.alrex.parcool.common.attachment.common.Parkourability`. Uses `get(Player)`, `getList()` and `isDoingNothing()`. |
+
+The [Carpet provider class](https://github.com/gnembon/fabric-carpet/blob/master/src/main/java/carpet/patches/EntityPlayerMPFake.java), [Iris public API](https://github.com/IrisShaders/Iris/blob/26.1/common/src/api/java/net/irisshaders/iris/api/v0/IrisApi.java), and [ParCool 1.21.1 NeoForge attachment API](https://github.com/alRex-U/ParCool/blob/1.21.1-NF/src/main/java/com/alrex/parcool/common/attachment/common/Parkourability.java) were checked. The ParCool API check does not establish that a matching upstream release exists for Minecraft 26.x.
+
+### Iris packaging fix
+
+The inherited Fabric 26.1.2 and 26.2 builds compiled and packaged a local `net.irisshaders.iris.api.v0.IrisApi` placeholder whose `getInstance()` returned null. This could shadow Iris's actual API and disable shader detection, depending on classpath order. The placeholder is removed and the bridge now resolves the public API reflectively. Iris remains optional; absent APIs and invocation/linkage failures return false safely. The historical `isPBRActive()` predicate still represents the shadow pass, not general material/PBR support.
+
+The regression fixture puts Fox before a separately compiled Iris API on the classpath, exercises enabled/disabled shader packs and shadow passes, and checks missing/broken APIs. CI also inspects the built standard and CurseForge JARs to reject packaged `net/irisshaders/**/*.class` entries.
+
+### Historical placeholders
+
+Better Combat, Create, Curios, Carry On, Player Animator, First Person, Real Camera, Simple Hats, Simple Planes, SWEM, Immersive Aircraft, Immersive Melodies, Elytra Slot, Iron's Spellbooks, `SBackpack` and SWarfare have inactive `isLoaded()` placeholders in these restored branches. This was already true in the archived SPM 1.2.9 sources. Fabric additionally has the ParCool placeholder. TaCZ and SlashBlade vary by loader/version, so they must be assessed per branch.
+
+These stubs do not prove a mod combination crashes or cannot coexist. They mean dedicated item-slot, movement or animation integration is not implemented there. Their names and inherited animation assets are not evidence of full compatibility. Full in-game tests with exact mod versions and shader packs remain separate from source checks, adapter fixtures and clean builds.
+
 ## Regression checks
 
 Run with Python 3.11+ and JDK 21 or newer (`JAVA_HOME` or `FOX_JAVA21_HOME`):
 
 ```sh
 python scripts/tests/test_mod_id_compat.py
+python scripts/tests/test_optional_shader_compat.py
 ./gradlew clean build
 ./gradlew clean build -Pdist=curseforge
 ```
