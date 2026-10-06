@@ -35,7 +35,12 @@ def main():
                    cwd=source, check=True)
     source_files = {name: sha(source / name) for name in FILES}
     source_sha = hashlib.sha256(json.dumps(source_files, sort_keys=True).encode()).hexdigest()
-    version = f"fox-2.0-{family}-{source_sha[:16]}"
+    mod_version = next((line.split("=", 1)[1].strip() for line in
+                        (repo / "gradle.properties").read_text(encoding="utf-8").splitlines()
+                        if line.strip().startswith("mod_version=")), None)
+    if not mod_version:
+        raise RuntimeError(f"Missing mod_version in {repo / 'gradle.properties'}")
+    version = f"fox-{mod_version}-{family}-{source_sha[:16]}"
     # Validate all outputs before changing packaged resources.
     for artifact in manifest["artifacts"]:
         binary = source / "zig-out" / artifact["platform"] / artifact["filename"]

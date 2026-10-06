@@ -94,8 +94,8 @@ public class Fixture {
     }
     public static void main(String[] args) {
         ModVersion fn = new ModVersion();
-        check(fn, "foxmodelloader", "2.0");
-        check(fn, "sparkle_morpher", "2.0");
+        check(fn, "foxmodelloader", "2.1");
+        check(fn, "sparkle_morpher", "2.1");
         check(fn, "other_mod", "3.1");
         check(fn, "missing_mod", null);
         check(fn, "yes_steve_model", null);
@@ -114,7 +114,7 @@ public class Platform {
     public record Mod(String version) { public String getVersion() { return version; } }
     static String version(String id) {
         return switch(id) {
-            case "foxmodelloader" -> "2.0";
+            case "foxmodelloader" -> "2.1";
             case "other_mod" -> "3.1";
             case "sparkle_morpher" -> System.getProperty("fixture.spm");
             default -> null;
