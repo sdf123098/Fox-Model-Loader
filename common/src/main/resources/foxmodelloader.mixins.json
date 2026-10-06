@@ -10,9 +10,9 @@
   "client": [
     "client.ArrowEntityAccessor",
     "client.CameraAccessor",
-    "client.CommandEncoderAccessor",
-    "client.GpuDeviceAccessor", "client.LevelRendererAccessor",
+    "client.LevelRendererAccessor",
     "client.MinecraftAccessor",
+    "client.OptionsKeyMappingMixin",
     "client.ClientPacketListenerMixin", "client.EntityRenderDispatcherAccessor", "client.EntityRenderDispatcherMixin", "client.FishingHookAccessor", "client.GuiEntityRendererMixin", "client.InventoryScreenMixin",
     "client.LivingRendererMixin", "client.PauseScreenMixin", "client.ScreenAccessor",
     "client.ThrowableItemProjectileAccessor", "client.WorldRendererMixin"

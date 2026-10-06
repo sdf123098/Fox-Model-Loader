@@ -7,6 +7,7 @@ import com.micaftic.morpher.client.model.ModelAssembly;
 import com.micaftic.morpher.core.config.ConfigPolicies;
 import com.micaftic.morpher.core.api.PlatformAPI;
 import com.micaftic.morpher.core.api.client.KeyMappingFactory;
+import com.micaftic.morpher.core.api.client.InputCodeAdapter;
 import com.micaftic.morpher.core.architectury.event.EventResult;
 import com.micaftic.morpher.core.architectury.event.events.client.ClientRawInputEvent;
 import com.micaftic.morpher.client.compat.touhoulittlemaid.TouhouLittleMaidClientCompat;
@@ -35,10 +36,10 @@ import net.minecraft.client.gui.screens.Screen;
 public final class AnimationRouletteKey {
 
     public static final KeyMapping KEY_ROULETTE = KeyMappingFactory.createInGameNone(
-            "key.foxmodelloader.animation_roulette.desc", InputConstants.Type.KEYSYM, 90, "key.category.foxmodelloader");
+            "key.foxmodelloader.animation_roulette.desc", InputConstants.Type.KEYBOARD, InputCodeAdapter.SDL_SCANCODE_Z, "key.category.foxmodelloader");
 
     public static final KeyMapping KEY_LOCK = KeyMappingFactory.createInGameAlt(
-            "key.foxmodelloader.lock_roulette.desc", InputConstants.Type.KEYSYM, 76, "key.category.foxmodelloader");
+            "key.foxmodelloader.lock_roulette.desc", InputConstants.Type.KEYBOARD, InputCodeAdapter.SDL_SCANCODE_L, "key.category.foxmodelloader");
 
     private AnimationRouletteKey() {
     }

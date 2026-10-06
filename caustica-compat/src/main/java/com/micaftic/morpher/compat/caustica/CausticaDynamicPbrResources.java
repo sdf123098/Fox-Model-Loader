@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
@@ -301,13 +302,13 @@ public final class CausticaDynamicPbrResources implements ClientRenderCompatibil
     private static Pack createPack() {
         Pack.ResourcesSupplier supplier = new Pack.ResourcesSupplier() {
             @Override
-            public PackResources openPrimary(PackLocationInfo location) {
+            public PackMetadataResources openMetadata(PackLocationInfo location) {
                 return new Resources(location);
             }
 
             @Override
-            public PackResources openFull(PackLocationInfo location, Pack.Metadata metadata) {
-                return new Resources(location);
+            public Stream<PackResources> openResources(PackLocationInfo location, Pack.Metadata metadata) {
+                return Stream.of(new Resources(location));
             }
         };
         Pack.Metadata metadata = new Pack.Metadata(Component.literal("Runtime model PBR textures"),

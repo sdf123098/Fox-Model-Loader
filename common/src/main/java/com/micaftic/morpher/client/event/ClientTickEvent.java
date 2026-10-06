@@ -49,7 +49,11 @@ public final class ClientTickEvent {
             ObjectPool.cleanup();
         }
         if (tickCount % REFRESH_RATE_UPDATE_INTERVAL_TICKS == 0) {
-            refreshRate = Math.max(60, client.getWindow().getRefreshRate());
+            var monitor = client.getWindow().findBestMonitor();
+            int displayRefreshRate = monitor == null || monitor.currentMode() == null
+                    ? 60
+                    : Math.round(monitor.currentMode().getRefreshRate());
+            refreshRate = Math.max(60, displayRefreshRate);
         }
         LocalPlayer localPlayer = client.player;
         if (localPlayer != null) {
