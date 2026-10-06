@@ -2,6 +2,7 @@ package com.micaftic.morpher.client.event;
 
 import com.micaftic.morpher.YesSteveModel;
 import com.micaftic.morpher.capability.PlayerCapability;
+import com.micaftic.morpher.client.compat.TweakerooCompat;
 import com.micaftic.morpher.client.renderer.ModelPreviewRenderer;
 import com.micaftic.morpher.client.render.PlayerRenderPolicy;
 import com.micaftic.morpher.client.renderer.RendererManager;
@@ -38,7 +39,7 @@ public class ReplacePlayerRenderEvent {
                 entity.equals(localPlayer),
                 ConfigPolicies.render().disableSelfModel(),
                 ConfigPolicies.render().disableOtherModel(),
-                entity.isSpectator(),
+                TweakerooCompat.isSpectatorBody(entity),
                 cap != null && cap.isModelActive(),
                 firstPersonSuppressionSatisfied
         ));
