@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * The official maid mod only exposes its YSM button when the legacy
- * {@code foxmodelloader} mod id is installed. FoxModelLoader provides the
+ * {@code yes_steve_model} mod id is installed. FoxModelLoader provides the
  * same integration surface under its own mod id.
  */
 @Pseudo

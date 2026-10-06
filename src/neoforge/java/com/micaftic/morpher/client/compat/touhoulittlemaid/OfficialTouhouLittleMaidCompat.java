@@ -38,7 +38,7 @@ final class OfficialTouhouLittleMaidCompat {
 
     static void init(Logger logger) {
         if (!TouhouLittleMaidAccess.isLoaded()
-                || ModList.get().isLoaded("foxmodelloader")
+                || ModList.get().isLoaded("yes_steve_model")
                 || FMLEnvironment.dist != Dist.CLIENT) {
             return;
         }
