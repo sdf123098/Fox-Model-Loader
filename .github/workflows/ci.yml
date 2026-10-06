@@ -46,6 +46,9 @@ jobs:
       - name: Optional shader compatibility regression
         run: python3 scripts/tests/test_optional_shader_compat.py
 
+      - name: Tweakeroo free camera regression
+        run: python3 scripts/tests/test_tweakeroo_freecam.py
+
       - name: Grant gradlew executable bit
         run: chmod +x gradlew
 
