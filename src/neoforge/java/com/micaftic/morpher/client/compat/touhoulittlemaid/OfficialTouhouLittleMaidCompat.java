@@ -6,6 +6,10 @@ import com.micaftic.morpher.client.gui.ModernPlayerModelScreen;
 import com.micaftic.morpher.util.InputUtil;
 import com.micaftic.morpher.network.NetworkHandler;
 import com.micaftic.morpher.network.message.C2SSetMaidModelPacket;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +26,8 @@ import java.lang.reflect.Method;
 final class OfficialTouhouLittleMaidCompat {
     private static final String OPEN_SCREEN_EVENT =
             "com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.OpenYsmMaidScreenEvent";
+    private static final String GUI_INIT_EVENT =
+            "com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidContainerGuiEvent$Init";
     private static final String[] MODEL_PACKETS = {
             "com.github.tartaricacid.touhoulittlemaid.network.message.YsmMaidModelPackage",
             "com.github.tartaricacid.touhoulittlemaid.network.message.YsmMaidModelMessage"
@@ -32,7 +38,7 @@ final class OfficialTouhouLittleMaidCompat {
 
     static void init(Logger logger) {
         if (!TouhouLittleMaidAccess.isLoaded()
-                || ModList.get().isLoaded("foxmodelloader")
+                || ModList.get().isLoaded("yes_steve_model")
                 || FMLEnvironment.getDist() != Dist.CLIENT) {
             return;
         }
@@ -41,6 +47,9 @@ final class OfficialTouhouLittleMaidCompat {
                     OfficialTouhouLittleMaidCompat.class.getClassLoader());
             registerOpenScreenListener(eventClass);
             logger.info("Enabled official Touhou Little Maid YSM model screen integration");
+        } catch (ClassNotFoundException legacyEventAbsent) {
+            // The new 26.x repository exposes its general GUI extension event instead of YSM hooks.
+            initGuiIntegration(logger);
         } catch (Throwable throwable) {
             logger.debug("Official Touhou Little Maid YSM screen integration unavailable: {}",
                     throwable.getMessage());
@@ -69,6 +78,51 @@ final class OfficialTouhouLittleMaidCompat {
         } catch (Throwable ignored) {
             // The event is optional and must never affect the maid screen.
         }
+    }
+
+    private static void initGuiIntegration(Logger logger) {
+        try {
+            Class<?> eventClass = Class.forName(GUI_INIT_EVENT, false,
+                    OfficialTouhouLittleMaidCompat.class.getClassLoader());
+            registerGuiInitListener(eventClass);
+            logger.info("Enabled Touhou Little Maid model selection through its GUI extension event");
+        } catch (Throwable throwable) {
+            logger.debug("Touhou Little Maid GUI integration unavailable: {}", throwable.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void registerGuiInitListener(Class<?> eventClass) {
+        registerGuiInitListenerTyped((Class<? extends net.neoforged.bus.api.Event>) eventClass);
+    }
+
+    private static <T extends net.neoforged.bus.api.Event> void registerGuiInitListenerTyped(Class<T> eventClass) {
+        NeoForge.EVENT_BUS.addListener(eventClass, OfficialTouhouLittleMaidCompat::onGuiInit);
+    }
+
+    private static void onGuiInit(net.neoforged.bus.api.Event event) {
+        try {
+            Object gui = event.getClass().getMethod("getGui").invoke(event);
+            if (!(gui instanceof Screen parent)) return;
+            Object menu = gui.getClass().getMethod("getMenu").invoke(gui);
+            Object value = menu.getClass().getMethod("getMaid").invoke(menu);
+            if (!(value instanceof Entity maid) || !TouhouLittleMaidAccess.isMaid(maid)) return;
+            int left = ((Number) event.getClass().getMethod("getLeftPos").invoke(event)).intValue();
+            int top = ((Number) event.getClass().getMethod("getTopPos").invoke(event)).intValue();
+            Button button = Button.builder(Component.literal("F"), ignored -> openModelScreen(parent, maid))
+                    .bounds(left + 42, top + 14, 9, 9).build();
+            button.setTooltip(Tooltip.create(Component.translatable("key.foxmodelloader.player_model.desc")));
+            event.getClass().getMethod("addButton", String.class, AbstractWidget.class)
+                    .invoke(event, "foxmodelloader:model", button);
+        } catch (Throwable ignored) {
+            // The optional maid integration must never break the host screen.
+        }
+    }
+
+    private static void openModelScreen(Screen parent, Entity maid) {
+        InputUtil.setScreen(new ModernPlayerModelScreen(parent,
+                (modelId, texture) -> applyModel(maid, modelId, texture),
+                "maid:" + maid.getUUID()));
     }
 
     private static void applyModel(Entity maid, String modelId, String texture) {
