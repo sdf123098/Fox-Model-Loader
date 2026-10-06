@@ -88,16 +88,18 @@ See [compatibility scope and verification](MOD_ID_COMPATIBILITY.md) for loader d
 
 ### Current release targets
 
-Current release targets cover Fabric and NeoForge on Minecraft 1.21.1, 26.1.2 and 26.2. The supported versions and downloadable builds are listed in [Releases](https://github.com/sdf123098/Fox-Model-Loader/releases).
+Current release targets cover Fabric and NeoForge on Minecraft 1.21.1, 26.1.2, 26.2 and 26.3. The supported versions and downloadable builds are listed in [Releases](https://github.com/sdf123098/Fox-Model-Loader/releases).
 
 | Variant | Loader | Minecraft |
 | --- | --- | --- |
 | Fox-Model-Loader-Fa1.21.1 | Fabric | 1.21.1 |
 | Fox-Model-Loader-Fa26.1.2 | Fabric | 26.1.2 |
 | Fox-Model-Loader-Fa26.2 | Fabric | 26.2 |
+| Fox-Model-Loader-Fa26.3 | Fabric | 26.3 |
 | Fox-Model-Loader-Neo1.21.1 | NeoForge | 1.21.1 |
 | Fox-Model-Loader-Neo26.1.2 | NeoForge | 26.1.2 |
 | Fox-Model-Loader-Neo26.2 | NeoForge | 26.2 |
+| Fox-Model-Loader-Neo26.3 | NeoForge | 26.3 |
 
 ## How It Works
 
@@ -145,3 +147,16 @@ Varies by build variant — see `mods.toml` (NeoForge) or `fabric.mod.json` (Fab
 ## Building
 
 Java 21 is required for 1.21.1; Java 25 for 26.x. Run `./gradlew build` for the standard distribution, or `./gradlew build -Pdist=curseforge` for the Java fallback distribution. The standard distribution bundles the rebuilt SIMD renderer; the CurseForge distribution excludes project native libraries. To rebuild all six native platforms, run `python scripts/rebuild-natives.py --zig <zig.exe> --ndk <Android NDK root>`. See [native source and build provenance](NATIVE_SOURCES.md).
+
+## Publishing GitHub Releases
+
+From this repository, upload the workspace's eight standard `Release/` JARs with Python 3.11+ and an authenticated [GitHub CLI](https://cli.github.com/manual/gh_release_create):
+
+```powershell
+python scripts/upload-release.py --dry-run
+python scripts/upload-release.py
+```
+
+The script validates the build index, mod identity, icon, native binaries and SHA-256 values before uploading. It creates `v<version>` as a draft, uploads the eight JARs, verifies their remote digests, and publishes only after all checks pass. Reruns skip identical assets and resume incomplete drafts; conflicting assets are never overwritten. `--dry-run` validates local files without contacting GitHub. Use `--draft` to keep the release unpublished, `--workspace <folder>` for another build workspace, or `--tag`, `--target`, `--repo` and `--notes-file` to select a different release.
+
+The default release notes are [docs/releases/v2.1/RELEASE_NOTES.md](docs/releases/v2.1/RELEASE_NOTES.md). Edit the notes before publishing; checksum tables must match the current JARs. Upload records go to `D:/SparkleMorpher/docs/YYYY-MM-DD/fox-release-upload-*/result.json`; override their base directory with `--record-dir`. The uploader requires the workspace's `artifacts.json` and `icon.png`, alongside `Release/`.
