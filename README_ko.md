@@ -1,8 +1,10 @@
-# Fox Model Loader: Revival 2.0
+# Fox Model Loader: Revival
 
 <img src="src/main/resources/foxmodelloader.png" alt="Fox Model Loader: Revival" width="160">
 
-Fox Model Loader: Revival **2.0**은 Sparkle Morpher **1.2.9** 소스 코드를 기반으로 다시 시작합니다. 모드 ID와 리소스 네임스페이스는 `foxmodelloader`입니다. 기존 Minecraft 서버 동기화를 유지하므로 멀티플레이 모델 공유에는 서버와 클라이언트 모두 모드를 설치해야 합니다. 개별 모델 ID와 `.ysm` 형식은 유지됩니다.
+Fox Model Loader: Revival는 Sparkle Morpher **1.2.9**의 계보를 이어가는 프로젝트입니다. 모드 ID와 리소스 네임스페이스는 `foxmodelloader`입니다. 기존 Minecraft 서버 동기화 아키텍처를 유지하므로 멀티플레이 모델 공유에는 서버와 클라이언트 모두 모드를 설치해야 합니다. 개별 모델 ID와 `.ysm` 형식은 유지됩니다.
+
+중국어 공식 명칭: **绯绯狐的模型加载器：复兴**.
 
 > [English](README.md) | [中文](README_zh.md) | [日本語](README_ja.md) | **한국어**
 
@@ -14,11 +16,23 @@ Minecraft 종합 커스텀 모델 로더. 플레이어에게 커스텀 모델, �
 
 ---
 
+## 릴리스 정책 (Release Policy)
+
+프로젝트는 **분기별 LTS 스타일 업데이트**를 따르며, 매 분기 한 번의 기능 릴리스를 계획합니다. 필요한 경우 분기 릴리스 사이에도 심각한 버그, 호환성 문제 또는 보안 문제를 수정하는 유지보수 릴리스를 제공합니다.
+
+이 릴리스 주기는 의도적으로 선택한 것입니다. 잦은 기능 업데이트보다 안정성, 호환성, 서버 배포의 예측 가능성을 우선합니다.
+
+버전 이력, 릴리스 노트와 변경 로그는 주로 [Releases](https://github.com/sdf123098/Fox-Model-Loader/releases)에 기록합니다.
+
+## 프로젝트 역사 (Project History)
+
+Fox Model Loader는 원래 Sparkle Morpher로 발전했습니다. Sparkle Morpher **1.2.9** 이후 개발 방향이 갈라졌으며, Fox Model Loader는 **2.0**부터 **Revival**이라는 이름으로 유지보수를 재개했습니다. 기존 Minecraft 서버 동기화 아키텍처를 이어갑니다.
+
 ## 기능
 
 ### 커스텀 플레이어 모델 & 스킨
 
-기본 플레이어 모델을 완전히 커스텀된 3D 모델로 교체합니다. 모든 커스텀 모델은 멀티플레이어에서**다른 플레이어에게도 보입니다**——서버 사이드 모드 없이 모델 가시성을 구현합니다.
+기본 플레이어 모델을 완전히 커스텀된 3D 모델로 교체합니다. 모든 커스텀 모델은 멀티플레이어에서**다른 플레이어에게도 보입니다**.
 
 ### 모델 형식 지원
 
@@ -60,9 +74,9 @@ Minecraft 종합 커스텀 모델 로더. 플레이어에게 커스텀 모델, �
 | 렌더링 | Iris、Sodium |
 | 플레이어 스킨 | 스킨 레이어 호환 |
 
-### 크로스 플랫폼
+### 현재 릴리스 대상
 
-Minecraft 1.21.1, 26.1.2, 26.2의 Fabric 및 NeoForge를 위한 6개 빌드를 제공합니다.
+현재 릴리스 대상은 Minecraft 1.21.1, 26.1.2, 26.2의 Fabric 및 NeoForge입니다. 지원 버전과 다운로드는 [Releases](https://github.com/sdf123098/Fox-Model-Loader/releases)를 확인하세요.
 
 | 변형 | 로더 | Minecraft |
 | --- | --- | --- |
