@@ -1,8 +1,10 @@
-# Fox Model Loader: Revival 2.0
+# Fox Model Loader: Revival
 
 <img src="common/src/main/resources/foxmodelloader.png" alt="Fox Model Loader: Revival" width="160">
 
-Fox Model Loader: Revival **2.0** revives the Sparkle Morpher **1.2.9** codebase. Mod ID and resource namespace: `foxmodelloader`. This version retains the original Minecraft server synchronization; multiplayer model sharing requires the mod on both server and clients. Individual model IDs and the `.ysm` format are preserved.
+Fox Model Loader: Revival follows the Sparkle Morpher **1.2.9** lineage. Its Mod ID and resource namespace are `foxmodelloader`. It retains the traditional Minecraft server synchronization architecture; multiplayer model sharing requires the mod on both server and clients. Individual model IDs and the `.ysm` format are preserved.
+
+Official Chinese name: **绯绯狐的模型加载器：复兴**.
 
 > **English** | [中文](README_zh.md) | [日本語](README_ja.md) | [한국어](README_ko.md)
 
@@ -11,6 +13,18 @@ Fox Model Loader: Revival **2.0** revives the Sparkle Morpher **1.2.9** codebase
 A comprehensive Minecraft custom model loader that lets players mount custom models, animations, and sound effects onto players (and select entities, vehicles, and projectiles) — say goodbye to the default blocky character.
 
 > Fox Model Loader: Revival is a **universal model loader**. It currently supports the `.ysm` format (based on OpenYSM, MIT licensed) and `.bbmodel` format (Blockbench), with support for additional mainstream model formats planned for future releases.
+
+## Release Policy
+
+The project follows a **quarterly LTS-style release cycle**: one planned feature release each quarter. Between quarterly releases, maintenance releases may address critical bugs, compatibility problems, or security issues.
+
+This cadence is deliberate. Stability, compatibility, and predictable server deployments take priority over frequent feature releases.
+
+See [Releases](https://github.com/sdf123098/Fox-Model-Loader/releases) for published versions, release notes, and changelogs.
+
+## Project History
+
+Fox Model Loader originally evolved into Sparkle Morpher. The development paths diverged after Sparkle Morpher **1.2.9**. Beginning with **2.0**, Fox Model Loader resumed maintenance under the **Revival** identity, continuing the traditional Minecraft server synchronization architecture.
 
 ## Features
 
@@ -70,9 +84,9 @@ Designed to work alongside popular mods:
 | Rendering | Iris, Sodium |
 | Player Skins | Skin layers compatible |
 
-### Cross-platform
+### Current release targets
 
-Six variants cover Fabric and NeoForge on Minecraft 1.21.1, 26.1.2 and 26.2.
+Current release targets cover Fabric and NeoForge on Minecraft 1.21.1, 26.1.2 and 26.2. The supported versions and downloadable builds are listed in [Releases](https://github.com/sdf123098/Fox-Model-Loader/releases).
 
 | Variant | Loader | Minecraft |
 | --- | --- | --- |
