@@ -64,7 +64,7 @@ public class YesSteveModel {
             }
         }
         ConfigRegistration.register(MOD_ID, ModConfig.Type.CLIENT, GeneralConfig.buildSpec());
-        ConfigRegistration.register(MOD_ID, ModConfig.Type.SERVER, ServerConfig.buildSpec());
+        ConfigRegistration.register(MOD_ID, ModConfig.Type.SYNCED, ServerConfig.buildSpec());
         if (!PlatformAPI.isServer()) {
             // MC 26.x: DeferredRegister.register now requires (String, Supplier) args
             // ModSoundEvents.REGISTER.register("", () -> SoundEvent.createVariableRangeEvent(com.micaftic.morpher.core.api.resource.ResourceApi.nativeId(MOD_ID, "")));

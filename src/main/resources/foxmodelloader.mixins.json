@@ -8,9 +8,10 @@
     "defaultRequire": 1
   },
   "client": [
-    "client.GpuDeviceAccessor", "client.LevelRendererAccessor", "client.ArrowEntityAccessor",
+    "client.LevelRendererAccessor", "client.ArrowEntityAccessor",
     "client.CameraAccessor",
     "client.MinecraftAccessor",
+    "client.OptionsKeyMappingMixin",
     "client.ClientPacketListenerMixin",
     "client.EntityRenderDispatcherAccessor",
     "client.EntityRenderDispatcherMixin",

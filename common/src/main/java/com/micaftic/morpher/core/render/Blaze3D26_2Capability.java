@@ -1,9 +1,9 @@
 package com.micaftic.morpher.core.render;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.GpuDevice;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.device.GpuDevice;
+import com.mojang.renderpearl.api.commands.RenderPass;
 
 public final class Blaze3D26_2Capability {
     private static volatile Report cachedReport;

@@ -20,6 +20,7 @@ dependencyResolutionManagement {
             name = "Project Local Maven"
             url = uri("local-maven")
         }
+        maven { url = "https://maven.neoforged.net/releases" }
         maven {
             name = "BMCLAPI Minecraft Libraries"
             url = "https://bmclapi2.bangbang93.com/maven"
@@ -33,7 +34,6 @@ dependencyResolutionManagement {
             url = "https://maven.aliyun.com/repository/central"
         }
         maven { url = "https://maven.creeperhost.net" }
-        maven { url = "https://maven.neoforged.net/releases" }
         maven { url = "https://libraries.minecraft.net/" }
         mavenCentral()
         maven { url = "https://jitpack.io" }
