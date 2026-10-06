@@ -40,6 +40,9 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: gradle
 
+      - name: Mod ID compatibility regression
+        run: python3 scripts/tests/test_mod_id_compat.py
+
       - name: Grant gradlew executable bit
         run: chmod +x gradlew
 

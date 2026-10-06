@@ -60,12 +60,18 @@ public final class PreviewRenderBridge {
     private static boolean isGuiPreviewBridgeMixinEnabledByConfig() {
         String property = System.getProperty("foxmodelloader.mixin.GuiEntityRendererMixin");
         if (property == null) {
+            property = System.getProperty("sparkle_morpher.mixin.GuiEntityRendererMixin");
+        }
+        if (property == null) {
             property = System.getProperty("ysm.mixin.GuiEntityRendererMixin");
         }
         if (property != null && property.equalsIgnoreCase("false")) {
             return false;
         }
         String disabledMixins = System.getProperty("foxmodelloader.disableMixins");
+        if (disabledMixins == null) {
+            disabledMixins = System.getProperty("sparkle_morpher.disableMixins");
+        }
         if (disabledMixins == null) {
             disabledMixins = System.getProperty("ysm.disableMixins");
         }

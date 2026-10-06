@@ -67,6 +67,7 @@ public final class SmGraphicsBackendDetector {
 
         String override = firstNonBlank(
                 System.getProperty("foxmodelloader.graphicsBackend"),
+                System.getProperty("sparkle_morpher.graphicsBackend"),
                 System.getProperty("ysm.graphicsBackend"),
                 System.getenv("SPARKLE_MORPHER_GRAPHICS_BACKEND"),
                 System.getenv("YSM_GRAPHICS_BACKEND")
