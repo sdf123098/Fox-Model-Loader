@@ -1,5 +1,6 @@
 package com.micaftic.morpher.client.animation.molang.functions.ysm;
 
+import com.micaftic.morpher.YesSteveModel;
 import com.micaftic.morpher.molang.runtime.ExecutionContext;
 import com.micaftic.morpher.molang.runtime.Function;
 import com.micaftic.morpher.core.architectury.platform.Platform;
@@ -13,6 +14,10 @@ public class ModVersion implements Function {
         String modid = arguments.getAsString(context, 0);
         if (modid == null) {
             return null;
+        }
+        // Preserve the model-script API from the 1.2.9 lineage without claiming to be YSM.
+        if (!Platform.isModLoaded(modid) && "sparkle_morpher".equals(modid)) {
+            modid = YesSteveModel.MOD_ID;
         }
         if (!Platform.isModLoaded(modid)) {
             return null;
