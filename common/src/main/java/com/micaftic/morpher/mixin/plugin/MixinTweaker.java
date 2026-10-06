@@ -27,6 +27,9 @@ public class MixinTweaker implements IMixinConfigPlugin {
         String simpleName = str2 == null ? "" : str2.substring(str2.lastIndexOf('.') + 1);
         String property = System.getProperty("foxmodelloader.mixin." + simpleName);
         if (property == null) {
+            property = System.getProperty("sparkle_morpher.mixin." + simpleName);
+        }
+        if (property == null) {
             property = System.getProperty("ysm.mixin." + simpleName);
         }
         if (property != null && property.equalsIgnoreCase("false")) {
@@ -78,6 +81,7 @@ public class MixinTweaker implements IMixinConfigPlugin {
     private static Set<String> disabledMixins() {
         String value = firstNonBlank(
                 System.getProperty("foxmodelloader.disableMixins"),
+                System.getProperty("sparkle_morpher.disableMixins"),
                 System.getProperty("ysm.disableMixins"),
                 System.getenv("SPARKLE_MORPHER_DISABLE_MIXINS"),
                 System.getenv("YSM_DISABLE_MIXINS")

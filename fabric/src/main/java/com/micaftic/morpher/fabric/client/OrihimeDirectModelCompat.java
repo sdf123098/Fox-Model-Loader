@@ -28,7 +28,7 @@ final class OrihimeDirectModelCompat {
 
     static void init() {
         if (!FabricLoader.getInstance().isModLoaded("touhou_little_maid")
-                || FabricLoader.getInstance().isModLoaded("foxmodelloader")) {
+                || FabricLoader.getInstance().isModLoaded("yes_steve_model")) {
             return;
         }
         try {
