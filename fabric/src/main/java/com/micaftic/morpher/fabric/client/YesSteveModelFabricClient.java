@@ -14,9 +14,17 @@ import com.micaftic.morpher.core.api.client.HudOverlay;
 public final class YesSteveModelFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        net.fabricmc.loader.api.FabricLoader.getInstance()
-                .getEntrypoints("foxmodelloader_render_compat", ClientRenderCompatibility.class)
-                .forEach(ClientRenderCompatibilityRegistry::register);
+        // External 1.2.9 integrations may still use the original entrypoint key.
+        // A module advertising both keys must initialize only once; prefer the Revival entry.
+        java.util.Set<Class<?>> discovered = new java.util.HashSet<>();
+        for (String key : new String[]{"foxmodelloader_render_compat", "sparkle_morpher_render_compat"}) {
+            for (ClientRenderCompatibility module : net.fabricmc.loader.api.FabricLoader.getInstance()
+                    .getEntrypoints(key, ClientRenderCompatibility.class)) {
+                if (discovered.add(module.getClass())) {
+                    ClientRenderCompatibilityRegistry.register(module);
+                }
+            }
+        }
         OrihimeDirectModelCompat.init();
         FabricClientResourceLifecycle.register();
         HudOverlay debugOverlay = AnimationDebugOverlay.createOverlay();
