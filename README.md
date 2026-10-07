@@ -5,6 +5,7 @@
 Fox Model Loader: Revival follows the Sparkle Morpher **1.2.9** lineage. Its Mod ID and resource namespace are `foxmodelloader`. It retains the traditional Minecraft server synchronization architecture; multiplayer model sharing requires the mod on both server and clients. Individual model IDs and the `.ysm` format are preserved.
 
 Official Chinese name: **绯绯狐的模型加载器：复兴**.
+Current release: **2.1.1** — a bugfix maintenance release in the 2.1 LTS line.
 
 > **English** | [中文](README_zh.md) | [日本語](README_ja.md) | [한국어](README_ko.md)
 
