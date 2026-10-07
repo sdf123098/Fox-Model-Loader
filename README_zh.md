@@ -4,6 +4,8 @@
 
 绯绯狐的模型加载器：复兴（Fox Model Loader: Revival）沿袭 Sparkle Morpher **1.2.9** 路线。模组 ID 与资源命名空间为 `foxmodelloader`，保留传统 Minecraft 服务端同步架构；联机共享模型需要服务器与客户端都安装模组。各模型自身的 ID 与 `.ysm` 格式保持兼容。
 
+当前版本：**2.1.1**，这是 2.1 LTS 系列下的 bugfix 维护版本。
+
 > [English](README.md) | **中文** | [日本語](README_ja.md) | [한국어](README_ko.md)
 
 **QQ:** 1104823534 | **Discord:** [点此加入](https://discord.gg/3KqK7USF39) | **Patreon:** [cw/Soid211](https://www.patreon.com/cw/Soid211) | **爱发电:** [Micaftic](https://afdian.com/a/Micaftic)
