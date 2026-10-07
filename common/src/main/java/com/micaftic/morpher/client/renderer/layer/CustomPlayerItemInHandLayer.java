@@ -107,6 +107,9 @@ public class CustomPlayerItemInHandLayer extends GeoLayerRenderer<CustomPlayerEn
 
     public void renderItem(AnimatedGeoModel model, LivingEntity livingEntity, ItemStack itemStack, ItemDisplayContext itemDisplayContext, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, float partialTick, HandLocatorProfile handLocatorProfile) {
         if (!itemStack.isEmpty()) {
+            if (isSwordItem(itemStack) && modelHasSwordReplacement(model)) {
+                return;
+            }
             boolean isLeftHand = humanoidArm == HumanoidArm.LEFT;
             boolean renderedDirectly = false;
             boolean hasDirectAnchor = hasDirectHandAnchor(model, humanoidArm);
@@ -151,6 +154,40 @@ public class CustomPlayerItemInHandLayer extends GeoLayerRenderer<CustomPlayerEn
                 });
             }
         }
+    }
+
+    private boolean modelHasSwordReplacement(AnimatedGeoModel model) {
+        for (com.micaftic.morpher.geckolib3.geo.render.built.GeoBone bone : model.getGeoModel().topLevelBones()) {
+            int boneId = bone.getBoneId();
+            if (model.getGeoModel().leftSwordIds.contains(boneId) || model.getGeoModel().rightSwordIds.contains(boneId)) {
+                continue;
+            }
+            String name = bone.getName().toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", "");
+            if (name.endsWith("handlocator") || name.equals("itemlocator") || name.endsWith("handloc")) {
+                continue;
+            }
+            while (!name.isEmpty() && Character.isDigit(name.charAt(name.length() - 1))) {
+                name = name.substring(0, name.length() - 1);
+            }
+            for (String suffix : new String[] { "locator", "mesh", "model", "bone" }) {
+                if (name.length() > suffix.length() && name.endsWith(suffix)) {
+                    name = name.substring(0, name.length() - suffix.length());
+                }
+            }
+            if (isSwordBoneName(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSwordBoneName(String name) {
+        for (String weaponName : new String[] { "sword", "blade", "katana", "tachi", "sabre", "saber", "rapier", "greatsword" }) {
+            if (name.equals(weaponName) || name.startsWith(weaponName) || name.endsWith(weaponName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void applyFallbackHandTransform(ItemStack itemStack, PoseStack poseStack, boolean directHandBone, boolean vanillaEquipment) {
