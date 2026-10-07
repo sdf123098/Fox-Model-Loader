@@ -91,8 +91,8 @@ class YsmCryptGoldenTest {
 
     /** byte-for-byte 锁定：2026-08-10 记录的 packet 加密输出（appendNextKey=false，KEY_IV=0x5A×56，payload="Hello YSM golden protocol"）。 */
     private static final String GOLDEN_PACKET_B64 = "IGQSY+7MxH+8hYIYksrxJitS4H7573PCvSJGVr2FAuxO";
-    /** byte-for-byte 锁定：Fox 2.1 ModDev 单测环境的 calculateModelHashes("model-abc", SERVER_KEY)。 */
-    private static final long[] GOLDEN_HASHES = {7243848027635630176L, -8887215530390954578L};
+    /** byte-for-byte 锁定：Fox 2.1.1 ModDev 单测环境的 calculateModelHashes("model-abc", SERVER_KEY)。 */
+    private static final long[] GOLDEN_HASHES = {-5881530153041766988L, -1883520723482625805L};
 
     @Test
     void packetEncrypt_goldenBytes() throws Exception {
