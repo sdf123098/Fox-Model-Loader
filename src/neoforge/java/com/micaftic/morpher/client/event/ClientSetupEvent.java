@@ -9,14 +9,41 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import com.micaftic.morpher.core.api.client.RenderLivingBridge;
 import org.lwjgl.opengl.*;
 import com.micaftic.morpher.core.api.PlatformAPI;
 
 @EventBusSubscriber(modid = YesSteveModel.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class ClientSetupEvent {
     private ClientSetupEvent() {}
-    @SubscribeEvent public static void onSetup(FMLClientSetupEvent event) { if (YesSteveModel.isAvailable()) AnimationManager.registerDefaultStates(); }
+    @SubscribeEvent public static void onSetup(FMLClientSetupEvent event) {
+        RenderLivingBridge.install(new RenderLivingBridge.Dispatcher() {
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            @Override
+            public boolean firePre(net.minecraft.world.entity.LivingEntity entity, LivingEntityRenderer<?, ?> renderer,
+                                   float partialTick, com.mojang.blaze3d.vertex.PoseStack poseStack,
+                                   net.minecraft.client.renderer.MultiBufferSource bufferSource, int packedLight) {
+                RenderLivingEvent.Pre pre = new RenderLivingEvent.Pre(entity, (LivingEntityRenderer) renderer,
+                        partialTick, poseStack, bufferSource, packedLight);
+                NeoForge.EVENT_BUS.post(pre);
+                return pre.isCanceled();
+            }
+
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            @Override
+            public void firePost(net.minecraft.world.entity.LivingEntity entity, LivingEntityRenderer<?, ?> renderer,
+                                 float partialTick, com.mojang.blaze3d.vertex.PoseStack poseStack,
+                                 net.minecraft.client.renderer.MultiBufferSource bufferSource, int packedLight) {
+                NeoForge.EVENT_BUS.post(new RenderLivingEvent.Post(entity, (LivingEntityRenderer) renderer,
+                        partialTick, poseStack, bufferSource, packedLight));
+            }
+        });
+        if (YesSteveModel.isAvailable()) AnimationManager.registerDefaultStates();
+    }
     @SubscribeEvent public static void onKeys(RegisterKeyMappingsEvent event) { registerKeyMappings(event); }
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(PlayerModelToggleKey.KEY_MAPPING);
