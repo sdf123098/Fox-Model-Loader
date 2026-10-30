@@ -212,7 +212,7 @@ public class ModelAssemblyFactory {
         boolean useBuiltinDefaultActionPreset = shouldUseBuiltinDefaultActionPreset(sourceFormat, externalPlayerModel);
         boolean useBbmodelActionPreset = shouldUseBbmodelActionPreset(sourceFormat);
         if (useBuiltinDefaultActionPreset) {
-            applyBuiltinDefaultActionPreset(object2ReferenceOpenHashMap, armAnimations);
+            applyBuiltinDefaultActionPreset(object2ReferenceOpenHashMap, armAnimations, mainModel);
         }
         if (useBbmodelActionPreset) {
             applyBbmodelActionPreset(object2ReferenceOpenHashMap, armAnimations, semanticSkeleton);
@@ -271,9 +271,10 @@ public class ModelAssemblyFactory {
         return externalPlayerModel && sourceFormat == ModelSourceFormat.YSM_NATIVE;
     }
 
-    private static void applyBuiltinDefaultActionPreset(Object2ReferenceLinkedOpenHashMap<String, Animation> mainAnimations,
-                                                        Object2ReferenceLinkedOpenHashMap<String, Animation> armAnimations) {
-        Object2ReferenceMap<String, Animation> builtinMainAnimations = BuiltinDefaultActionPreset.mainAnimations();
+    static void applyBuiltinDefaultActionPreset(Object2ReferenceLinkedOpenHashMap<String, Animation> mainAnimations,
+                                               Object2ReferenceLinkedOpenHashMap<String, Animation> armAnimations,
+                                               GeoModel mainModel) {
+        Object2ReferenceMap<String, Animation> builtinMainAnimations = BuiltinDefaultActionPreset.mainAnimations(mainModel);
         for (Object2ReferenceMap.Entry<String, Animation> entry : builtinMainAnimations.object2ReferenceEntrySet()) {
             mainAnimations.computeIfAbsent(entry.getKey(), key -> entry.getValue());
         }
